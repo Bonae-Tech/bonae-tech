@@ -1,12 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Panel de administración de contenido BONAE" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0f172a" />
     <title>BONAE — Admin</title>
+    <style>
+      #loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #64748b;
+        background: #f8fafc;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="loading">Cargando…</div>
+    </div>
+    <noscript>
+      <div style="font-family:system-ui,sans-serif;padding:2rem;text-align:center">
+        Se requiere JavaScript para usar el panel de administración de BONAE.
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
