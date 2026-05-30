@@ -5,7 +5,7 @@ export const en: Translations = {
   siteName: 'BONAE TECH',
   siteTagline: 'Technology accessible for your business',
   metaDescription:
-    'BONAE TECH: accessible technology for your business. Three sisters with over 30 years of combined experience. Digitalization, websites, CRM, and consulting for SMEs in Venezuela and Latin America.',
+    'BONAE TECH transforms companies into digital powerhouses with websites, social media, CRM, consulting, and custom technology strategies for Venezuela and Latin America.',
 
   nav: {
     home: 'Home',
@@ -23,9 +23,9 @@ export const en: Translations = {
 
   hero: {
     badge: 'Venezuela · Latin America · World',
-    headline: 'Technology accessible for your business',
+    headline: 'We transform your company into a digital powerhouse',
     subheadline:
-      'No complications, no outrageous costs. Three sisters with over 30 years of combined experience in technology, hospitality, and entrepreneurship, united to modernize and digitalize businesses in Venezuela, Latin America, and beyond.',
+      'We drive the growth of companies in Venezuela and Latin America with custom technology solutions: from your website design to customer loyalty. Everything you need to digitalize your brand in one place.',
     cta: 'Contact us now',
     ctaSecondary: 'Learn about our services',
     ctaSub: 'We respond the same day',
@@ -33,40 +33,40 @@ export const en: Translations = {
 
   valueProp: {
     sectionBadge: 'Our proposition',
-    title: 'Why choose us',
+    title: 'Technology as your competitive advantage',
     items: [
       {
         icon: 'accessible',
         title: 'Accessible',
-        description: "You don't need to break the bank to go digital.",
+        description: 'Market-aligned pricing, from basic plans to complete solutions, with financing options.',
       },
       {
         icon: 'simple',
-        title: 'Simple',
-        description: 'We make technology easy so you can focus on your business.',
+        title: 'Strategic',
+        description: 'We structure high-performance digital ecosystems with advanced SEO and sustainable organic growth.',
       },
       {
         icon: 'secure',
         title: 'Secure',
-        description: 'Your data and your customers\' data protected with international standards.',
+        description: 'We optimize every technical and strategic process to professionalize your image and protect customer trust.',
       },
       {
         icon: 'close',
         title: 'Close to you',
-        description: 'We understand Venezuelans and Latin Americans, from large corporations to street vendors.',
+        description: 'We understand the challenges and opportunities of our region, speak your language, and provide close, real, efficient technical support.',
       },
     ],
   },
 
   servicesSummary: {
-    sectionBadge: 'What we do',
-    title: 'Featured services',
-    subtitle: 'Solutions designed for small and medium businesses.',
+    sectionBadge: 'What do we do for you?',
+    title: 'Our services',
+    subtitle: 'Technology solutions so your brand can connect, sell, and grow.',
     items: [
-      { icon: 'web', title: 'Websites', description: 'Design and development of modern, responsive, optimized sites.' },
-      { icon: 'social', title: 'Social Media', description: 'Strategies for Instagram, Facebook, WhatsApp Business, and more.' },
-      { icon: 'crm', title: 'CRM', description: 'Customer management and sales tracking without complex systems.' },
-      { icon: 'consulting', title: 'Digital Consulting', description: 'Assessment and support in your digital transformation.' },
+      { icon: 'web', title: 'High-Impact Web Presence', description: 'We create, design, and maintain your website so it becomes a constant sales tool.' },
+      { icon: 'social', title: 'Social Media', description: 'We create and optimize WhatsApp Business, Instagram, Facebook, and more so you never miss a contact opportunity.' },
+      { icon: 'crm', title: 'CRM', description: 'Customer management and sales tracking with systems that are easy to access and use.' },
+      { icon: 'consulting', title: 'Digital Consulting', description: 'Assessment and support for your digital transformation, based on your priorities and goals.' },
     ],
   },
 
@@ -85,45 +85,45 @@ export const en: Translations = {
     history: {
       title: 'Our story',
       content:
-        'Three sisters with technical training, entrepreneurial vision, and hospitality expertise decided to join forces to close the digital gap in Venezuela and Latin America. We live the same challenges as your customers and design for them.',
+        'Where technology meets hospitality. We are professionals who decided to combine technical training and entrepreneurial vision with years of experience in hospitality and technology. We understand that behind every screen there is a person looking for a solution. Focused on closing the digital gap in Venezuela and Latin America, we transform everyday challenges into growth tools for others.',
     },
     mission: {
       title: 'Mission',
       content:
-        'To bring modernization and digitalization services to small and medium businesses in Venezuela, Latin America, and the world, making technology accessible, affordable, and effective.',
+        'To drive the digital evolution of small and medium businesses in Venezuela and around the world by offering accessible, effective, and human technology solutions that remove the barriers to modernization.',
     },
     vision: {
       title: 'Vision',
       content:
-        'To be the leading technology ally for Latin American SMEs, combining international best practices with a deep understanding of local needs.',
+        'To become the strategic technology ally of reference for Venezuelan and Latin American small and medium businesses, recognized for blending global innovation standards with a deep, empathetic understanding of local realities.',
     },
     values: {
-      title: 'Values',
+      title: 'Our values',
       items: [
-        'Accessibility: technology within everyone\'s reach',
-        'Integrity: transparency in every interaction',
-        'Security: data protection as a priority',
-        'Purpose-driven innovation: modernization that solves real problems',
-        'Proximity: we understand your context because we live it',
+        'Empathetic proximity: we are not just providers, we are allies. We understand your context because we live it with you.',
+        'Purpose-driven innovation: we do not implement technology because it is trendy, but to solve real problems and generate tangible results.',
+        'Integral accessibility: we believe high-level digitalization should be within everyone\'s reach, affordable and easy to use.',
+        'Integrity and transparency: we build trust-based relationships, with clear communication and honest processes at every stage.',
+        'Security and trust: we protect what is most valuable in your business, your information and your customers\' information, as if it were our own.',
       ],
     },
     members: [
       {
         initials: 'IS',
         role: 'Technology',
-        bio: 'Over 15 years in the tech industry. Expert in systems architecture, development, and enterprise-grade quality standards applied to the local context.',
+        bio: 'Over 15 years in the technology industry. Expert in systems architecture, development, and enterprise-grade quality standards applied to the local context, with digitalization experience for major companies in the United States and Spain.',
         highlights: ['Systems architecture', 'Backend development', 'Enterprise quality'],
       },
       {
         initials: 'IE',
         role: 'Project Management · PMP',
-        bio: 'Systems Engineer with PMP certification. Specialized in technology project management, strategic planning, and delivery using international methodologies.',
+        bio: 'Computer Engineer with PMP certification. Specialized in technology project management, strategic planning, and delivery using international methodologies, with experience in Spain and Chile.',
         highlights: ['PMP certified', 'PMI methodology', 'Project management'],
       },
       {
         initials: 'TH',
         role: 'Hospitality and entrepreneurship',
-        bio: 'Tourism and Hospitality professional with entrepreneurial spirit. Business vision, customer focus, and hands-on experience building service businesses in Venezuela.',
+        bio: 'Tourism and Hospitality professional with entrepreneurial spirit. Specialist in customer service and loyalty, with experience in Argentina, the United States, and Venezuela.',
         highlights: ['Business vision', 'Customer focus', 'Local entrepreneurship'],
       },
     ],
@@ -132,38 +132,38 @@ export const en: Translations = {
   services: {
     sectionBadge: 'Service Catalog',
     title: 'Our services',
-    subtitle: 'Comprehensive solutions for your business digitalization.',
+    subtitle: 'Everything you need to digitalize your brand in one place.',
     presenceDigital: {
       title: 'Digital Presence',
       items: [
         {
-          title: 'Website Design and Development',
-          description: 'Modern, responsive, mobile-optimized sites. From informational pages to product catalogs. It doesn\'t have to be complex or expensive to look professional.',
+          title: 'High-Impact Web Presence',
+          description: 'We create, design, and maintain your website so it becomes your best presentation card and a constant sales tool.',
         },
         {
-          title: 'Social Media Management',
-          description: 'Strategies and frameworks to connect your business with customers where they are: Instagram, Facebook, WhatsApp Business, TikTok, and more.',
+          title: 'Social Media',
+          description: 'We create and optimize your channels, including WhatsApp Business, Instagram, Facebook, and more, so you never miss a contact opportunity.',
         },
         {
-          title: 'Search Engine Optimization (SEO)',
-          description: 'Ranking on Google and other search engines so customers find you when they search.',
+          title: 'Advertising and Growth',
+          description: 'We design digital strategies so your ideal customers find you and your brand gains sustainable visibility.',
         },
       ],
     },
     webDigital: {
-      title: 'Digital Web Services',
+      title: 'Education, Loyalty, and Organization',
       items: [
         {
-          title: 'Progressive Web Apps (PWA)',
-          description: 'Sites that work like apps, even offline. Customers can "install" your site on their phone without app stores.',
+          title: 'Education Without Borders',
+          description: 'We digitalize your courses and classes so your knowledge can reach anywhere in the world.',
         },
         {
-          title: 'Payment Platform Integration',
-          description: 'Connection with local and international payment methods.',
+          title: 'Loyalty and Organization',
+          description: 'We help you organize your digital structure and create service plans that turn buyers into loyal fans.',
         },
         {
-          title: 'Forms and Automation',
-          description: 'Digitalize your processes. Leave paper and pencil behind — everything can be recorded, tracked, and queried online.',
+          title: 'SEO and Organic Growth',
+          description: 'We decode algorithm behavior so your brand climbs positions naturally and sustainably.',
         },
       ],
     },
@@ -171,16 +171,8 @@ export const en: Translations = {
       title: 'CRM Solutions',
       items: [
         {
-          title: 'CRM for Small Businesses',
-          description: 'Simple tools to manage customers, track sales, and maintain relationships without complex systems.',
-        },
-        {
-          title: 'Contact and Customer Management',
-          description: 'Organized and secure database of your customers and prospects.',
-        },
-        {
-          title: 'Reports and Tracking',
-          description: 'Simple dashboards to see how your business is doing at a glance.',
+          title: 'Customer and Sales Management',
+          description: 'We implement systems that are easy to access and use to manage customers, track sales, and strengthen every business relationship.',
         },
       ],
     },
@@ -188,16 +180,16 @@ export const en: Translations = {
       title: 'Digital Consulting and Strategy',
       items: [
         {
-          title: 'Digital Maturity Assessment',
-          description: 'Diagnosis of where your business is today and what steps to take to go digital.',
+          title: 'Digital assessment and priorities',
+          description: 'We evaluate your business and design a digital transformation roadmap based on your priorities, goals, and resources.',
         },
         {
-          title: 'Digital Transformation Support',
-          description: 'We don\'t leave you alone — we guide you step by step through the process.',
+          title: 'Strategic support',
+          description: 'We guide you step by step to professionalize your image, maximize your visibility, and build real connections with your customers.',
         },
       ],
     },
-    expansion: 'Our service portfolio is constantly growing to adapt to customer needs, on any platform where they are.',
+    expansion: 'We turn technology into your competitive advantage 24 hours a day.',
   },
 
   portfolio: {
@@ -272,8 +264,8 @@ export const en: Translations = {
   },
 
   footer: {
-    tagline: 'Technology accessible for your business. No complications, no outrageous costs.',
-    description: 'Digitalization for SMEs in Venezuela and Latin America.',
+    tagline: 'We transform your company into a digital powerhouse.',
+    description: 'Custom technology solutions for companies in Venezuela and Latin America.',
     nav: {
       title: 'Quick links',
       home: 'Home',

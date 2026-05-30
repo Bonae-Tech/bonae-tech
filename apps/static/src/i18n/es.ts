@@ -3,7 +3,7 @@ export const es = {
   siteName: 'BONAE TECH',
   siteTagline: 'Tecnología accesible para tu negocio',
   metaDescription:
-    'BONAE TECH: tecnología accesible para tu negocio. Tres hermanas con más de 30 años de experiencia combinada. Digitalización, sitios web, CRM y consultoría para PyMEs en Venezuela y Latinoamérica.',
+    'BONAE TECH transforma empresas en potencias digitales con sitios web, redes sociales, CRM, consultoría y estrategias tecnológicas a la medida para Venezuela y Latinoamérica.',
 
   nav: {
     home: 'Inicio',
@@ -21,9 +21,9 @@ export const es = {
 
   hero: {
     badge: 'Venezuela · Latinoamérica · Mundo',
-    headline: 'Tecnología accesible para tu negocio',
+    headline: 'Transformamos tu empresa en una potencia digital',
     subheadline:
-      'Sin complicaciones, sin costos exagerados. Tres hermanas con más de 30 años de experiencia combinada en tecnología, hotelería y emprendimiento, unidas para modernizar y digitalizar negocios en Venezuela, Latinoamérica y más allá.',
+      'Impulsamos el crecimiento de empresas en Venezuela y Latinoamérica con soluciones tecnológicas a la medida: desde el diseño de tu web hasta la fidelización de tus clientes. Todo lo que necesitas para digitalizar tu marca en un solo lugar.',
     cta: 'Contáctanos ahora',
     ctaSecondary: 'Conoce nuestros servicios',
     ctaSub: 'Te respondemos el mismo día',
@@ -31,40 +31,40 @@ export const es = {
 
   valueProp: {
     sectionBadge: 'Nuestra propuesta',
-    title: 'Por qué elegirnos',
+    title: 'Tecnología como ventaja competitiva',
     items: [
       {
         icon: 'accessible',
         title: 'Accesible',
-        description: 'No necesitas quebrar la alcancía para digitalizarte.',
+        description: 'Precios acordes al mercado, desde planes básicos hasta soluciones completas, con opciones de financiación.',
       },
       {
         icon: 'simple',
-        title: 'Simple',
-        description: 'Hacemos la tecnología fácil para que tú te enfoques en tu negocio.',
+        title: 'Estratégico',
+        description: 'Estructuramos ecosistemas digitales de alto rendimiento con SEO avanzado y crecimiento orgánico sostenible.',
       },
       {
         icon: 'secure',
         title: 'Seguro',
-        description: 'Tus datos y los de tus clientes protegidos con estándares internacionales.',
+        description: 'Optimizamos cada proceso técnico y estratégico para profesionalizar tu imagen y proteger la confianza de tus clientes.',
       },
       {
         icon: 'close',
         title: 'Cercano',
-        description: 'Entendemos al venezolano y al latinoamericano, desde la empresa grande hasta el puesto de pepitos en la esquina.',
+        description: 'Entendemos los retos y oportunidades de nuestra región, hablamos tu idioma y ofrecemos soporte técnico cercano, real y eficiente.',
       },
     ],
   },
 
   servicesSummary: {
-    sectionBadge: 'Lo que hacemos',
-    title: 'Servicios destacados',
-    subtitle: 'Soluciones pensadas para pequeñas y medianas empresas.',
+    sectionBadge: '¿Qué hacemos por ti?',
+    title: 'Nuestros servicios',
+    subtitle: 'Soluciones tecnológicas para que tu marca conecte, venda y crezca.',
     items: [
-      { icon: 'web', title: 'Sitios Web', description: 'Diseño y desarrollo de sitios modernos, responsivos y optimizados.' },
-      { icon: 'social', title: 'Redes Sociales', description: 'Estrategias para Instagram, Facebook, WhatsApp Business y más.' },
-      { icon: 'crm', title: 'CRM', description: 'Gestión de clientes y seguimiento de ventas sin sistemas complejos.' },
-      { icon: 'consulting', title: 'Consultoría Digital', description: 'Evaluación y acompañamiento en tu transformación digital.' },
+      { icon: 'web', title: 'Presencia Web de Alto Impacto', description: 'Creamos, diseñamos y mantenemos tu sitio web para que sea una herramienta de ventas constante.' },
+      { icon: 'social', title: 'Redes sociales', description: 'Creamos y optimizamos WhatsApp Business, Instagram, Facebook y más para que no pierdas oportunidades de contacto.' },
+      { icon: 'crm', title: 'CRM', description: 'Gestión de clientes y seguimiento de ventas con sistemas de fácil acceso y manejo.' },
+      { icon: 'consulting', title: 'Consultoría Digital', description: 'Evaluación y acompañamiento en tu transformación digital, tomando en cuenta tus prioridades y objetivos.' },
     ],
   },
 
@@ -83,45 +83,45 @@ export const es = {
     history: {
       title: 'Nuestra historia',
       content:
-        'Tres hermanas con formación técnica, visión emprendedora y especialización en hotelería decidieron unirse para cerrar la brecha digital en Venezuela y Latinoamérica. Vivimos los mismos desafíos que tus clientes y diseñamos para ellos.',
+        'Donde la tecnología se encuentra con la hospitalidad. Somos profesionales que decidimos fusionar nuestra formación técnica y visión emprendedora con años de experiencia en hospitalidad y tecnología. Entendemos que, detrás de cada pantalla, hay una persona buscando una solución. Enfocadas en cerrar la brecha digital en Venezuela y Latinoamérica, transformamos los desafíos diarios en herramientas de crecimiento para otros.',
     },
     mission: {
       title: 'Misión',
       content:
-        'Llevar modernización y servicios de digitalización a pequeñas y medianas empresas en Venezuela, Latinoamérica y el mundo, haciendo que la tecnología sea accesible, asequible y efectiva.',
+        'Impulsar la evolución digital de las pequeñas y medianas empresas en Venezuela y el mundo, ofreciendo soluciones tecnológicas accesibles, efectivas y humanas que eliminen las barreras de la modernización.',
     },
     vision: {
       title: 'Visión',
       content:
-        'Ser el aliado tecnológico de referencia para las PyMEs latinoamericanas, combinando prácticas internacionales con el entendimiento profundo de las necesidades locales.',
+        'Convertirnos en el aliado tecnológico estratégico de referencia para las pequeñas y medianas empresas venezolanas y latinoamericanas, reconocidas por fusionar estándares de innovación global con un entendimiento profundo y empático de las realidades locales.',
     },
     values: {
-      title: 'Valores',
+      title: 'Nuestros valores',
       items: [
-        'Accesibilidad: tecnología al alcance de todos',
-        'Integridad: transparencia en cada interacción',
-        'Seguridad: protección de datos como prioridad',
-        'Innovación con propósito: modernización que resuelve problemas reales',
-        'Cercanía: entendemos tu contexto porque lo vivimos',
+        'Cercanía empática: no solo somos proveedoras, somos aliadas. Entendemos tu contexto porque lo vivimos contigo.',
+        'Innovación con propósito: no implementamos tecnología por moda, sino para resolver problemas reales y generar resultados tangibles.',
+        'Accesibilidad integral: creemos que la digitalización de alto nivel debe estar al alcance de todos, siendo asequible y fácil de usar.',
+        'Integridad y transparencia: construimos relaciones basadas en la confianza, con comunicación clara y procesos honestos en cada etapa.',
+        'Seguridad y confianza: protegemos lo más valioso de tu negocio, tu información y la de tus clientes, como si fuera la nuestra.',
       ],
     },
     members: [
       {
         initials: 'IS',
         role: 'Tecnología',
-        bio: 'Más de 15 años en la industria tecnológica. Experta en arquitectura de sistemas, desarrollo y estándares de calidad empresarial aplicados al contexto local.',
+        bio: 'Más de 15 años en la industria tecnológica. Experta en arquitectura de sistemas, desarrollo y estándares de calidad empresarial aplicados al contexto local, con experiencia en digitalización para grandes compañías de Estados Unidos y España.',
         highlights: ['Arquitectura de sistemas', 'Desarrollo backend', 'Calidad empresarial'],
       },
       {
         initials: 'IE',
         role: 'Gestión de proyectos · PMP',
-        bio: 'Ingeniera de Sistemas con certificación PMP. Especializada en gestión de proyectos tecnológicos, planificación estratégica y entrega con metodologías internacionales.',
+        bio: 'Ingeniera de Informática con certificación PMP. Especializada en gestión de proyectos tecnológicos, planificación estratégica y entrega con metodologías internacionales, con experiencia en España y Chile.',
         highlights: ['PMP certificada', 'Metodología PMI', 'Gestión de proyectos'],
       },
       {
         initials: 'TH',
         role: 'Hotelería y emprendimiento',
-        bio: 'Profesional en Turismo y Hospitalidad con espíritu emprendedor. Visión de negocio, orientación al cliente y experiencia construyendo empresas de servicio en Venezuela.',
+        bio: 'Profesional en Turismo y Hospitalidad con espíritu emprendedor. Especialista en atención y fidelización de clientes, con experiencia en Argentina, Estados Unidos y Venezuela.',
         highlights: ['Visión de negocio', 'Orientación al cliente', 'Emprendimiento local'],
       },
     ],
@@ -130,38 +130,38 @@ export const es = {
   services: {
     sectionBadge: 'Catálogo de Servicios',
     title: 'Nuestros servicios',
-    subtitle: 'Soluciones integrales para la digitalización de tu negocio.',
+    subtitle: 'Todo lo que necesitas para digitalizar tu marca en un solo lugar.',
     presenceDigital: {
       title: 'Presencia Digital',
       items: [
         {
-          title: 'Diseño y Desarrollo de Sitios Web',
-          description: 'Sitios modernos, responsivos y optimizados para móviles. Desde páginas informativas hasta catálogos de productos. No tiene que ser complejo ni costoso para verse profesional.',
+          title: 'Presencia Web de Alto Impacto',
+          description: 'Creamos, diseñamos y mantenemos tu sitio web para que sea tu mejor carta de presentación y una herramienta de ventas constante.',
         },
         {
-          title: 'Gestión de Redes Sociales',
-          description: 'Estrategias y marcos de trabajo para redes sociales que conecten tu negocio con tus clientes donde ellos están: Instagram, Facebook, WhatsApp Business, TikTok y más.',
+          title: 'Redes sociales',
+          description: 'Creamos y optimizamos tus redes, incluyendo WhatsApp Business, Instagram, Facebook y más, para que nunca pierdas una oportunidad de contacto.',
         },
         {
-          title: 'Optimización para Buscadores (SEO)',
-          description: 'Posicionamiento en Google y otros buscadores para que te encuentren cuando te busquen.',
+          title: 'Publicidad y Crecimiento',
+          description: 'Diseñamos estrategias digitales para que los clientes ideales te encuentren a ti y tu marca gane visibilidad de forma sostenible.',
         },
       ],
     },
     webDigital: {
-      title: 'Servicios Web Digitales',
+      title: 'Educación, fidelización y organización',
       items: [
         {
-          title: 'Aplicaciones Web Progresivas (PWA)',
-          description: 'Sitios que funcionan como aplicaciones, incluso sin conexión. Tus clientes pueden "instalar" tu sitio en su teléfono sin tiendas de aplicaciones.',
+          title: 'Educación sin Fronteras',
+          description: 'Digitalizamos tus cursos y clases para que tu conocimiento llegue a cualquier parte del mundo.',
         },
         {
-          title: 'Integración con Plataformas de Pago',
-          description: 'Conexión con métodos de pago locales e internacionales.',
+          title: 'Fidelización y Organización',
+          description: 'Te ayudamos a organizar tu estructura digital y a crear planes de atención que conviertan a tus compradores en fans leales.',
         },
         {
-          title: 'Formularios y Automatización',
-          description: 'Digitaliza tus procesos. Deja el papel y el lápiz atrás: todo se puede registrar, rastrear y consultar en línea.',
+          title: 'SEO y crecimiento orgánico',
+          description: 'Desciframos el comportamiento de los algoritmos para que tu marca escale posiciones de forma natural y sostenible.',
         },
       ],
     },
@@ -169,16 +169,8 @@ export const es = {
       title: 'Soluciones CRM',
       items: [
         {
-          title: 'CRM para Pequeños Negocios',
-          description: 'Herramientas simples para gestionar tus clientes, hacer seguimiento de ventas y mantener la relación sin sistemas complejos.',
-        },
-        {
-          title: 'Gestión de Contactos y Clientes',
-          description: 'Base de datos organizada y segura de tus clientes y prospectos.',
-        },
-        {
-          title: 'Reportes y Seguimiento',
-          description: 'Paneles sencillos para ver cómo va tu negocio de un vistazo.',
+          title: 'Gestión de clientes y ventas',
+          description: 'Implementamos sistemas de fácil acceso y manejo para gestionar clientes, dar seguimiento a ventas y fortalecer cada relación comercial.',
         },
       ],
     },
@@ -186,16 +178,16 @@ export const es = {
       title: 'Consultoría y Estrategia Digital',
       items: [
         {
-          title: 'Evaluación de Madurez Digital',
-          description: 'Diagnóstico de dónde está tu negocio hoy y qué pasos seguir para digitalizarte.',
+          title: 'Evaluación y prioridades digitales',
+          description: 'Evaluamos tu negocio y diseñamos una ruta de transformación digital tomando en cuenta tus prioridades, objetivos y recursos.',
         },
         {
-          title: 'Acompañamiento en la Transformación Digital',
-          description: 'No te dejamos solo: te guiamos paso a paso en el proceso.',
+          title: 'Acompañamiento estratégico',
+          description: 'Te guiamos paso a paso para profesionalizar tu imagen, maximizar tu visibilidad y estrechar vínculos reales con tus clientes.',
         },
       ],
     },
-    expansion: 'Nuestro portafolio de servicios está en constante crecimiento para adaptarse a las necesidades de los clientes, en cualquier plataforma donde se encuentren.',
+    expansion: 'Convertimos la tecnología en tu ventaja competitiva las 24 horas del día.',
   },
 
   portfolio: {
@@ -270,8 +262,8 @@ export const es = {
   },
 
   footer: {
-    tagline: 'Tecnología accesible para tu negocio. Sin complicaciones, sin costos exagerados.',
-    description: 'Digitalización para PyMEs en Venezuela y Latinoamérica.',
+    tagline: 'Transformamos tu empresa en una potencia digital.',
+    description: 'Soluciones tecnológicas a la medida para empresas en Venezuela y Latinoamérica.',
     nav: {
       title: 'Navegación',
       home: 'Inicio',
