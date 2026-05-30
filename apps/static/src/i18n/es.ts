@@ -3,7 +3,7 @@ export const es = {
   siteName: 'BONAE TECH',
   siteTagline: 'Tecnología accesible para tu negocio',
   metaDescription:
-    'BONAE TECH: tecnología accesible para tu negocio. Tres hermanas con más de 30 años de experiencia combinada. Digitalización, sitios web, CRM y consultoría para PyMEs en Venezuela y Latinoamérica.',
+    'BONAE TECH: tecnología accesible para tu negocio. Jessica, Maria y Veronica de experiencia combinada. Digitalización, sitios web, CRM y consultoría para PyMEs en Venezuela y Latinoamérica.',
 
   nav: {
     home: 'Inicio',
@@ -23,7 +23,7 @@ export const es = {
     badge: 'Venezuela · Latinoamérica · Mundo',
     headline: 'Tecnología accesible para tu negocio',
     subheadline:
-      'Sin complicaciones, sin costos exagerados. Tres hermanas con más de 30 años de experiencia combinada en tecnología, hotelería y emprendimiento, unidas para modernizar y digitalizar negocios en Venezuela, Latinoamérica y más allá.',
+      'Sin complicaciones, sin costos exagerados. Jessica, Maria y Veronica de experiencia combinada en tecnología, hotelería y emprendimiento, unidas para modernizar y digitalizar negocios en Venezuela, Latinoamérica y más allá.',
     cta: 'Contáctanos ahora',
     ctaSecondary: 'Conoce nuestros servicios',
     ctaSub: 'Te respondemos el mismo día',

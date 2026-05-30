@@ -2,16 +2,11 @@
   "name": "bonae",
   "private": true,
   "version": "1.0.0",
-  "description": "BONAE TECH monorepo (marketing site, admin, infra)",
+  "description": "BONAE TECH static marketing site",
   "scripts": {
-    "merge:i18n": "npm --prefix apps/static run merge:i18n",
-    "fetch:i18n": "npm --prefix apps/static run fetch:i18n",
     "dev": "npm --prefix apps/static run dev",
     "build": "npm --prefix apps/static run build",
-    "preview": "npm --prefix apps/static run preview",
-    "admin:dev": "npm --prefix apps/admin run dev",
-    "admin:build": "npm --prefix apps/admin run build",
-    "admin:preview": "npm --prefix apps/admin run preview"
+    "preview": "npm --prefix apps/static run preview"
   },
   "license": "Apache-2.0",
   "engines": {
