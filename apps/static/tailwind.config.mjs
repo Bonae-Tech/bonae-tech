@@ -14,14 +14,14 @@ export default {
           dark: '#e85a28',
         },
         brown: '#9C8172',
-        'mid-blue': '#3996AE',
-        'light-blue': '#F4F4ED', 
+        'mid-blue': '#458b9c',
+        'light-blue': '#6bb0dd', 
         'dark-blue': {
           DEFAULT: '#40575D',
           dark: '#3A4E53',
         },
-        pacificblue: '#48A8C1',
-        cream: '#F4F4ED',
+        pacificblue: '#0b4d5e',
+        cream: '#d4d4b9',
       },
       fontFamily: {
         sans: ['Inter Variable', 'Inter', 'system-ui', 'sans-serif'],
