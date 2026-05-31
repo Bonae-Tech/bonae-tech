@@ -3,18 +3,24 @@
   "version": "1.0.0",
   "description": "BONAE TECH marketing site (Astro)",
   "scripts": {
+    "content:validate": "npm --prefix ../../packages/content run validate:published",
+    "predev": "npm run content:validate",
     "dev": "astro dev",
+    "prebuild": "npm run content:validate",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "content:seed": "tsx scripts/seed-content.ts"
   },
   "license": "Apache-2.0",
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "tsx": "^4.22.3",
     "wrangler": "^3.99.0"
   },
   "dependencies": {
+    "@bonae/content": "file:../../packages/content",
     "@astrojs/tailwind": "^6.0.2",
     "@fontsource-variable/inter": "^5.2.8",
     "astro": "^4.16.19",

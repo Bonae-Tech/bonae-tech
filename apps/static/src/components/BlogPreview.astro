@@ -1,5 +1,5 @@
 ---
-import type { Translations } from '../i18n/es';
+import type { Translations } from '@bonae/content';
 
 interface Props {
   t: Translations;
@@ -15,22 +15,12 @@ const base = t.lang === 'en' ? '/en/' : '/';
       <span class="inline-block px-3 py-1 rounded-full bg-white text-dark-blue text-xs font-semibold uppercase tracking-wider mb-4 border border-light-blue/20">
         {t.nav.blog}
       </span>
-      <h2 class="section-title">
-        {t.lang === 'en' ? 'Blog & Resources' : 'Blog y Recursos'}
-      </h2>
-      <p class="section-subtitle">
-        {t.lang === 'en'
-          ? 'Tips, guides, and updates for Latin American SMEs.'
-          : 'Consejos, guías y actualizaciones para PyMEs latinoamericanas.'}
-      </p>
+      <h2 class="section-title">{t.blog.title}</h2>
+      <p class="section-subtitle">{t.blog.subtitle}</p>
     </div>
 
     <div class="card max-w-2xl mx-auto text-center py-12 px-6">
-      <p class="text-pacificblue mb-4">
-        {t.lang === 'en'
-          ? 'Articles and downloadable resources coming soon.'
-          : 'Artículos y recursos descargables próximamente.'}
-      </p>
+      <p class="text-pacificblue mb-4">{t.blog.comingSoon}</p>
     </div>
   </div>
 </section>

@@ -1,0 +1,26 @@
+name: Content PR check
+
+on:
+  pull_request:
+    paths:
+      - 'apps/static/content/**'
+      - 'packages/content/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: packages/content/package-lock.json
+      - run: npm ci
+        working-directory: packages/content
+      - run: npm run build
+        working-directory: packages/content
+      - run: npm run validate:published
+        working-directory: packages/content
+      - run: npm run validate -- ../../apps/static/content drafts
+        working-directory: packages/content

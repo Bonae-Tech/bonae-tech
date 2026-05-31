@@ -8,8 +8,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+      - run: npm ci
+        working-directory: packages/content
+      - run: npm run build
+        working-directory: packages/content
+      - run: npm run validate:published
+        working-directory: packages/content
       - run: npm ci
         working-directory: apps/static
       - run: npm run build
         working-directory: apps/static
+      - run: npm ci
+        working-directory: apps/admin
+      - run: npm run build
+        working-directory: apps/admin

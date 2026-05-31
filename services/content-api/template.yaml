@@ -1,0 +1,154 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: BONAE content admin API — Cognito auth + GitHub git proxy
+
+Parameters:
+  CorsOrigin:
+    Type: String
+    Default: http://localhost:5173
+  GitHubRepo:
+    Type: String
+    Description: owner/repo for content commits
+  GitHubBranch:
+    Type: String
+    Default: main
+  ContentPathPrefix:
+    Type: String
+    Default: apps/static/content
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs20.x
+    MemorySize: 256
+
+Resources:
+  ContentAdminUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: bonae-content-admins
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: true
+
+  ContentAdminUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: bonae-content-admin-spa
+      UserPoolId: !Ref ContentAdminUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      PreventUserExistenceErrors: ENABLED
+
+  AdministratorsGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Administrators
+      Description: Content editors with publish access
+      UserPoolId: !Ref ContentAdminUserPool
+
+  GitHubAppSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: bonae/github-app-content
+      Description: GitHub App credentials for content API
+      SecretString: '{"appId":"REPLACE","installationId":"REPLACE","privateKey":"REPLACE"}'
+
+  ContentApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: handler.handler
+      Description: Git-backed content draft/publish API
+      Environment:
+        Variables:
+          CORS_ORIGIN: !Ref CorsOrigin
+          GITHUB_REPO: !Ref GitHubRepo
+          GITHUB_BRANCH: !Ref GitHubBranch
+          CONTENT_PATH_PREFIX: !Ref ContentPathPrefix
+          GITHUB_SECRET_ARN: !Ref GitHubAppSecret
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref GitHubAppSecret
+      Events:
+        DraftGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ContentHttpApi
+            Method: GET
+            Path: /content/drafts/{locale}
+        DraftPut:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ContentHttpApi
+            Method: PUT
+            Path: /content/drafts/{locale}
+        PublishedGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ContentHttpApi
+            Method: GET
+            Path: /content/published/{locale}
+        PublishPost:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ContentHttpApi
+            Method: POST
+            Path: /content/publish
+        OptionsProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ContentHttpApi
+            Method: OPTIONS
+            Path: /{proxy+}
+            Auth:
+              Authorizer: NONE
+
+  ContentHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+      CorsConfiguration:
+        AllowOrigins:
+          - !Ref CorsOrigin
+        AllowHeaders:
+          - Authorization
+          - Content-Type
+        AllowMethods:
+          - GET
+          - PUT
+          - POST
+          - OPTIONS
+      Auth:
+        DefaultAuthorizer: CognitoJwtAuthorizer
+        Authorizers:
+          CognitoJwtAuthorizer:
+            JwtConfiguration:
+              issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${ContentAdminUserPool}
+              audience:
+                - !Ref ContentAdminUserPoolClient
+            IdentitySource: $request.header.Authorization
+
+Outputs:
+  UserPoolId:
+    Value: !Ref ContentAdminUserPool
+  UserPoolClientId:
+    Value: !Ref ContentAdminUserPoolClient
+  HttpApiUrl:
+    Value: !Sub https://${ContentHttpApi}.execute-api.${AWS::Region}.amazonaws.com
+  GitHubSecretArn:
+    Value: !Ref GitHubAppSecret

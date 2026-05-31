@@ -1,15 +1,16 @@
 ---
 import '../styles/global.css';
-import type { Translations } from '../i18n/es';
+import type { Translations, SiteSettings } from '@bonae/content';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 
 interface Props {
   t: Translations;
+  settings: SiteSettings;
+  whatsappHref: string;
 }
 
-const { t } = Astro.props;
-const whatsappHref = `https://wa.me/584140000000?text=${encodeURIComponent(t.contact.whatsappMessage)}`;
+const { t, whatsappHref, settings } = Astro.props;
 const isEn = t.lang === 'en';
 const canonicalES = Astro.site ? new URL('/', Astro.site).href : '/';
 const canonicalEN = Astro.site ? new URL('/en/', Astro.site).href : '/en/';
@@ -24,18 +25,13 @@ const canonicalEN = Astro.site ? new URL('/en/', Astro.site).href : '/en/';
     <meta name="description" content={t.metaDescription} />
     <meta name="theme-color" content="#44808F" />
 
-    <!-- Hreflang for bilingual SEO -->
     <link rel="alternate" hreflang="es" href={canonicalES} />
     <link rel="alternate" hreflang="en" href={canonicalEN} />
     <link rel="alternate" hreflang="x-default" href={canonicalES} />
 
-    <!-- PWA manifest -->
     <link rel="manifest" href="/manifest.webmanifest" />
-
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={`${t.siteName} — ${t.siteTagline}`} />
     <meta property="og:description" content={t.metaDescription} />
@@ -46,7 +42,7 @@ const canonicalEN = Astro.site ? new URL('/en/', Astro.site).href : '/en/';
   <body class="min-h-screen flex flex-col">
     <slot />
     <WhatsAppFloat href={whatsappHref} />
-    <CookieBanner t={t} />
+    <CookieBanner t={t} settings={settings} />
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

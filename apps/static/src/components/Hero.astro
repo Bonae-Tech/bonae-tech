@@ -1,5 +1,5 @@
 ---
-import type { Translations } from '../i18n/es';
+import type { Translations } from '@bonae/content';
 
 interface Props {
   t: Translations;
@@ -64,8 +64,8 @@ const base = t.lang === 'en' ? '/en/' : '/';
         <div class="text-xs text-light-blue mt-1">{t.keyFigures.yearsLabel}</div>
       </div>
       <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center">
-        <div class="text-3xl font-bold text-terracotta">3</div>
-        <div class="text-xs text-light-blue mt-1">{t.lang === 'en' ? 'Founders' : 'Fundadoras'}</div>
+        <div class="text-3xl font-bold text-terracotta">{t.keyFigures.foundersCount}</div>
+        <div class="text-xs text-light-blue mt-1">{t.keyFigures.foundersLabel}</div>
       </div>
     </div>
   </div>

@@ -13,12 +13,60 @@ This is the static website for BONAE TECH Digital Services, built with Astro and
 
 ## Architecture
 
+The repo is a **git-backed content platform**: the marketing site reads published JSON, editors use a React admin app, and a minimal AWS stack handles auth plus GitHub commits.
+
+```mermaid
+flowchart LR
+  subgraph admin [AdminApp]
+    AdminUI[ReactAdminSPA]
+    CognitoLogin[CognitoLogin]
+  end
+
+  subgraph aws [MinimalAWS]
+    Cognito[CognitoUserPool]
+    Api[HTTPApiPlusLambda]
+    Secret[SecretsManagerGitHubApp]
+  end
+
+  subgraph git [GitHubRepo]
+    Drafts[content/drafts]
+    Published[content/published]
+    Actions[GitHubActions]
+  end
+
+  subgraph site [StaticSite]
+    Schema[packages/content]
+    Astro[AstroBuild]
+    Pages[CloudflarePages]
+  end
+
+  AdminUI --> CognitoLogin --> Cognito
+  AdminUI -->|JWT| Api
+  Api --> Secret
+  Api -->|save draft| Drafts
+  Api -->|publish| Published
+  Published --> Schema --> Astro --> Pages
+  Published --> Actions --> Astro
+```
+
+| Piece | Path | Role |
+|-------|------|------|
+| Marketing site | `apps/static/` | Astro site; reads `content/published/` only |
+| Content schema | `packages/content/` | Shared Zod validation for site, admin, and API |
+| Admin UI | `apps/admin/` | React editor (Cognito login, section forms) |
+| Content API | `services/content-api/` | SAM stack: JWT auth + GitHub App git proxy |
+| Editor guide | `docs/content-admin.md` | AWS setup and publish workflow |
+
 ### Tech Stack
 
 | Layer | Technology |
 |-------|------------|
 | Static generator | Astro 4.x |
 | Styling | Tailwind CSS |
+| Content | JSON in git (`drafts/` + `published/`) |
+| Validation | Zod (`@bonae/content`) |
+| Admin UI | React + Vite + Cognito |
+| Content API | AWS SAM (Cognito, HTTP API, Lambda) |
 | Hosting | Cloudflare Pages |
 | Output | Static HTML (no client-side routing) |
 
@@ -30,10 +78,10 @@ This is the static website for BONAE TECH Digital Services, built with Astro and
 
 ### i18n
 
-- Translation files: `apps/static/src/i18n/es.ts` (source) and `apps/static/src/i18n/en.ts`
-- Shared `Translations` type ensures both languages stay in sync
-- Each page imports the relevant translation object and passes it as `t` to Layout and components
-- No runtime i18n library; content is compiled at build time
+- Content files: `apps/static/content/published/es.json` and `en.json` (+ `settings.json`)
+- Shared schema in `packages/content` keeps both locales structurally in sync
+- Each page loads published content and passes it as `t` to Layout and components
+- No runtime i18n library; content is validated and compiled at build time
 
 ### Component Hierarchy
 
@@ -57,7 +105,9 @@ Layout.astro (HTML shell, meta, PWA, WhatsApp float, Cookie banner)
 
 ### Data Flow
 
-- Site copy lives in `apps/static/src/i18n/es.ts` and `apps/static/src/i18n/en.ts`.
+- Site copy lives in `apps/static/content/published/` (`es.json`, `en.json`, `settings.json`).
+- Validated at build time via `@bonae/content` (`packages/content`).
+- Draft edits and publish workflow: see [docs/content-admin.md](docs/content-admin.md).
 - Components receive `t: Translations` as a prop and render text from `t.*`.
 
 ### PWA & Performance
@@ -68,12 +118,84 @@ Layout.astro (HTML shell, meta, PWA, WhatsApp float, Cookie banner)
 
 ---
 
-## Development Setup
+## Quick Start
 
 ### Prerequisites
 
-- Node.js (version 18 or higher recommended)
-- npm (comes with Node.js)
+- Node.js 20+
+- npm
+
+### 1. Install and run the marketing site
+
+```bash
+npm ci --prefix packages/content && npm run content:build
+npm ci --prefix apps/static
+npm run dev
+```
+
+Open `http://localhost:4321`. The site reads **`apps/static/content/published/`** only.
+
+### 2. Validate content
+
+```bash
+npm run content:validate
+```
+
+### 3. Build for production
+
+```bash
+npm run build
+npm run preview
+```
+
+Output: `apps/static/dist/`
+
+### 4. Run the content admin (optional)
+
+**Local mock mode (no AWS)** — try the editor first:
+
+```bash
+npm run admin:dev:mock
+```
+
+Open `http://localhost:5173`. Any email/password works. Saves write to `apps/static/content/` on disk.
+
+**With AWS** — requires a deployed content API and Cognito users in the `Administrators` group:
+
+```bash
+cp apps/admin/.env.example apps/admin/.env
+# Fill in VITE_API_BASE_URL, VITE_COGNITO_USER_POOL_ID, VITE_COGNITO_CLIENT_ID
+
+npm ci --prefix apps/admin
+npm run admin:dev
+```
+
+See [docs/content-admin.md](docs/content-admin.md) for AWS and GitHub App setup.
+
+### 5. Deploy the content API (optional)
+
+```bash
+npm run api:build
+cd services/content-api
+sam build && sam deploy --guided
+```
+
+### Root scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Astro dev server |
+| `npm run build` | Build marketing site |
+| `npm run preview` | Preview production build |
+| `npm run content:validate` | Validate published JSON |
+| `npm run admin:dev` | Content admin dev server |
+| `npm run admin:dev:mock` | Admin in local mock mode (no AWS) |
+| `npm run admin:build` | Build admin SPA |
+| `npm run api:build` | Bundle content API Lambda |
+
+---
+
+## Development Setup
 
 ### Installation
 
@@ -83,45 +205,43 @@ Layout.astro (HTML shell, meta, PWA, WhatsApp float, Cookie banner)
    cd bonae
    ```
 
-2. Install dependencies for the marketing site:
+2. Bootstrap the content package and static app:
    ```bash
+   npm ci --prefix packages/content && npm run content:build
    npm ci --prefix apps/static
    ```
-   The repo root has no `node_modules`; convenience scripts (`npm run dev`, `npm run build`, etc.) delegate to `apps/static`.
+
+   Root scripts (`npm run dev`, `npm run build`, etc.) delegate to the apps below.
 
 ### Development
-
-To start the development server:
 
 ```bash
 npm run dev
 ```
 
-This will start the Astro development server, typically available at `http://localhost:4321`.
+Starts the Astro dev server at `http://localhost:4321` (runs content validation first).
 
 ### Building for Production
-
-To build the website for production:
 
 ```bash
 npm run build
 ```
 
-The built files will be in `apps/static/dist/`.
+Built files: `apps/static/dist/`
 
 ### Preview Production Build
-
-To preview the production build locally:
 
 ```bash
 npm run preview
 ```
 
-This serves the built website from `apps/static/dist/`.
-
 ## Project Structure
 
-- `apps/static/` - Marketing site (Astro): `src/pages/`, `src/components/`, `src/layouts/`, `src/styles/`, `public/`, and `src/i18n/`
+- `apps/static/` - Marketing site (Astro): reads `content/published/` JSON
+- `apps/admin/` - React content admin SPA (Cognito + content API)
+- `packages/content/` - Shared Zod schema and validators
+- `services/content-api/` - SAM stack (Cognito, HTTP API, Lambda GitHub proxy)
+- `docs/content-admin.md` - Editor and AWS setup guide
 
 ## Technologies Used
 
@@ -177,9 +297,9 @@ Your Astro site lives under `apps/static`, builds to `apps/static/dist/`, and re
 
 3. Build settings:
 - **Root directory:** `apps/static`
-- **Build command:** `npm ci && npm run build`
+- **Build command:** `npm ci --prefix ../../packages/content && npm run build --prefix ../../packages/content && npm ci && npm run build`
 - **Output directory:** `dist`
-- Node version env var: `NODE_VERSION=18` (or 20 to match `engines`)
+- Node version env var: `NODE_VERSION=20`
 
 Every push to main auto-deploys. You get a free *.pages.dev URL immediately, and can add a custom domain later.
 
