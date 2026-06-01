@@ -8,7 +8,7 @@ Git-backed content editing for the BONAE static site with minimal AWS (Cognito +
 - **Draft content** (`apps/static/content/drafts/`) — edited via admin; not deployed until publish
 - **Schema** (`packages/content`) — shared Zod validation for site, admin, and API
 - **Admin SPA** (`apps/admin`) — React editor with Cognito login
-- **Content API** (`services/content-api`) — SAM stack; commits draft/publish to GitHub
+- **Content API** (`services/content-api`) — Terraform stack (Cognito + HTTP API + Lambda); commits draft/publish to GitHub
 
 ## Editor workflow
 
@@ -49,16 +49,13 @@ npm run admin:dev
 
 ## AWS setup
 
-```bash
-cd services/content-api
-npm ci && npm run build
-sam build && sam deploy --guided
-```
+Infrastructure is managed by Terraform in [`infra/terraform/`](../infra/terraform/) and deployed automatically via GitHub Actions. See [`services/content-api/README.md`](../services/content-api/README.md) for the full bootstrap guide.
 
-1. Create a GitHub App with `contents: write` on this repo
+One-time manual steps after first deploy:
+1. Create a GitHub App (`bonae-content-writer`) with `Contents: Read & Write` on this repo
 2. Update Secrets Manager `bonae/github-app-content` with `appId`, `installationId`, `privateKey`
 3. Create Cognito users in the `Administrators` group (no self-sign-up)
-4. Configure admin `.env` with API URL, User Pool ID, and Client ID from SAM outputs
+4. Configure admin `.env` with API URL, User Pool ID, and Client ID from Terraform outputs (stored automatically as GitHub repository variables)
 
 ## Content validation
 

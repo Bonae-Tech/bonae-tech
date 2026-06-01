@@ -54,7 +54,7 @@ flowchart LR
 | Marketing site | `apps/static/` | Astro site; reads `content/published/` only |
 | Content schema | `packages/content/` | Shared Zod validation for site, admin, and API |
 | Admin UI | `apps/admin/` | React editor (Cognito login, section forms) |
-| Content API | `services/content-api/` | SAM stack: JWT auth + GitHub App git proxy |
+| Content API | `services/content-api/` | Terraform stack: JWT auth + GitHub App git proxy |
 | Editor guide | `docs/content-admin.md` | AWS setup and publish workflow |
 
 ### Tech Stack
@@ -66,7 +66,7 @@ flowchart LR
 | Content | JSON in git (`drafts/` + `published/`) |
 | Validation | Zod (`@bonae/content`) |
 | Admin UI | React + Vite + Cognito |
-| Content API | AWS SAM (Cognito, HTTP API, Lambda) |
+| Content API | Terraform (Cognito, HTTP API, Lambda) |
 | Hosting | Cloudflare Pages |
 | Output | Static HTML (no client-side routing) |
 
@@ -174,11 +174,7 @@ See [docs/content-admin.md](docs/content-admin.md) for AWS and GitHub App setup.
 
 ### 5. Deploy the content API (optional)
 
-```bash
-npm run api:build
-cd services/content-api
-sam build && sam deploy --guided
-```
+Infrastructure is managed by Terraform and deployed automatically via GitHub Actions on push to `main`. See [`services/content-api/README.md`](services/content-api/README.md) for the one-time bootstrap steps.
 
 ### Root scripts
 
@@ -240,7 +236,7 @@ npm run preview
 - `apps/static/` - Marketing site (Astro): reads `content/published/` JSON
 - `apps/admin/` - React content admin SPA (Cognito + content API)
 - `packages/content/` - Shared Zod schema and validators
-- `services/content-api/` - SAM stack (Cognito, HTTP API, Lambda GitHub proxy)
+- `services/content-api/` - Terraform stack (Cognito, HTTP API, Lambda GitHub proxy)
 - `docs/content-admin.md` - Editor and AWS setup guide
 
 ## Technologies Used

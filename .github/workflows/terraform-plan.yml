@@ -1,0 +1,78 @@
+name: Terraform plan
+
+on:
+  pull_request:
+    paths:
+      - 'infra/terraform/**'
+      - 'services/content-api/**'
+      - '.github/workflows/terraform-plan.yml'
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Build Lambda
+        run: npm ci && npm run build
+        working-directory: services/content-api
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: infra/terraform
+
+      - name: Terraform plan
+        id: plan
+        run: |
+          terraform plan -no-color \
+            -var "github_repo=${{ vars.GITHUB_REPO || 'mpiantella/bonae' }}" \
+            -var "cors_origin=${{ vars.ADMIN_CLOUDFRONT_DOMAIN && format('https://{0}', vars.ADMIN_CLOUDFRONT_DOMAIN) || 'https://placeholder.bonaetech.com' }}"
+        working-directory: infra/terraform
+        continue-on-error: true
+
+      - name: Post plan as PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const plan = `${{ steps.plan.outputs.stdout }}`.substring(0, 60000);
+            const outcome = '${{ steps.plan.outcome }}';
+            const icon = outcome === 'success' ? '✅' : '❌';
+            const body = [
+              `## ${icon} Terraform Plan — ${outcome}`,
+              '',
+              '<details><summary>Show plan</summary>',
+              '',
+              '```terraform',
+              plan,
+              '```',
+              '',
+              '</details>',
+              '',
+              `_Triggered by @${{ github.actor }} on \`${{ github.head_ref }}\`_`,
+            ].join('\n');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
+
+      - name: Fail if plan failed
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
