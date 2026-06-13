@@ -11,14 +11,29 @@ const pool = new CognitoUserPool({
   ClientId: config.clientId,
 });
 
-export function signIn(email: string, password: string): Promise<CognitoUserSession> {
+export function signIn(
+  email: string,
+  password: string,
+): Promise<{ type: 'success' } | { type: 'newPasswordRequired'; completeChallenge: (newPassword: string) => Promise<void> }> {
   const user = new CognitoUser({ Username: email, Pool: pool });
   const authDetails = new AuthenticationDetails({ Username: email, Password: password });
 
   return new Promise((resolve, reject) => {
     user.authenticateUser(authDetails, {
-      onSuccess: resolve,
+      onSuccess: () => resolve({ type: 'success' }),
       onFailure: reject,
+      newPasswordRequired: () => {
+        resolve({
+          type: 'newPasswordRequired',
+          completeChallenge: (newPassword: string) =>
+            new Promise<void>((res, rej) => {
+              user.completeNewPasswordChallenge(newPassword, {}, {
+                onSuccess: () => res(),
+                onFailure: rej,
+              });
+            }),
+        });
+      },
     });
   });
 }

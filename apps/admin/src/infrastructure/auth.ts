@@ -1,5 +1,9 @@
 import { config } from '../config.js';
 
+export type SignInResult =
+  | { type: 'success' }
+  | { type: 'newPasswordRequired'; completeChallenge: (newPassword: string) => Promise<void> };
+
 type AuthModule = typeof import('./auth.mock.js');
 
 let authModule: AuthModule | null = null;
@@ -13,7 +17,7 @@ async function getAuth(): Promise<AuthModule> {
   return authModule;
 }
 
-export async function signIn(email: string, password: string) {
+export async function signIn(email: string, password: string): Promise<SignInResult> {
   return (await getAuth()).signIn(email, password);
 }
 

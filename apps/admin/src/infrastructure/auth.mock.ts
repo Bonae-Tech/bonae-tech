@@ -4,12 +4,15 @@ export interface MockSession {
   isValid(): boolean;
 }
 
-export function signIn(email: string, password: string): Promise<MockSession> {
+export function signIn(
+  email: string,
+  password: string,
+): Promise<{ type: 'success' } | { type: 'newPasswordRequired'; completeChallenge: (newPassword: string) => Promise<void> }> {
   if (!email.trim() || !password) {
     return Promise.reject(new Error('Email and password required'));
   }
   sessionStorage.setItem(STORAGE_KEY, email.trim());
-  return Promise.resolve({ isValid: () => true });
+  return Promise.resolve({ type: 'success' });
 }
 
 export function signOut(): void {
