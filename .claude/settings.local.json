@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(terraform providers)",
-      "Bash(/Users/marialucena/code/bonae/infra/terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/darwin_amd64/terraform-provider-aws_v5.100.0_x5 --version)"
+      "Bash(/Users/marialucena/code/bonae/infra/terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/darwin_amd64/terraform-provider-aws_v5.100.0_x5 --version)",
+      "Bash(xargs -I{} git diff-tree --no-commit-id -r {})",
+      "Read(//Users/marialucena/code/bonae/**)",
+      "Bash(git ls-tree -r --long HEAD -- infra/terraform/.terraform/)",
+      "Bash(git-filter-repo --version)",
+      "Bash(git filter-branch --tree-filter 'rm -rf infra/terraform/.terraform/' -- origin/main..HEAD)",
+      "Bash(git stash)",
+      "Bash(git add .gitignore)",
+      "Bash(git commit -m \"chore: add .terraform/ to .gitignore\")",
+      "Bash(git ls-tree -r --long HEAD -- infra/terraform/)"
     ]
   }
 }
