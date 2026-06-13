@@ -1,0 +1,5 @@
+name = "bonae-tech"
+pages_build_output_dir = "apps/static/dist"
+
+[build]
+command = "npm run content:build && npm run build"
