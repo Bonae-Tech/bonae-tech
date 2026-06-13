@@ -172,32 +172,23 @@ src/
 
 All requests send a Cognito `Bearer` ID token. In mock mode the Vite plugin handles these routes directly against `apps/static/content/`.
 
+## Editor workflow
+
+1. Sign in (Cognito user in `Administrators` group, or any credentials in mock mode)
+2. Select locale (ES / EN) and section
+3. Edit fields and click **Save draft** — commits to `content/drafts/` via the content API
+4. Click **Publish site** — copies `drafts/` → `published/` in one commit; triggers a Cloudflare Pages rebuild automatically
+
+Drafts are never visible on the public marketing site until published.
+
+## Rules
+
+- ES and EN documents must have **matching array lengths** at all mapped paths (locale parity). The API rejects saves that break parity.
+- The static site reads only `content/published/` — never `content/drafts/`.
+- Users are invite-only — no self-sign-up. Create users via `aws cognito-idp admin-create-user`.
+
 ## Deploy
 
-The app is a static SPA hosted on S3 + CloudFront. Env vars are baked in at build time.
+Deployments are handled automatically by `deploy-admin.yml` on push to `main`. Env vars (`VITE_COGNITO_USER_POOL_ID`, `VITE_COGNITO_CLIENT_ID`, `VITE_API_BASE_URL`) are baked in at build time from GitHub repository variables set by Terraform.
 
-Run from the repo root `infra/terraform` directory:
-
-```bash
-# 1. Read Terraform outputs
-export BUCKET=$(terraform output -raw admin_s3_bucket_name) \
-export DIST_ID=$(terraform output -raw admin_cloudfront_distribution_id) \
-export API_URL=$(terraform output -raw api_url) \
-export POOL_ID=$(terraform output -raw user_pool_id) \
-export CLIENT_ID=$(terraform output -raw user_pool_client_id)
-
-# 2. Build with real env vars
-cd ../../apps/admin
-VITE_COGNITO_USER_POOL_ID=$POOL_ID \
-VITE_COGNITO_CLIENT_ID=$CLIENT_ID \
-VITE_API_BASE_URL=$API_URL \
-npm run build
-
-# 3. Sync to S3 and invalidate CloudFront cache
-aws s3 sync dist/ s3://$BUCKET --delete --region sa-east-1
-aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
-```
-
-The admin is served at the `admin_cloudfront_domain` Terraform output (`https://<id>.cloudfront.net`).
-
-> CloudFront caches aggressively. The invalidation step is required for changes to be visible immediately.
+See [infra/README.md](../../infra/README.md) for manual deploy steps and first-time bootstrap.
