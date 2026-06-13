@@ -38,7 +38,7 @@ resource "aws_cognito_user_pool_client" "spa" {
   prevent_user_existence_errors = "ENABLED"
 }
 
-resource "aws_cognito_user_pool_group" "administrators" {
+resource "aws_cognito_user_group" "administrators" {
   name         = "Administrators"
   description  = "Content editors with publish access"
   user_pool_id = aws_cognito_user_pool.admins.id

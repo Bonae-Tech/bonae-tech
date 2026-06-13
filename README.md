@@ -1,19 +1,19 @@
-# BONAE TECH Digital Services Website
+# Sitio Web de Servicios Digitales BONAE TECH
 
-This is the static website for BONAE TECH Digital Services, built with Astro and Tailwind CSS in [`apps/static`](apps/static/). Deployed on Cloudflare Pages.
+Este es el sitio web estático de BONAE TECH Digital Services, construido con Astro y Tailwind CSS en [`apps/static`](apps/static/). Desplegado en Cloudflare Pages.
 
-## Design Principles
+## Principios de Diseño
 
-- **Mobile-first**: The majority of Latin American traffic is mobile. Layouts and components are designed for small screens first, then enhanced for desktop.
-- **Low-bandwidth friendly**: Optimized for 3G/4G connections. Minimal external assets, inline critical styles, and PWA support for offline use.
-- **Accessibility (WCAG 2.1 AA)**: Semantic HTML, ARIA labels, focus states, and sufficient color contrast. Forms and interactive elements are keyboard-navigable.
-- **Bilingual by default**: Spanish (primary) and English with clear language switching and proper `hreflang` for SEO.
-- **Cercano y profesional**: Tone is approachable and empowering—digitalization is within reach. Avoid unnecessary jargon; explain technical terms when used.
-- **Trust signals**: Clear value propositions, founder profiles, contact options, and visible CTAs (WhatsApp, contact form) to reduce friction.
+- **Mobile-first**: La mayoría del tráfico latinoamericano es móvil. Los layouts y componentes están diseñados primero para pantallas pequeñas y luego mejorados para escritorio.
+- **Optimizado para bajo ancho de banda**: Optimizado para conexiones 3G/4G. Recursos externos mínimos, estilos críticos en línea y soporte PWA para uso sin conexión.
+- **Accesibilidad (WCAG 2.1 AA)**: HTML semántico, etiquetas ARIA, estados de foco y contraste de color suficiente. Los formularios y elementos interactivos son navegables con teclado.
+- **Bilingüe por defecto**: Español (principal) e inglés con cambio de idioma claro y `hreflang` correcto para SEO.
+- **Cercano y profesional**: El tono es accesible y empoderador—la digitalización está al alcance. Evitar jerga innecesaria; explicar términos técnicos cuando se usen.
+- **Señales de confianza**: Propuestas de valor claras, perfiles de fundadores, opciones de contacto y CTAs visibles (WhatsApp, formulario de contacto) para reducir la fricción.
 
-## Architecture
+## Arquitectura
 
-The repo is a **git-backed content platform**: the marketing site reads published JSON, editors use a React admin app, and a minimal AWS stack handles auth plus GitHub commits.
+El repositorio es una **plataforma de contenido respaldada por git**: el sitio de marketing lee JSON publicado, los editores usan una app React de administración, y un stack mínimo de AWS gestiona la autenticación y los commits a GitHub.
 
 ```mermaid
 flowchart LR
@@ -49,41 +49,41 @@ flowchart LR
   Published --> Actions --> Astro
 ```
 
-| Piece | Path | Role |
+| Componente | Ruta | Rol |
 |-------|------|------|
-| Marketing site | `apps/static/` | Astro site; reads `content/published/` only |
-| Content schema | `packages/content/` | Shared Zod validation for site, admin, and API |
-| Admin UI | `apps/admin/` | React editor (Cognito login, section forms) |
-| Content API | `services/content-api/` | Terraform stack: JWT auth + GitHub App git proxy |
-| Editor guide | `docs/content-admin.md` | AWS setup and publish workflow |
+| Sitio de marketing | `apps/static/` | Sitio Astro; solo lee `content/published/` |
+| Esquema de contenido | `packages/content/` | Validación Zod compartida para el sitio, admin y API |
+| Admin UI | `apps/admin/` | Editor React (login Cognito, formularios de sección) |
+| Content API | `services/content-api/` | Stack Terraform: autenticación JWT + proxy git con GitHub App |
+| Guía del editor | `docs/content-admin.md` | Configuración de AWS y flujo de publicación |
 
-### Tech Stack
+### Stack Tecnológico
 
-| Layer | Technology |
+| Capa | Tecnología |
 |-------|------------|
-| Static generator | Astro 4.x |
-| Styling | Tailwind CSS |
-| Content | JSON in git (`drafts/` + `published/`) |
-| Validation | Zod (`@bonae/content`) |
+| Generador estático | Astro 4.x |
+| Estilos | Tailwind CSS |
+| Contenido | JSON en git (`drafts/` + `published/`) |
+| Validación | Zod (`@bonae/content`) |
 | Admin UI | React + Vite + Cognito |
 | Content API | Terraform (Cognito, HTTP API, Lambda) |
 | Hosting | Cloudflare Pages |
-| Output | Static HTML (no client-side routing) |
+| Salida | HTML estático (sin enrutamiento del lado del cliente) |
 
-### Page Structure
+### Estructura de Páginas
 
-- **Spanish**: `/` (index)
-- **English**: `/en/`
-- Single-page layout per language: all sections (Hero, Value Prop, Services, About, Portfolio, Plans, Contact) are rendered on the homepage with anchor navigation.
+- **Español**: `/` (índice)
+- **Inglés**: `/en/`
+- Layout de una sola página por idioma: todas las secciones (Hero, Propuesta de Valor, Servicios, Nosotros, Portafolio, Planes, Contacto) se renderizan en la página principal con navegación por anclas.
 
 ### i18n
 
-- Content files: `apps/static/content/published/es.json` and `en.json` (+ `settings.json`)
-- Shared schema in `packages/content` keeps both locales structurally in sync
-- Each page loads published content and passes it as `t` to Layout and components
-- No runtime i18n library; content is validated and compiled at build time
+- Archivos de contenido: `apps/static/content/published/es.json` y `en.json` (+ `settings.json`)
+- El esquema compartido en `packages/content` mantiene ambas localidades sincronizadas estructuralmente
+- Cada página carga el contenido publicado y lo pasa como `t` al Layout y los componentes
+- Sin librería i18n en tiempo de ejecución; el contenido se valida y compila en tiempo de construcción
 
-### Component Hierarchy
+### Jerarquía de Componentes
 
 ```
 Layout.astro (HTML shell, meta, PWA, WhatsApp float, Cookie banner)
@@ -103,29 +103,29 @@ Layout.astro (HTML shell, meta, PWA, WhatsApp float, Cookie banner)
 └── Footer.astro (4-column: brand, nav, services, contact)
 ```
 
-### Data Flow
+### Flujo de Datos
 
-- Site copy lives in `apps/static/content/published/` (`es.json`, `en.json`, `settings.json`).
-- Validated at build time via `@bonae/content` (`packages/content`).
-- Draft edits and publish workflow: see [docs/content-admin.md](docs/content-admin.md).
-- Components receive `t: Translations` as a prop and render text from `t.*`.
+- El contenido del sitio vive en `apps/static/content/published/` (`es.json`, `en.json`, `settings.json`).
+- Validado en tiempo de construcción mediante `@bonae/content` (`packages/content`).
+- Edición de borradores y flujo de publicación: ver [docs/content-admin.md](docs/content-admin.md).
+- Los componentes reciben `t: Translations` como prop y renderizan texto desde `t.*`.
 
-### PWA & Performance
+### PWA y Rendimiento
 
-- `manifest.webmanifest` and `sw.js` for installability and offline support
-- `compressHTML: true` and `inlineStylesheets: 'auto'` in Astro config
-- Target: Lighthouse performance > 90, load time < 3s on 3G
+- `manifest.webmanifest` y `sw.js` para instalabilidad y soporte sin conexión
+- `compressHTML: true` e `inlineStylesheets: 'auto'` en la config de Astro
+- Objetivo: Lighthouse performance > 90, tiempo de carga < 3s en 3G
 
 ---
 
-## Quick Start
+## Inicio Rápido
 
-### Prerequisites
+### Requisitos Previos
 
 - Node.js 20+
 - npm
 
-### 1. Install and run the marketing site
+### 1. Instalar y ejecutar el sitio de marketing
 
 ```bash
 npm ci --prefix packages/content && npm run content:build
@@ -133,34 +133,34 @@ npm ci --prefix apps/static
 npm run dev
 ```
 
-Open `http://localhost:4321`. The site reads **`apps/static/content/published/`** only.
+Abrir `http://localhost:4321`. El sitio solo lee **`apps/static/content/published/`**.
 
-### 2. Validate content
+### 2. Validar contenido
 
 ```bash
 npm run content:validate
 ```
 
-### 3. Build for production
+### 3. Construir para producción
 
 ```bash
 npm run build
 npm run preview
 ```
 
-Output: `apps/static/dist/`
+Salida: `apps/static/dist/`
 
-### 4. Run the content admin (optional)
+### 4. Ejecutar el admin de contenido (opcional)
 
-**Local mock mode (no AWS)** — try the editor first:
+**Modo mock local (sin AWS)** — probar el editor primero:
 
 ```bash
 npm run admin:dev:mock
 ```
 
-Open `http://localhost:5173`. Any email/password works. Saves write to `apps/static/content/` on disk.
+Abrir `http://localhost:5173`. Cualquier email/contraseña funciona. Los guardados se escriben en `apps/static/content/` en disco.
 
-**With AWS** — requires a deployed content API and Cognito users in the `Administrators` group:
+**Con AWS** — requiere una Content API desplegada y usuarios Cognito en el grupo `Administrators`:
 
 ```bash
 cp apps/admin/.env.example apps/admin/.env
@@ -170,138 +170,138 @@ npm ci --prefix apps/admin
 npm run admin:dev
 ```
 
-See [docs/content-admin.md](docs/content-admin.md) for AWS and GitHub App setup.
+Ver [docs/content-admin.md](docs/content-admin.md) para la configuración de AWS y GitHub App.
 
-### 5. Deploy the content API (optional)
+### 5. Desplegar la Content API (opcional)
 
-Infrastructure is managed by Terraform and deployed automatically via GitHub Actions on push to `main`. See [`services/content-api/README.md`](services/content-api/README.md) for the one-time bootstrap steps.
+La infraestructura es gestionada por Terraform y se despliega automáticamente mediante GitHub Actions al hacer push a `main`. Ver [`services/content-api/README.md`](services/content-api/README.md) para los pasos de bootstrap inicial.
 
-### Root scripts
+### Scripts raíz
 
-| Command | Description |
+| Comando | Descripción |
 |---------|-------------|
-| `npm run dev` | Astro dev server |
-| `npm run build` | Build marketing site |
-| `npm run preview` | Preview production build |
-| `npm run content:validate` | Validate published JSON |
-| `npm run admin:dev` | Content admin dev server |
-| `npm run admin:dev:mock` | Admin in local mock mode (no AWS) |
-| `npm run admin:build` | Build admin SPA |
-| `npm run api:build` | Bundle content API Lambda |
+| `npm run dev` | Servidor de desarrollo Astro |
+| `npm run build` | Construir el sitio de marketing |
+| `npm run preview` | Vista previa del build de producción |
+| `npm run content:validate` | Validar JSON publicado |
+| `npm run admin:dev` | Servidor de desarrollo del admin de contenido |
+| `npm run admin:dev:mock` | Admin en modo mock local (sin AWS) |
+| `npm run admin:build` | Construir la SPA de admin |
+| `npm run api:build` | Empaquetar Lambda de la Content API |
 
 ---
 
-## Development Setup
+## Configuración de Desarrollo
 
-### Installation
+### Instalación
 
-1. Clone the repository:
+1. Clonar el repositorio:
    ```bash
    git clone <repository-url>
    cd bonae
    ```
 
-2. Bootstrap the content package and static app:
+2. Inicializar el paquete de contenido y la app estática:
    ```bash
    npm ci --prefix packages/content && npm run content:build
    npm ci --prefix apps/static
    ```
 
-   Root scripts (`npm run dev`, `npm run build`, etc.) delegate to the apps below.
+   Los scripts raíz (`npm run dev`, `npm run build`, etc.) delegan a las apps de abajo.
 
-### Development
+### Desarrollo
 
 ```bash
 npm run dev
 ```
 
-Starts the Astro dev server at `http://localhost:4321` (runs content validation first).
+Inicia el servidor de desarrollo Astro en `http://localhost:4321` (ejecuta la validación de contenido primero).
 
-### Building for Production
+### Construcción para Producción
 
 ```bash
 npm run build
 ```
 
-Built files: `apps/static/dist/`
+Archivos construidos: `apps/static/dist/`
 
-### Preview Production Build
+### Vista Previa del Build de Producción
 
 ```bash
 npm run preview
 ```
 
-## Project Structure
+## Estructura del Proyecto
 
-- `apps/static/` - Marketing site (Astro): reads `content/published/` JSON
-- `apps/admin/` - React content admin SPA (Cognito + content API)
-- `packages/content/` - Shared Zod schema and validators
-- `services/content-api/` - Terraform stack (Cognito, HTTP API, Lambda GitHub proxy)
-- `docs/content-admin.md` - Editor and AWS setup guide
+- `apps/static/` - Sitio de marketing (Astro): lee JSON de `content/published/`
+- `apps/admin/` - SPA de admin de contenido en React (Cognito + content API)
+- `packages/content/` - Esquema Zod compartido y validadores
+- `services/content-api/` - Stack Terraform (Cognito, HTTP API, Lambda proxy de GitHub)
+- `docs/content-admin.md` - Guía de configuración del editor y AWS
 
-## Technologies Used
+## Tecnologías Utilizadas
 
-- [Astro](https://astro.build/) - Static site generator
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- TypeScript - Type-safe JavaScript
+- [Astro](https://astro.build/) - Generador de sitios estáticos
+- [Tailwind CSS](https://tailwindcss.com/) - Framework CSS de utilidades
+- TypeScript - JavaScript con tipado seguro
 
-## License
+## Licencia
 
 Apache-2.0
 
 ---
 
-## Deploy Quick Reference
+## Referencia Rápida de Despliegue
 
-| Item | Purpose |
+| Elemento | Propósito |
 |------|---------|
-| GitHub `CLOUDFLARE_API_TOKEN` | Deploy `apps/static/dist/` to Cloudflare Pages |
+| GitHub `CLOUDFLARE_API_TOKEN` | Desplegar `apps/static/dist/` en Cloudflare Pages |
 
-Deploy the **marketing** site from `apps/static` or rely on GitHub Actions. The marketing deploy in GitHub Actions runs from `apps/static` and uses [`wrangler pages deploy dist --project-name bonae-tech`](.github/workflows/deploy-site.yml).
+Despliega el sitio de **marketing** desde `apps/static` o usa GitHub Actions. El despliegue de marketing en GitHub Actions corre desde `apps/static` y usa [`wrangler pages deploy dist --project-name bonae-tech`](.github/workflows/deploy-site.yml).
 
-**If builds still fail,** check the log line that shows `HEAD is now at <commit>` — it must match the commit on GitHub that contains your latest changes (push `main` / your production branch and redeploy).
+**Si los builds siguen fallando,** verifica la línea del log que muestra `HEAD is now at <commit>` — debe coincidir con el commit en GitHub que contiene los últimos cambios (hacer push a `main` / tu rama de producción y redesplegar).
 
-Do **not** set a Cloudflare Pages deploy command to `npx wrangler deploy`: that targets **Workers**, not static sites, and will fail with “Missing entry-point to Worker script”. The marketing site’s GitHub Action uses `wrangler pages deploy` to push the built `dist` folder to Pages.
+**No** configures el comando de despliegue de Cloudflare Pages como `npx wrangler deploy`: eso apunta a **Workers**, no a sitios estáticos, y fallará con “Missing entry-point to Worker script”. La GitHub Action del sitio de marketing usa `wrangler pages deploy` para subir la carpeta `dist` construida a Pages.
 
-# Hosting Recommendations
+# Recomendaciones de Hosting
 
-## Best Hosting for Venezuela + International Availability
+## Mejor Hosting para Venezuela + Disponibilidad Internacional
 
-### 1 Cloudflare Pages (strongly recommended)
+### 1. Cloudflare Pages (recomendado ampliamente)
 
-Cloudflare is the best choice specifically for Venezuela because their Anycast CDN has 300+ global Points of Presence, and Venezuelan users get routed through nearby nodes in Colombia, Brazil, and the Caribbean. No other free platform matches this Latin American coverage.
+Cloudflare es la mejor opción específicamente para Venezuela porque su CDN Anycast tiene más de 300 Puntos de Presencia globales, y los usuarios venezolanos son enrutados a través de nodos cercanos en Colombia, Brasil y el Caribe. Ninguna otra plataforma gratuita iguala esta cobertura latinoamericana.
 
-Free tier includes: unlimited bandwidth, unlimited sites, 500 builds/month, SSL, DDoS protection.
+El plan gratuito incluye: ancho de banda ilimitado, sitios ilimitados, 500 builds/mes, SSL y protección DDoS.
 
-#### Ranked alternatives
+#### Alternativas ordenadas por ranking
 
-| Service	| LatAm CDN Coverage	| Free Tier |
+| Servicio	| Cobertura CDN LatAm	| Plan Gratuito |
 |-----------|-----------------------|-----------|
-| Cloudflare Pages ⭐	| Best (Anycast, 300+ PoP)	| Unlimited BW |
-| Vercel	| Good (São Paulo region)	| 100GB BW/mo |
-| Netlify	| Good	| 100GB BW/mo |
-| AWS S3 + CloudFront	| Good (São Paulo, Buenos Aires)	| 12mo free trial |
+| Cloudflare Pages ⭐	| Mejor (Anycast, 300+ PoP)	| BW ilimitado |
+| Vercel	| Bueno (región São Paulo)	| 100GB BW/mes |
+| Netlify	| Bueno	| 100GB BW/mes |
+| AWS S3 + CloudFront	| Bueno (São Paulo, Buenos Aires)	| Prueba gratuita 12 meses |
 
 
-### Deploying to Cloudflare Pages (3 steps)
+### Desplegar en Cloudflare Pages (3 pasos)
 
-Your Astro site lives under `apps/static`, builds to `apps/static/dist/`, and requires no Astro config changes for hosting:
+Tu sitio Astro vive en `apps/static`, construye en `apps/static/dist/`, y no requiere cambios en la config de Astro para el hosting:
 
-1. Push to GitHub (if not already there)
+1. Hacer push a GitHub (si aún no está allí)
 
-2. Connect at cloudflare.com → Workers & Pages → Create → Pages → Connect to Git
+2. Conectar en cloudflare.com → Workers & Pages → Create → Pages → Connect to Git
 
-3. Build settings:
-- **Root directory:** `apps/static`
-- **Build command:** `npm ci --prefix ../../packages/content && npm run build --prefix ../../packages/content && npm ci && npm run build`
-- **Output directory:** `dist`
-- Node version env var: `NODE_VERSION=20`
+3. Configuración del build:
+- **Directorio raíz:** `apps/static`
+- **Comando de build:** `npm ci --prefix ../../packages/content && npm run build --prefix ../../packages/content && npm ci && npm run build`
+- **Directorio de salida:** `dist`
+- Variable de entorno de versión de Node: `NODE_VERSION=20`
 
-Every push to main auto-deploys. You get a free *.pages.dev URL immediately, and can add a custom domain later.
+Cada push a main se despliega automáticamente. Obtienes una URL gratuita *.pages.dev de inmediato, y puedes agregar un dominio personalizado después.
 
-## Styles
+## Estilos
 
-### Fonts
+### Fuentes
 
 ```
 # one
@@ -310,7 +310,7 @@ font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 ```
 
-### Pallete 
+### Paleta de Colores
 
 * terracota: #FF6B35
 * brown: #9C8172
@@ -342,20 +342,20 @@ Favorite: 40575D
 
 
 
-🧩 Recommended Pairings
-To keep things simple and modern:
+🧩 Combinaciones Recomendadas
+Para mantenerlo simple y moderno:
 
-**Option A** — Clean & Friendly
-Headlines: Poppins SemiBold
-Body: Inter Regular
-UI Labels: Inter Medium
+**Opción A** — Limpio y Amigable
+Títulos: Poppins SemiBold
+Cuerpo: Inter Regular
+Etiquetas UI: Inter Medium
 
-**Option B** — Sleek & Professional
-- Headlines: Montserrat SemiBold
-- Body: Inter Regular
-- Buttons: Inter Medium
+**Opción B** — Elegante y Profesional
+- Títulos: Montserrat SemiBold
+- Cuerpo: Inter Regular
+- Botones: Inter Medium
 
-**Option C** — Ultra‑Lightweight (Lowest Bandwidth)
-- Headlines: Segoe UI Bold
-- Body: Segoe UI Regular
-- No external font downloads needed
+**Opción C** — Ultra Ligero (Menor Ancho de Banda)
+- Títulos: Segoe UI Bold
+- Cuerpo: Segoe UI Regular
+- Sin descargas de fuentes externas

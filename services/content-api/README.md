@@ -23,29 +23,33 @@ npm ci && npm run build
 | `deploy-infra.yml` | Push to `main` touching this path | Applies Terraform, stores outputs as GitHub vars |
 | `deploy-admin.yml` | Push to `main` (`apps/admin/**`) | Builds + uploads admin SPA to S3, invalidates CloudFront |
 
-## First-time bootstrap (one-time manual steps)
+## First-time bootstrap
 
-1. Create Terraform state bucket + DynamoDB lock table in `sa-east-1`:
-   ```bash
-   aws s3 mb s3://bonae-terraform-state-112066795953 --region sa-east-1
-   aws s3api put-bucket-versioning --bucket bonae-terraform-state-112066795953 --versioning-configuration Status=Enabled
-   aws dynamodb create-table --table-name bonae-terraform-locks \
-     --attribute-definitions AttributeName=LockID,AttributeType=S \
-     --key-schema AttributeName=LockID,KeyType=HASH \
-     --billing-mode PAY_PER_REQUEST --region sa-east-1
-   ```
+All AWS prerequisites (S3 state bucket, DynamoDB lock table, OIDC provider, IAM role) and GitHub configuration (secrets, environment) are declared in [`infra/terraform/bootstrap/`](../../infra/terraform/bootstrap/). Run it once locally with your own AWS credentials — after that everything is managed by CI.
 
-2. Create AWS OIDC provider + IAM role for GitHub Actions (trust: `token.actions.githubusercontent.com`, repo `mpiantella/bonae`)
+```bash
+cd infra/terraform/bootstrap
 
-3. Create GitHub App (`bonae-content-writer`, `Contents: Read & Write` on this repo)
+# AWS credentials must be set in your shell (aws configure, SSO, etc.)
+export GITHUB_TOKEN=<pat-with-repo-secrets-environments-scope>
 
-4. Add GitHub repository secrets: `AWS_ROLE_ARN`, `AWS_REGION`
+terraform init
+terraform apply
+```
 
-5. Create GitHub environment `infra-production` with required reviewers (repo Settings → Environments)
+This creates and stores in Terraform local state:
+- S3 bucket + DynamoDB table for remote state
+- GitHub OIDC provider + IAM deploy role
+- `AWS_ROLE_ARN` and `AWS_REGION` repository secrets
+- `infra-production` deployment environment (add required reviewers in GitHub Settings → Environments)
+
+**One step that cannot be automated** — GitHub does not expose an API to create GitHub Apps:
+
+3. Create GitHub App (`bonae-content-writer`, `Contents: Read & Write` on this repo) via GitHub Settings → Developer settings → GitHub Apps
 
 After the first `deploy-infra` run completes:
 
-6. Update Secrets Manager with GitHub App credentials:
+4. Update Secrets Manager with GitHub App credentials:
    ```bash
    aws secretsmanager update-secret \
      --secret-id bonae/github-app-content \
@@ -53,7 +57,7 @@ After the first `deploy-infra` run completes:
      --region sa-east-1
    ```
 
-7. Create Cognito admin user:
+5. Create Cognito admin user:
    ```bash
    aws cognito-idp admin-create-user --user-pool-id <UserPoolId> \
      --username editor@bonaetech.com --region sa-east-1
