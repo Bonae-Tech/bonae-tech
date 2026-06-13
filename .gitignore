@@ -18,3 +18,7 @@ packages/content/dist/
 .env.*
 !.env.example
 .cursor/
+
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/bootstrap/.terraform/
