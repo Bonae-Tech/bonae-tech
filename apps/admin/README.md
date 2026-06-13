@@ -174,4 +174,30 @@ All requests send a Cognito `Bearer` ID token. In mock mode the Vite plugin hand
 
 ## Deploy
 
-The app is a static SPA. Build it and serve `dist/` from any static host (S3 + CloudFront, etc.). Set the four env vars at build time.
+The app is a static SPA hosted on S3 + CloudFront. Env vars are baked in at build time.
+
+Run from the repo root `infra/terraform` directory:
+
+```bash
+# 1. Read Terraform outputs
+export BUCKET=$(terraform output -raw admin_s3_bucket_name) \
+export DIST_ID=$(terraform output -raw admin_cloudfront_distribution_id) \
+export API_URL=$(terraform output -raw api_url) \
+export POOL_ID=$(terraform output -raw user_pool_id) \
+export CLIENT_ID=$(terraform output -raw user_pool_client_id)
+
+# 2. Build with real env vars
+cd ../../apps/admin
+VITE_COGNITO_USER_POOL_ID=$POOL_ID \
+VITE_COGNITO_CLIENT_ID=$CLIENT_ID \
+VITE_API_BASE_URL=$API_URL \
+npm run build
+
+# 3. Sync to S3 and invalidate CloudFront cache
+aws s3 sync dist/ s3://$BUCKET --delete --region sa-east-1
+aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
+```
+
+The admin is served at the `admin_cloudfront_domain` Terraform output (`https://<id>.cloudfront.net`).
+
+> CloudFront caches aggressively. The invalidation step is required for changes to be visible immediately.

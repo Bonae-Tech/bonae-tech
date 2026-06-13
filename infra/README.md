@@ -218,8 +218,6 @@ This updates the Lambda environment variable and API Gateway CORS configuration.
 
 Terraform does not create the GitHub App — it only creates the Secrets Manager secret with placeholder values ("REPLACE"). You must create the GitHub App yourself first, then populate the secret in Step 6.
 
-Here's what you need to do before Step 6:
-
 1. Create a GitHub App at github.com/settings/apps/new (or under your org's settings):
 
 * Give it a name (e.g. bonae-content-api)
@@ -280,8 +278,8 @@ VITE_COGNITO_CLIENT_ID=$CLIENT_ID \
 VITE_API_BASE_URL=$API_URL \
 npm run build
 
-aws s3 sync dist/ s3://$BUCKET --delete --region sa-east-1
-aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
+aws s3 sync dist/ s3://bonae-admin-spa-112066795953 --delete --region sa-east-1
+aws cloudfront create-invalidation --distribution-id EJ50TQI3OIHSB --paths "/*"
 ```
 
 ---
