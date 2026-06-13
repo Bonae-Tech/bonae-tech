@@ -1,0 +1,138 @@
+name: Deploy infra
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/terraform/**'
+      - 'services/content-api/**'
+      - '.github/workflows/deploy-infra.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-infra
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+  actions: write  # required for gh variable set
+
+jobs:
+  plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    outputs:
+      cors_origin: ${{ steps.cors.outputs.origin }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Build Lambda
+        run: npm ci && npm run build
+        working-directory: services/content-api
+
+      - name: Resolve CORS origin
+        id: cors
+        run: |
+          if [ -n "${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" ]; then
+            echo "origin=https://${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "origin=https://placeholder.bonaetech.com" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: infra/terraform
+
+      - name: Terraform plan
+        run: |
+          terraform plan -no-color \
+            -var "github_repo=${{ vars.GITHUB_REPO || 'mpiantella/bonae' }}" \
+            -var "cors_origin=${{ steps.cors.outputs.origin }}"
+        working-directory: infra/terraform
+
+      - name: Upload built Lambda as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-dist
+          path: services/content-api/dist/
+          retention-days: 1
+
+  apply:
+    name: Terraform apply
+    needs: [plan]
+    runs-on: ubuntu-latest
+    # This environment requires manual approval — configure reviewers in
+    # GitHub repo Settings → Environments → infra-production
+    environment: infra-production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Download built Lambda
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-dist
+          path: services/content-api/dist/
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: infra/terraform
+
+      - name: Terraform apply
+        run: |
+          terraform apply -auto-approve \
+            -var "github_repo=${{ vars.GITHUB_REPO || 'mpiantella/bonae' }}" \
+            -var "cors_origin=${{ needs.plan.outputs.cors_origin }}"
+        working-directory: infra/terraform
+
+      - name: Store Terraform outputs as GitHub repository variables
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd infra/terraform
+
+          USER_POOL_ID=$(terraform output -raw user_pool_id)
+          CLIENT_ID=$(terraform output -raw user_pool_client_id)
+          API_URL=$(terraform output -raw api_url)
+          CF_DOMAIN=$(terraform output -raw admin_cloudfront_domain)
+          CF_ID=$(terraform output -raw admin_cloudfront_distribution_id)
+          S3_BUCKET=$(terraform output -raw admin_s3_bucket_name)
+
+          gh variable set COGNITO_USER_POOL_ID   --body "$USER_POOL_ID" -R "$GITHUB_REPOSITORY"
+          gh variable set COGNITO_CLIENT_ID      --body "$CLIENT_ID"    -R "$GITHUB_REPOSITORY"
+          gh variable set API_BASE_URL           --body "$API_URL"      -R "$GITHUB_REPOSITORY"
+          gh variable set ADMIN_CLOUDFRONT_DOMAIN --body "$CF_DOMAIN"   -R "$GITHUB_REPOSITORY"
+          gh variable set ADMIN_CLOUDFRONT_ID    --body "$CF_ID"        -R "$GITHUB_REPOSITORY"
+          gh variable set ADMIN_S3_BUCKET        --body "$S3_BUCKET"    -R "$GITHUB_REPOSITORY"
+
+          echo "Outputs stored. Admin SPA will be available at: https://$CF_DOMAIN"
+          echo ""
+          echo "Next steps (one-time manual):"
+          echo "  1. Update Secrets Manager with GitHub App credentials:"
+          echo "     aws secretsmanager update-secret --secret-id bonae/github-app-content \\"
+          echo "       --secret-string '{\"appId\":\"<ID>\",\"installationId\":\"<ID>\",\"privateKey\":\"<PEM>\"}' \\"
+          echo "       --region ${{ secrets.AWS_REGION }}"
+          echo "  2. Create Cognito admin user:"
+          echo "     aws cognito-idp admin-create-user --user-pool-id $USER_POOL_ID --username editor@bonaetech.com --region ${{ secrets.AWS_REGION }}"
+          echo "     aws cognito-idp admin-add-user-to-group --user-pool-id $USER_POOL_ID --username editor@bonaetech.com --group-name Administrators --region ${{ secrets.AWS_REGION }}"
+          echo "  3. Trigger deploy-admin workflow to push the admin SPA to S3."

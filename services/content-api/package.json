@@ -1,0 +1,21 @@
+{
+  "name": "@bonae/content-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm run build --prefix ../../packages/content && esbuild src/handler.ts --bundle --platform=node --target=node20 --outfile=dist/handler.js --format=esm && echo '{\"type\":\"module\"}' > dist/package.json"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.699.0",
+    "@bonae/content": "file:../../packages/content",
+    "@octokit/auth-app": "^7.1.4",
+    "@octokit/rest": "^21.1.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "^22.10.5",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,4 +1,4 @@
-import type { Translations } from './es';
+import type { Translations } from '@bonae/content';
 
 export const en: Translations = {
   lang: 'en',

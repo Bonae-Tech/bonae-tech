@@ -1,11 +1,12 @@
 ---
-import type { Translations } from '../i18n/es';
+import type { Translations, SiteSettings } from '@bonae/content';
 
 interface Props {
   t: Translations;
+  settings: SiteSettings;
 }
 
-const { t } = Astro.props;
+const { t, settings } = Astro.props;
 ---
 
 <div
@@ -13,12 +14,12 @@ const { t } = Astro.props;
   class="fixed bottom-0 left-0 right-0 z-50 bg-dark-blue-dark text-white px-4 py-4 shadow-lg border-t border-white/10"
   role="dialog"
   aria-live="polite"
-  aria-label="Aviso de cookies"
+  aria-label={t.cookieBanner.ariaLabel}
 >
   <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
     <p class="text-sm text-light-blue flex-1">
       {t.cookieBanner.message}{' '}
-      <a href="#" class="text-terracotta hover:text-terracotta-dark underline">{t.cookieBanner.privacy}</a>
+      <a href={settings.legalLinks.privacy || '#'} class="text-terracotta hover:text-terracotta-dark underline">{t.cookieBanner.privacy}</a>
     </p>
     <button
       type="button"

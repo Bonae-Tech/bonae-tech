@@ -1,0 +1,7 @@
+# Local state — intentional, this module uses local state by design
+terraform.tfstate
+terraform.tfstate.backup
+
+# Terraform working directory
+.terraform/
+.terraform.lock.hcl

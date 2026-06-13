@@ -1,245 +1,204 @@
-# BONAE TECH Digital Services Website
+# BONAE Tech
 
-This is the static website for BONAE TECH Digital Services, built with Astro and Tailwind CSS in [`apps/static`](apps/static/). Deployed on Cloudflare Pages.
+Git-backed content platform for the BONAE Tech marketing site. Editors update copy through a React admin backed by a minimal AWS stack; published content triggers an Astro static site rebuild on Cloudflare Pages.
 
-## Design Principles
-
-- **Mobile-first**: The majority of Latin American traffic is mobile. Layouts and components are designed for small screens first, then enhanced for desktop.
-- **Low-bandwidth friendly**: Optimized for 3G/4G connections. Minimal external assets, inline critical styles, and PWA support for offline use.
-- **Accessibility (WCAG 2.1 AA)**: Semantic HTML, ARIA labels, focus states, and sufficient color contrast. Forms and interactive elements are keyboard-navigable.
-- **Bilingual by default**: Spanish (primary) and English with clear language switching and proper `hreflang` for SEO.
-- **Cercano y profesional**: Tone is approachable and empowering—digitalization is within reach. Avoid unnecessary jargon; explain technical terms when used.
-- **Trust signals**: Clear value propositions, founder profiles, contact options, and visible CTAs (WhatsApp, contact form) to reduce friction.
-
-## Architecture
-
-### Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Static generator | Astro 4.x |
-| Styling | Tailwind CSS |
-| Hosting | Cloudflare Pages |
-| Output | Static HTML (no client-side routing) |
-
-### Page Structure
-
-- **Spanish**: `/` (index)
-- **English**: `/en/`
-- Single-page layout per language: all sections (Hero, Value Prop, Services, About, Portfolio, Plans, Contact) are rendered on the homepage with anchor navigation.
-
-### i18n
-
-- Translation files: `apps/static/src/i18n/es.ts` (source) and `apps/static/src/i18n/en.ts`
-- Shared `Translations` type ensures both languages stay in sync
-- Each page imports the relevant translation object and passes it as `t` to Layout and components
-- No runtime i18n library; content is compiled at build time
-
-### Component Hierarchy
+## Repository structure
 
 ```
-Layout.astro (HTML shell, meta, PWA, WhatsApp float, Cookie banner)
-├── Header.astro (nav, language switch, CTA)
-├── <main>
-│   ├── Hero.astro
-│   ├── ValueProp.astro
-│   ├── ServicesSummary.astro
-│   ├── KeyFigures.astro
-│   ├── About.astro
-│   ├── Services.astro
-│   ├── Portfolio.astro
-│   ├── Testimonials.astro
-│   ├── Plans.astro
-│   ├── BlogPreview.astro
-│   └── Contact.astro
-└── Footer.astro (4-column: brand, nav, services, contact)
+apps/static/          — Marketing site (Astro + Tailwind, Cloudflare Pages)
+apps/admin/           — Content admin SPA (React + Vite + Cognito)
+packages/content/     — Shared Zod schema and validators (built before everything else)
+services/content-api/ — Lambda handler (Node.js 20, esbuild)
+infra/terraform/      — Cognito, API Gateway, Lambda, S3 + CloudFront for admin
+infra/terraform/bootstrap/ — One-time state backend + GitHub OIDC setup
 ```
 
-### Data Flow
+Content lives in `apps/static/content/`:
 
-- Site copy lives in `apps/static/src/i18n/es.ts` and `apps/static/src/i18n/en.ts`.
-- Components receive `t: Translations` as a prop and render text from `t.*`.
-
-### PWA & Performance
-
-- `manifest.webmanifest` and `sw.js` for installability and offline support
-- `compressHTML: true` and `inlineStylesheets: 'auto'` in Astro config
-- Target: Lighthouse performance > 90, load time < 3s on 3G
+```
+drafts/    es.json  en.json  settings.json   ← saved by admin
+published/ es.json  en.json  settings.json   ← read by Astro at build time
+```
 
 ---
 
-## Development Setup
+## Setup
 
 ### Prerequisites
 
-- Node.js (version 18 or higher recommended)
-- npm (comes with Node.js)
+- Node.js 20+
+- npm
+- Terraform ≥ 1.6 (for infrastructure work)
+- AWS CLI (for infrastructure and user management)
 
-### Installation
+### Build order
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd bonae
-   ```
+`packages/content` must be compiled before anything that imports it (admin, static site, Lambda) because all packages import from `dist/`. The scripts below handle this automatically, but if you run steps manually: **always build content first.**
 
-2. Install dependencies for the marketing site:
-   ```bash
-   npm ci --prefix apps/static
-   ```
-   The repo root has no `node_modules`; convenience scripts (`npm run dev`, `npm run build`, etc.) delegate to `apps/static`.
-
-### Development
-
-To start the development server:
+### Local development — static site
 
 ```bash
-npm run dev
+npm ci --prefix packages/content && npm run content:build
+npm ci --prefix apps/static
+npm run dev          # http://localhost:4321
 ```
 
-This will start the Astro development server, typically available at `http://localhost:4321`.
+The site reads only `apps/static/content/published/`. It will fail to start if published JSON is invalid.
 
-### Building for Production
-
-To build the website for production:
+### Local development — content admin (mock mode, no AWS required)
 
 ```bash
-npm run build
+npm run admin:dev:mock   # http://localhost:5173
 ```
 
-The built files will be in `apps/static/dist/`.
+Sign in with any email/password. Saves write directly to `apps/static/content/` on disk. Use this to develop the editor UI without AWS credentials.
 
-### Preview Production Build
+### Local development — content admin (real AWS)
 
-To preview the production build locally:
+Requires deployed infrastructure and a Cognito user in the `Administrators` group.
 
 ```bash
-npm run preview
+cp apps/admin/.env.example apps/admin/.env
+# Fill in: VITE_API_BASE_URL, VITE_COGNITO_USER_POOL_ID, VITE_COGNITO_CLIENT_ID, VITE_AWS_REGION
+
+npm ci --prefix apps/admin
+npm run admin:dev        # http://localhost:5173
 ```
 
-This serves the built website from `apps/static/dist/`.
+### First-time infrastructure bootstrap
 
-## Project Structure
+See **[infra/README.md](infra/README.md)** for the full step-by-step guide. Summary:
 
-- `apps/static/` - Marketing site (Astro): `src/pages/`, `src/components/`, `src/layouts/`, `src/styles/`, `public/`, and `src/i18n/`
+1. Run `infra/terraform/bootstrap/` once locally — creates S3 state backend, DynamoDB lock table, GitHub OIDC provider, and IAM deploy role
+2. Create `infra/terraform/terraform.tfvars` with repo, branch, and a placeholder `cors_origin`
+3. Build the Lambda: `npm ci && npm run build` in `services/content-api/`
+4. Apply the main module: `terraform apply -var-file=terraform.tfvars` in `infra/terraform/`
+5. Populate Secrets Manager with GitHub App credentials (see infra/README.md step 6)
+6. Create the first Cognito admin user (see below)
+7. Trigger the `deploy-admin` workflow or deploy the admin SPA manually
 
-## Technologies Used
+---
 
-- [Astro](https://astro.build/) - Static site generator
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- TypeScript - Type-safe JavaScript
+## Maintenance
+
+### Content workflow
+
+Editors sign in to the admin SPA → edit sections in ES/EN → **Save draft** (commits to `drafts/`) → **Publish** (copies `drafts/` → `published/` in one commit, triggers Cloudflare rebuild).
+
+See [apps/admin/README.md](apps/admin/README.md) for the full editor workflow and local dev instructions.
+
+Rules enforced on every save:
+- ES and EN documents must have matching array lengths at all mapped paths (locale parity)
+- Published content is validated before every site build; an invalid `published/` will block the build
+
+### Managing Cognito users
+
+Users are invite-only (`allow_admin_create_user_only = true`). Create users via the AWS CLI — they receive a temporary password by email and must set a permanent one on first login.
+
+```bash
+POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
+REGION=sa-east-1
+
+# Create user (sends invite email)
+aws cognito-idp admin-create-user \
+  --user-pool-id $POOL_ID \
+  --username editor@example.com \
+  --desired-delivery-mediums EMAIL \
+  --region $REGION
+
+# Add to Administrators group
+aws cognito-idp admin-add-user-to-group \
+  --user-pool-id $POOL_ID \
+  --username editor@example.com \
+  --group-name Administrators \
+  --region $REGION
+```
+
+To disable or delete a user:
+
+```bash
+aws cognito-idp admin-disable-user --user-pool-id $POOL_ID --username editor@example.com --region $REGION
+aws cognito-idp admin-delete-user  --user-pool-id $POOL_ID --username editor@example.com --region $REGION
+```
+
+### Infrastructure changes
+
+Changes to `infra/terraform/**` or `services/content-api/**` pushed to `main` trigger the `deploy-infra` workflow automatically. The `apply` job is gated by the `infra-production` GitHub environment (requires manual approval — configure reviewers in GitHub Settings → Environments).
+
+To plan locally:
+
+```bash
+cd infra/terraform
+terraform plan -var-file=terraform.tfvars
+```
+
+### Rotating GitHub App credentials
+
+The Lambda reads GitHub App credentials from Secrets Manager (`bonae/github-app-content`). Terraform never overwrites this value after initial creation (`ignore_changes = [secret_string]`).
+
+To rotate:
+
+```bash
+aws secretsmanager put-secret-value \
+  --secret-id bonae/github-app-content \
+  --secret-string '{"appId":"<ID>","installationId":"<ID>","privateKey":"<PEM>"}' \
+  --region sa-east-1
+```
+
+No infrastructure redeploy is needed — Lambda reads the secret on each invocation.
+
+### Validating content locally
+
+```bash
+npm run content:validate          # validate published JSON
+npm --prefix packages/content run validate -- ../../apps/static/content drafts  # validate drafts
+```
+
+---
+
+## CI/CD reference
+
+| Workflow | Trigger | What it does |
+|----------|---------|--------------|
+| `ci.yml` | Push / PR touching app or package code | Builds all workspaces in order; validates published content |
+| `content-pr-check.yml` | PR touching `apps/static/content/**` or `packages/content/**` | Validates published + draft JSON |
+| `deploy-site.yml` | Push to `main` touching `apps/static/**` or `packages/content/**` | Builds static site, deploys to Cloudflare Pages |
+| `deploy-admin.yml` | Push to `main` touching `apps/admin/**` or `packages/content/**` | Builds admin SPA, syncs to S3, invalidates CloudFront |
+| `terraform-plan.yml` | PR touching `infra/terraform/**` or `services/content-api/**` | Posts Terraform plan as PR comment |
+| `deploy-infra.yml` | Push to `main` touching `infra/terraform/**` or `services/content-api/**` | Applies Terraform (gated by `infra-production` environment), stores outputs as GitHub vars |
+
+All deploy workflows require these secrets/variables set in the GitHub repository:
+
+| Secret / Variable | Set by | Used by |
+|-------------------|--------|---------|
+| `AWS_ROLE_ARN` | bootstrap Terraform | All AWS workflows |
+| `AWS_REGION` | bootstrap Terraform | All AWS workflows |
+| `CLOUDFLARE_API_TOKEN` | manual | `deploy-site.yml` |
+| `COGNITO_USER_POOL_ID` | `deploy-infra.yml` output | `deploy-admin.yml` |
+| `COGNITO_CLIENT_ID` | `deploy-infra.yml` output | `deploy-admin.yml` |
+| `API_BASE_URL` | `deploy-infra.yml` output | `deploy-admin.yml` |
+| `ADMIN_S3_BUCKET` | `deploy-infra.yml` output | `deploy-admin.yml` |
+| `ADMIN_CLOUDFRONT_ID` | `deploy-infra.yml` output | `deploy-admin.yml` |
+| `ADMIN_CLOUDFRONT_DOMAIN` | `deploy-infra.yml` output | `deploy-infra.yml` (CORS) |
+
+---
+
+## Command reference
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Astro dev server (validates published content first) |
+| `npm run build` | Build marketing site → `apps/static/dist/` |
+| `npm run preview` | Preview production build locally |
+| `npm run content:build` | Compile `packages/content` (required before other builds) |
+| `npm run content:validate` | Validate published JSON |
+| `npm run admin:dev:mock` | Admin SPA in mock mode (no AWS, reads/writes disk) |
+| `npm run admin:dev` | Admin SPA against real AWS (requires `.env`) |
+| `npm run admin:build` | Build admin SPA → `apps/admin/dist/` |
+| `npm run api:build` | Bundle Lambda → `services/content-api/dist/` |
+
+---
 
 ## License
 
 Apache-2.0
-
----
-
-## Deploy Quick Reference
-
-| Item | Purpose |
-|------|---------|
-| GitHub `CLOUDFLARE_API_TOKEN` | Deploy `apps/static/dist/` to Cloudflare Pages |
-
-Deploy the **marketing** site from `apps/static` or rely on GitHub Actions. The marketing deploy in GitHub Actions runs from `apps/static` and uses [`wrangler pages deploy dist --project-name bonae-tech`](.github/workflows/deploy-site.yml).
-
-**If builds still fail,** check the log line that shows `HEAD is now at <commit>` — it must match the commit on GitHub that contains your latest changes (push `main` / your production branch and redeploy).
-
-Do **not** set a Cloudflare Pages deploy command to `npx wrangler deploy`: that targets **Workers**, not static sites, and will fail with “Missing entry-point to Worker script”. The marketing site’s GitHub Action uses `wrangler pages deploy` to push the built `dist` folder to Pages.
-
-# Hosting Recommendations
-
-## Best Hosting for Venezuela + International Availability
-
-### 1 Cloudflare Pages (strongly recommended)
-
-Cloudflare is the best choice specifically for Venezuela because their Anycast CDN has 300+ global Points of Presence, and Venezuelan users get routed through nearby nodes in Colombia, Brazil, and the Caribbean. No other free platform matches this Latin American coverage.
-
-Free tier includes: unlimited bandwidth, unlimited sites, 500 builds/month, SSL, DDoS protection.
-
-#### Ranked alternatives
-
-| Service	| LatAm CDN Coverage	| Free Tier |
-|-----------|-----------------------|-----------|
-| Cloudflare Pages ⭐	| Best (Anycast, 300+ PoP)	| Unlimited BW |
-| Vercel	| Good (São Paulo region)	| 100GB BW/mo |
-| Netlify	| Good	| 100GB BW/mo |
-| AWS S3 + CloudFront	| Good (São Paulo, Buenos Aires)	| 12mo free trial |
-
-
-### Deploying to Cloudflare Pages (3 steps)
-
-Your Astro site lives under `apps/static`, builds to `apps/static/dist/`, and requires no Astro config changes for hosting:
-
-1. Push to GitHub (if not already there)
-
-2. Connect at cloudflare.com → Workers & Pages → Create → Pages → Connect to Git
-
-3. Build settings:
-- **Root directory:** `apps/static`
-- **Build command:** `npm ci && npm run build`
-- **Output directory:** `dist`
-- Node version env var: `NODE_VERSION=18` (or 20 to match `engines`)
-
-Every push to main auto-deploys. You get a free *.pages.dev URL immediately, and can add a custom domain later.
-
-## Styles
-
-### Fonts
-
-```
-# one
-font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-# two
-font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-```
-
-### Pallete 
-
-* terracota: #FF6B35
-* brown: #9C8172
-* mid-blue: #3996AE
-* light-blue: #48A8C1
-* dar-blue: #44808F
-* pacificblue: #40575D
-* cream: #F4F4ED
-
-BDD0D5,3C707D,3C6F7B,DEEAED,518490
-#### tailwind
-Favorite: 40575D
-
-{
-  "dark-slate-grey": {
-    "50": "#f0f4f5",
-    "100": "#e1e8ea",
-    "200": "#c3d2d5",
-    "300": "#a5bbc0",
-    "400": "#87a4ab",
-    "500": "#698d96",
-    "600": "#547178",
-    "700": "#3f555a",
-    "800": "#2a393c",
-    "900": "#151c1e",
-    "950": "#0f1415"
-  }
-}
-
-
-
-🧩 Recommended Pairings
-To keep things simple and modern:
-
-**Option A** — Clean & Friendly
-Headlines: Poppins SemiBold
-Body: Inter Regular
-UI Labels: Inter Medium
-
-**Option B** — Sleek & Professional
-- Headlines: Montserrat SemiBold
-- Body: Inter Regular
-- Buttons: Inter Medium
-
-**Option C** — Ultra‑Lightweight (Lowest Bandwidth)
-- Headlines: Segoe UI Bold
-- Body: Segoe UI Regular
-- No external font downloads needed

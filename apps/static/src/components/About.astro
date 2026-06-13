@@ -1,5 +1,5 @@
 ---
-import type { Translations } from '../i18n/es';
+import type { Translations } from '@bonae/content';
 
 interface Props {
   t: Translations;
@@ -54,7 +54,7 @@ const avatarColors = [
     </div>
 
     <h3 class="text-xl font-bold text-dark-blue text-center mb-10">
-      {t.lang === 'en' ? 'Founders' : 'Cofundadoras'}
+      {t.about.foundersTitle}
     </h3>
     <div class="grid md:grid-cols-3 gap-6">
       {t.about.members.map((member, i) => (

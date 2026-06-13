@@ -1,8 +1,11 @@
 # Dependencies
 node_modules/
 
-# Build output (marketing Astro site)
+# Build output
 apps/static/dist/
+apps/admin/dist/
+services/content-api/dist/
+packages/content/dist/
 
 # Astro internals
 .astro/
@@ -15,3 +18,7 @@ apps/static/dist/
 .env.*
 !.env.example
 .cursor/
+
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/bootstrap/.terraform/

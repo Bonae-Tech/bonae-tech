@@ -2,11 +2,17 @@
   "name": "bonae",
   "private": true,
   "version": "1.0.0",
-  "description": "BONAE TECH static marketing site",
+  "description": "BONAE TECH static marketing site with git-backed content admin",
   "scripts": {
+    "content:build": "npm --prefix packages/content run build",
+    "content:validate": "npm --prefix packages/content run validate:published",
     "dev": "npm --prefix apps/static run dev",
     "build": "npm --prefix apps/static run build",
-    "preview": "npm --prefix apps/static run preview"
+    "preview": "npm --prefix apps/static run preview",
+    "admin:dev": "npm --prefix apps/admin run dev",
+    "admin:dev:mock": "npm run content:build && npm --prefix apps/admin run dev:mock",
+    "admin:build": "npm --prefix apps/admin run build",
+    "api:build": "npm --prefix services/content-api run build"
   },
   "license": "Apache-2.0",
   "engines": {

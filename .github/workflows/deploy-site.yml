@@ -3,6 +3,10 @@ name: Deploy site
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/static/**'
+      - 'packages/content/**'
+      - '.github/workflows/deploy-site.yml'
   workflow_dispatch:
 
 concurrency:
@@ -20,7 +24,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+
+      - run: npm ci
+        working-directory: packages/content
+      - run: npm run build
+        working-directory: packages/content
+      - run: npm run validate:published
+        working-directory: packages/content
 
       - run: npm ci
         working-directory: apps/static

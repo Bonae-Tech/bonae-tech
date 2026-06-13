@@ -1,0 +1,67 @@
+name: Deploy admin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/admin/**'
+      - 'packages/content/**'
+      - '.github/workflows/deploy-admin.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-admin
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Requires infra to be deployed first (ADMIN_S3_BUCKET and ADMIN_CLOUDFRONT_ID must be set as repo vars)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Build content package
+        run: npm ci && npm run build
+        working-directory: packages/content
+
+      - name: Build admin SPA
+        run: npm ci && npm run build
+        working-directory: apps/admin
+        env:
+          VITE_API_BASE_URL: ${{ vars.API_BASE_URL }}
+          VITE_COGNITO_USER_POOL_ID: ${{ vars.COGNITO_USER_POOL_ID }}
+          VITE_COGNITO_CLIENT_ID: ${{ vars.COGNITO_CLIENT_ID }}
+          VITE_AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Sync to S3 — hashed assets (long cache)
+        run: |
+          aws s3 sync dist/ "s3://${{ vars.ADMIN_S3_BUCKET }}/" \
+            --delete \
+            --exclude "index.html" \
+            --cache-control "public, max-age=31536000, immutable"
+        working-directory: apps/admin
+
+      - name: Sync to S3 — index.html (no cache)
+        run: |
+          aws s3 cp dist/index.html "s3://${{ vars.ADMIN_S3_BUCKET }}/index.html" \
+            --cache-control "no-cache, no-store, must-revalidate"
+        working-directory: apps/admin
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ vars.ADMIN_CLOUDFRONT_ID }}" \
+            --paths "/*"
