@@ -44,17 +44,26 @@ jobs:
       - name: Terraform plan
         id: plan
         run: |
+          set -o pipefail
           terraform plan -no-color \
             -var "github_repo=${{ vars.GITHUB_REPO || 'mpiantella/bonae' }}" \
-            -var "cors_origin=${{ vars.ADMIN_CLOUDFRONT_DOMAIN && format('https://{0}', vars.ADMIN_CLOUDFRONT_DOMAIN) || 'https://placeholder.bonaetech.com' }}"
+            -var "cors_origin=${{ vars.ADMIN_CLOUDFRONT_DOMAIN && format('https://{0}', vars.ADMIN_CLOUDFRONT_DOMAIN) || 'https://placeholder.bonaetech.com' }}" \
+            2>&1 | tee plan_output.txt
+          exit ${PIPESTATUS[0]}
         working-directory: infra/terraform
         continue-on-error: true
 
       - name: Post plan as PR comment
         uses: actions/github-script@v7
+        env:
+          PLAN_PATH: infra/terraform/plan_output.txt
         with:
           script: |
-            const plan = `${{ steps.plan.outputs.stdout }}`.substring(0, 60000);
+            const fs = require('fs');
+            const planPath = process.env.PLAN_PATH;
+            const plan = fs.existsSync(planPath)
+              ? fs.readFileSync(planPath, 'utf8').substring(0, 60000)
+              : '_Plan output not available._';
             const outcome = '${{ steps.plan.outcome }}';
             const icon = outcome === 'success' ? '✅' : '❌';
             const body = [
