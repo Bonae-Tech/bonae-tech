@@ -54,22 +54,6 @@ function requireAdmin(event: APIGatewayProxyEventV2WithJWTAuthorizer): string {
   const groupsRaw = claims['cognito:groups'];
   const groups = parseCognitoGroups(groupsRaw);
 
-  // #region agent log
-  console.log(JSON.stringify({
-    sessionId: '814b98',
-    hypothesisId: 'H3-H5',
-    location: 'handler.ts:requireAdmin',
-    message: 'JWT group claims snapshot',
-    data: {
-      claimKeys: Object.keys(claims).filter((k) => k.includes('group') || k.startsWith('cognito')),
-      groupsRawType: groupsRaw === undefined ? 'undefined' : typeof groupsRaw,
-      groupsRawValue: typeof groupsRaw === 'string' ? groupsRaw : null,
-      groupsParsed: groups,
-      sub: typeof claims.sub === 'string' ? claims.sub : null,
-    },
-  }));
-  // #endregion
-
   if (!groups.includes('Administrators')) {
     throw new Error('Forbidden: Administrators group required');
   }
