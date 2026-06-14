@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "BONAE TECH marketing site (Astro)",
   "scripts": {
-    "content:validate": "npm --prefix ../../packages/content run validate:published",
+    "content:validate": "npm --prefix ../../packages/content run build && npm --prefix ../../packages/content run validate:published",
     "predev": "npm run content:validate",
     "dev": "astro dev",
     "prebuild": "npm run content:validate",
