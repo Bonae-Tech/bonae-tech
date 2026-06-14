@@ -5,6 +5,7 @@ on:
     paths:
       - 'infra/terraform/**'
       - 'services/content-api/**'
+      - 'packages/content/**'
       - '.github/workflows/terraform-plan.yml'
 
 permissions:

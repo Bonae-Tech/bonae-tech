@@ -1,6 +1,6 @@
 import type { ContentDocument, Locale, SiteSettings } from '@bonae/content';
 import { config } from '../config.js';
-import { getIdToken } from './auth.js';
+import { getIdToken, refreshSession } from './auth.js';
 
 export type ContentResource = Locale | 'settings';
 
@@ -11,7 +11,7 @@ export interface ContentResponse<T> {
   commitSha?: string;
 }
 
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+async function apiFetch<T>(path: string, init?: RequestInit, retried = false): Promise<T> {
   const token = await getIdToken();
   const res = await fetch(`${config.apiBaseUrl}${path}`, {
     ...init,
@@ -24,6 +24,14 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
   const body = (await res.json()) as T & { error?: string };
   if (!res.ok) {
+    if (
+      !retried &&
+      res.status === 403 &&
+      body.error?.includes('Administrators group required')
+    ) {
+      await refreshSession();
+      return apiFetch(path, init, true);
+    }
     throw new Error(body.error ?? `Request failed (${res.status})`);
   }
   return body;

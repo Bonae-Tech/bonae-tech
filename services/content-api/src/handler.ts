@@ -49,12 +49,46 @@ function parseCognitoGroups(groupsRaw: unknown): string[] {
   return trimmed.split(',').map((group) => group.trim()).filter(Boolean);
 }
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+
+  try {
+    const json = Buffer.from(parts[1], 'base64url').toString('utf8');
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function resolveCognitoGroups(event: APIGatewayProxyEventV2WithJWTAuthorizer): string[] {
+  const claims = event.requestContext.authorizer.jwt.claims;
+  const fromAuthorizer = parseCognitoGroups(claims['cognito:groups']);
+  if (fromAuthorizer.includes('Administrators')) return fromAuthorizer;
+
+  const authHeader = event.headers?.authorization ?? event.headers?.Authorization;
+  if (typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+    return fromAuthorizer;
+  }
+
+  const payload = decodeJwtPayload(authHeader.slice('Bearer '.length));
+  if (!payload) return fromAuthorizer;
+
+  const fromToken = parseCognitoGroups(payload['cognito:groups']);
+  return fromToken.length > 0 ? fromToken : fromAuthorizer;
+}
+
 function requireAdmin(event: APIGatewayProxyEventV2WithJWTAuthorizer): string {
   const claims = event.requestContext.authorizer.jwt.claims;
-  const groupsRaw = claims['cognito:groups'];
-  const groups = parseCognitoGroups(groupsRaw);
+  const groups = resolveCognitoGroups(event);
 
   if (!groups.includes('Administrators')) {
+    console.error(JSON.stringify({
+      error: 'Forbidden: Administrators group required',
+      groupsClaimPresent: claims['cognito:groups'] != null,
+      resolvedGroupCount: groups.length,
+      sub: typeof claims.sub === 'string' ? claims.sub : undefined,
+    }));
     throw new Error('Forbidden: Administrators group required');
   }
 

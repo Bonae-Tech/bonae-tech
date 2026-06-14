@@ -291,15 +291,17 @@ Users are invite-only (`allow_admin_create_user_only = true`). The user will rec
 ```bash
 POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
 
+
 aws cognito-idp admin-create-user \
   --user-pool-id $POOL_ID \
-  --username larawebworks@gmail.com \
+  --username EMAIL_REPLACE \
   --desired-delivery-mediums EMAIL \
+  --user-attributes Name=email,Value=EMAIL_REPLACE Name=email_verified,Value=true \
   --region sa-east-1
 
 aws cognito-idp admin-add-user-to-group \
   --user-pool-id $POOL_ID \
-  --username mpiantella@hotmail.com \
+  --username EMAIL_REPLACE \
   --group-name Administrators \
   --region sa-east-1
 ```

@@ -6,8 +6,14 @@ on:
     paths:
       - 'infra/terraform/**'
       - 'services/content-api/**'
+      - 'packages/content/**'
       - '.github/workflows/deploy-infra.yml'
   workflow_dispatch:
+    inputs:
+      force_lambda_redeploy:
+        description: Replace Lambda even if the built bundle hash is unchanged
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-infra
@@ -67,13 +73,35 @@ jobs:
         working-directory: infra/terraform
 
       - name: Terraform plan
+        id: plan
         run: |
-          args=(-no-color -var-file=terraform.tfvars)
+          set -o pipefail
+          args=(-no-color -var-file=terraform.tfvars -out=tfplan)
           if [ -n "${{ steps.tfvars.outputs.cors_origin }}" ]; then
             args+=(-var "cors_origin=${{ steps.tfvars.outputs.cors_origin }}")
           fi
-          terraform plan "${args[@]}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force_lambda_redeploy }}" = "true" ]; then
+            args+=(-replace=aws_lambda_function.content_api)
+          fi
+          terraform plan "${args[@]}" 2>&1 | tee plan_output.txt
+          exit ${PIPESTATUS[0]}
         working-directory: infra/terraform
+
+      - name: Summarize Lambda plan
+        working-directory: infra/terraform
+        run: |
+          if grep -q 'aws_lambda_function.content_api' plan_output.txt; then
+            echo "::notice title=Lambda::This plan updates the content-api Lambda (code and/or forced replace)."
+          else
+            echo "::notice title=Lambda::No Lambda changes in this plan. The built bundle matches Terraform state; infra-only commits will not redeploy Lambda code."
+          fi
+
+      - name: Upload Terraform plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: infra/terraform/tfplan
+          retention-days: 1
 
       - name: Upload built Lambda as artifact
         uses: actions/upload-artifact@v4
@@ -101,6 +129,12 @@ jobs:
         with:
           terraform_wrapper: false
 
+      - name: Download Terraform plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: infra/terraform/
+
       - name: Download built Lambda
         uses: actions/download-artifact@v4
         with:
@@ -112,12 +146,7 @@ jobs:
         working-directory: infra/terraform
 
       - name: Terraform apply
-        run: |
-          args=(-auto-approve -var-file=terraform.tfvars)
-          if [ -n "${{ needs.plan.outputs.cors_origin }}" ]; then
-            args+=(-var "cors_origin=${{ needs.plan.outputs.cors_origin }}")
-          fi
-          terraform apply "${args[@]}"
+        run: terraform apply -auto-approve tfplan
         working-directory: infra/terraform
 
       - name: Store Terraform outputs as GitHub repository variables

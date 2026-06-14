@@ -61,3 +61,25 @@ export async function getIdToken(): Promise<string> {
   }
   return session.getIdToken().getJwtToken();
 }
+
+export function refreshSession(): Promise<CognitoUserSession> {
+  const user = pool.getCurrentUser();
+  if (!user) return Promise.reject(new Error('Not authenticated'));
+
+  return new Promise((resolve, reject) => {
+    user.getSession((err: Error | null, session: CognitoUserSession | null) => {
+      if (err || !session) {
+        reject(err ?? new Error('Not authenticated'));
+        return;
+      }
+
+      user.refreshSession(session.getRefreshToken(), (refreshErr, newSession) => {
+        if (refreshErr || !newSession) {
+          reject(refreshErr ?? new Error('Session refresh failed'));
+          return;
+        }
+        resolve(newSession);
+      });
+    });
+  });
+}
