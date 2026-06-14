@@ -32,3 +32,11 @@ export async function getCurrentSession() {
 export async function getIdToken(): Promise<string> {
   return (await getAuth()).getIdToken();
 }
+
+export async function refreshSession() {
+  const auth = await getAuth();
+  if (!('refreshSession' in auth) || typeof auth.refreshSession !== 'function') {
+    return;
+  }
+  return auth.refreshSession();
+}
