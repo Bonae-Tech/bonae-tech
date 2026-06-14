@@ -110,6 +110,13 @@ jobs:
           path: services/content-api/dist/
           retention-days: 1
 
+      - name: Upload Lambda zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-zip
+          path: /tmp/bonae-content-api-lambda.zip
+          retention-days: 1
+
   apply:
     name: Terraform apply
     needs: [plan]
@@ -140,6 +147,12 @@ jobs:
         with:
           name: lambda-dist
           path: services/content-api/dist/
+
+      - name: Download Lambda zip
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-zip
+          path: /tmp/
 
       - name: Terraform init
         run: terraform init
