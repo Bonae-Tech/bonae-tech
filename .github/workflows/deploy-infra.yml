@@ -16,7 +16,6 @@ concurrency:
 permissions:
   id-token: write
   contents: read
-  variables: write  # required for gh variable set (repo Actions variables API)
 
 jobs:
   plan:
@@ -52,6 +51,16 @@ jobs:
           if [ -n "${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" ]; then
             echo "cors_origin=https://${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Verify GitHub variables token
+        env:
+          GH_TOKEN: ${{ secrets.GH_REPO_VARIABLES_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Missing repository secret GH_REPO_VARIABLES_TOKEN. Add a classic PAT with repo scope (see infra/README.md bootstrap step)."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/actions/variables" --jq .total_count >/dev/null
 
       - name: Terraform init
         run: terraform init
@@ -113,7 +122,7 @@ jobs:
 
       - name: Store Terraform outputs as GitHub repository variables
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_REPO_VARIABLES_TOKEN }}
         run: |
           cd infra/terraform
 
