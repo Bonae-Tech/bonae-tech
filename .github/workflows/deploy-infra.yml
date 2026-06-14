@@ -16,7 +16,7 @@ concurrency:
 permissions:
   id-token: write
   contents: read
-  actions: write  # required for gh variable set
+  variables: write  # required for gh variable set (repo Actions variables API)
 
 jobs:
   plan:
