@@ -23,7 +23,6 @@ resource "aws_cloudfront_distribution" "admin_spa" {
   enabled             = true
   default_root_object = "index.html"
   http_version        = "http2"
-  price_class         = "PriceClass_100"
   comment             = "BONAE admin SPA"
 
   origin {
@@ -66,8 +65,8 @@ resource "aws_cloudfront_distribution" "admin_spa" {
   }
 
   lifecycle {
-    # WAF may be attached via the CloudFront console ("CreatedByCloudFront-*" ACLs).
-    ignore_changes = [web_acl_id]
+    # Free-tier distributions cannot set price_class via API; WAF may be attached in console.
+    ignore_changes = [web_acl_id, price_class]
   }
 }
 
