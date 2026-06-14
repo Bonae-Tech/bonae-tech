@@ -22,3 +22,4 @@ packages/content/dist/
 # Terraform
 infra/terraform/.terraform/
 infra/terraform/bootstrap/.terraform/
+infra/terraform/plan_output.txt

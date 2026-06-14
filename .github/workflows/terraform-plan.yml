@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -29,9 +29,20 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
+      - name: Build content package
+        run: npm ci && npm run build
+        working-directory: packages/content
+
       - name: Build Lambda
         run: npm ci && npm run build
         working-directory: services/content-api
+
+      - name: Resolve Terraform variables
+        id: tfvars
+        run: |
+          if [ -n "${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" ]; then
+            echo "cors_origin=https://${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Terraform init
         run: terraform init
@@ -40,17 +51,27 @@ jobs:
       - name: Terraform plan
         id: plan
         run: |
-          terraform plan -no-color \
-            -var "github_repo=${{ vars.GITHUB_REPO || 'mpiantella/bonae' }}" \
-            -var "cors_origin=${{ vars.ADMIN_CLOUDFRONT_DOMAIN && format('https://{0}', vars.ADMIN_CLOUDFRONT_DOMAIN) || 'https://placeholder.bonaetech.com' }}"
+          set -o pipefail
+          args=(-no-color -var-file=terraform.tfvars)
+          if [ -n "${{ steps.tfvars.outputs.cors_origin }}" ]; then
+            args+=(-var "cors_origin=${{ steps.tfvars.outputs.cors_origin }}")
+          fi
+          terraform plan "${args[@]}" 2>&1 | tee plan_output.txt
+          exit ${PIPESTATUS[0]}
         working-directory: infra/terraform
         continue-on-error: true
 
       - name: Post plan as PR comment
         uses: actions/github-script@v7
+        env:
+          PLAN_PATH: infra/terraform/plan_output.txt
         with:
           script: |
-            const plan = `${{ steps.plan.outputs.stdout }}`.substring(0, 60000);
+            const fs = require('fs');
+            const planPath = process.env.PLAN_PATH;
+            const plan = fs.existsSync(planPath)
+              ? fs.readFileSync(planPath, 'utf8').substring(0, 60000)
+              : '_Plan output not available._';
             const outcome = '${{ steps.plan.outcome }}';
             const icon = outcome === 'success' ? '✅' : '❌';
             const body = [
