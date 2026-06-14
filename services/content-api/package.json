@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npm run build --prefix ../../packages/content && esbuild src/handler.ts --bundle --platform=node --target=node22 --outfile=dist/handler.js --format=cjs"
+    "build": "npm run build --prefix ../../packages/content && esbuild src/handler.ts --bundle --platform=node --target=node24 --outfile=dist/handler.js --format=cjs"
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.699.0",
@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.147",
-    "@types/node": "^22.10.5",
+    "@types/node": "^24.0.0",
     "esbuild": "^0.24.2",
     "typescript": "^5.7.3"
   }
