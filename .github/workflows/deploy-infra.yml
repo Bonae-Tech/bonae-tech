@@ -38,6 +38,10 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
+      - name: Build content package
+        run: npm ci && npm run build
+        working-directory: packages/content
+
       - name: Build Lambda
         run: npm ci && npm run build
         working-directory: services/content-api
