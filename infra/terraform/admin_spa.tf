@@ -64,6 +64,11 @@ resource "aws_cloudfront_distribution" "admin_spa" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
+
+  lifecycle {
+    # WAF may be attached via the CloudFront console ("CreatedByCloudFront-*" ACLs).
+    ignore_changes = [web_acl_id]
+  }
 }
 
 resource "aws_s3_bucket_policy" "admin_spa" {

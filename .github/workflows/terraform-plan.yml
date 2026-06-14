@@ -37,6 +37,13 @@ jobs:
         run: npm ci && npm run build
         working-directory: services/content-api
 
+      - name: Resolve Terraform variables
+        id: tfvars
+        run: |
+          if [ -n "${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" ]; then
+            echo "cors_origin=https://${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Terraform init
         run: terraform init
         working-directory: infra/terraform
@@ -45,10 +52,11 @@ jobs:
         id: plan
         run: |
           set -o pipefail
-          terraform plan -no-color \
-            -var "github_repo=${{ vars.GITHUB_REPO || 'mpiantella/bonae' }}" \
-            -var "cors_origin=${{ vars.ADMIN_CLOUDFRONT_DOMAIN && format('https://{0}', vars.ADMIN_CLOUDFRONT_DOMAIN) || 'https://placeholder.bonaetech.com' }}" \
-            2>&1 | tee plan_output.txt
+          args=(-no-color -var-file=terraform.tfvars)
+          if [ -n "${{ steps.tfvars.outputs.cors_origin }}" ]; then
+            args+=(-var "cors_origin=${{ steps.tfvars.outputs.cors_origin }}")
+          fi
+          terraform plan "${args[@]}" 2>&1 | tee plan_output.txt
           exit ${PIPESTATUS[0]}
         working-directory: infra/terraform
         continue-on-error: true

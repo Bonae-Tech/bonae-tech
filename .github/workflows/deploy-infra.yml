@@ -23,7 +23,7 @@ jobs:
     name: Terraform plan
     runs-on: ubuntu-latest
     outputs:
-      cors_origin: ${{ steps.cors.outputs.origin }}
+      cors_origin: ${{ steps.tfvars.outputs.cors_origin }}
     steps:
       - uses: actions/checkout@v4
 
@@ -46,13 +46,11 @@ jobs:
         run: npm ci && npm run build
         working-directory: services/content-api
 
-      - name: Resolve CORS origin
-        id: cors
+      - name: Resolve Terraform variables
+        id: tfvars
         run: |
           if [ -n "${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" ]; then
-            echo "origin=https://${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "origin=https://placeholder.bonaetech.com" >> "$GITHUB_OUTPUT"
+            echo "cors_origin=https://${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Terraform init
@@ -61,9 +59,11 @@ jobs:
 
       - name: Terraform plan
         run: |
-          terraform plan -no-color \
-            -var "github_repo=${{ vars.GITHUB_REPO || 'mpiantella/bonae' }}" \
-            -var "cors_origin=${{ steps.cors.outputs.origin }}"
+          args=(-no-color -var-file=terraform.tfvars)
+          if [ -n "${{ steps.tfvars.outputs.cors_origin }}" ]; then
+            args+=(-var "cors_origin=${{ steps.tfvars.outputs.cors_origin }}")
+          fi
+          terraform plan "${args[@]}"
         working-directory: infra/terraform
 
       - name: Upload built Lambda as artifact
@@ -104,9 +104,11 @@ jobs:
 
       - name: Terraform apply
         run: |
-          terraform apply -auto-approve \
-            -var "github_repo=${{ vars.GITHUB_REPO || 'mpiantella/bonae' }}" \
-            -var "cors_origin=${{ needs.plan.outputs.cors_origin }}"
+          args=(-auto-approve -var-file=terraform.tfvars)
+          if [ -n "${{ needs.plan.outputs.cors_origin }}" ]; then
+            args+=(-var "cors_origin=${{ needs.plan.outputs.cors_origin }}")
+          fi
+          terraform apply "${args[@]}"
         working-directory: infra/terraform
 
       - name: Store Terraform outputs as GitHub repository variables
