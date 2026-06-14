@@ -41,7 +41,7 @@ resource "aws_lambda_function" "content_api" {
   function_name    = "bonae-content-api"
   role             = aws_iam_role.lambda_exec.arn
   handler          = "handler.handler"
-  runtime          = "nodejs24.x"
+  runtime          = "nodejs22.x"
   memory_size      = 256
   timeout          = 30
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
