@@ -289,7 +289,7 @@ aws cloudfront create-invalidation --distribution-id EJ50TQI3OIHSB --paths "/*"
 Users are invite-only (`allow_admin_create_user_only = true`). The user will receive an email with a temporary password and must change it on first login.
 
 ```bash
-POOL_ID=$(cd terraform && terraform output -raw user_pool_id)
+POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
 
 aws cognito-idp admin-create-user \
   --user-pool-id $POOL_ID \
@@ -299,7 +299,7 @@ aws cognito-idp admin-create-user \
 
 aws cognito-idp admin-add-user-to-group \
   --user-pool-id $POOL_ID \
-  --username marianapiantella@gmail.com \
+  --username mpiantella@hotmail.com \
   --group-name Administrators \
   --region sa-east-1
 ```
