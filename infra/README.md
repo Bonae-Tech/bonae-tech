@@ -221,7 +221,8 @@ Terraform does not create the GitHub App — it only creates the Secrets Manager
 1. Create a GitHub App at github.com/settings/apps/new (or under your org's settings):
 
 * Give it a name (e.g. bonae-content-api)
-* Set Repository permissions → Contents to Read & write
+* Set **Repository permissions → Contents** to **Read and write** (required for draft save/publish; `metadata: read` alone is not enough)
+* Remove unnecessary permissions (Actions, Administration, etc.) unless you need them
 * No webhooks needed
 * After creation, note the App ID (shown at the top of the app page)
 
@@ -234,11 +235,13 @@ Terraform does not create the GitHub App — it only creates the Secrets Manager
 
 3. Then run Step 6 with the real values:
 
-* appId → App ID from step 1
-* installationId → Installation ID from step 3
-* privateKey → contents of the .pem from step 2 (replace ./path/to/private-key.pem with the actual path)
+* appId → App ID from step 1 (numeric, e.g. `4046714`)
+* installationId → **numeric** Installation ID from step 3 (e.g. `12345678`). This is **not** the App Client ID (which looks like `Iv23…`).
+* privateKey → contents of the .pem from step 2 (replace `./path/to/private-key.pem` with the actual path)
 
 Terraform only manages the secret's existence. The ignore_changes = [secret_string] lifecycle rule is specifically there to ensure terraform apply never overwrites the real credentials you populate in Step 6.
+
+**Branch protection:** The Lambda commits directly to `github_branch` (default `main`). If that branch requires pull requests, add **bonae-content-api** under the ruleset's bypass list (Repository → Settings → Rules → *Require a pull request before merging* → Bypass list → GitHub Apps). Without this, saves return `Changes must be made through a pull request`.
 
 The Lambda reads GitHub App credentials from Secrets Manager. Run from `infra/`:
 
@@ -246,7 +249,7 @@ The Lambda reads GitHub App credentials from Secrets Manager. Run from `infra/`:
 python3 -c "
 import json
 key = open('/Users/marialucena/code/secrets/bonae-content-api.2026-06-13.private-key.pem').read()
-print(json.dumps({'appId': '4046714', 'installationId': 'Iv23livmEOlmiNyelrE1', 'privateKey': key}))
+print(json.dumps({'appId': '<APP_ID>', 'installationId': '<INSTALLATION_ID>', 'privateKey': key}))
 " > /tmp/bonae-github-secret.json
 
 aws secretsmanager put-secret-value \

@@ -89,16 +89,32 @@ export async function writeRepoJson(
 ): Promise<string> {
   const path = contentFilePath(config, tier, fileName);
   const content = Buffer.from(JSON.stringify(data, null, 2) + '\n').toString('base64');
-  const res = await octokit.repos.createOrUpdateFileContents({
-    owner: config.owner,
-    repo: config.repo,
-    path,
-    message,
-    content,
-    branch: config.branch,
-    sha,
-  });
-  return res.data.commit.sha ?? 'unknown';
+  try {
+    const res = await octokit.repos.createOrUpdateFileContents({
+      owner: config.owner,
+      repo: config.repo,
+      path,
+      message,
+      content,
+      branch: config.branch,
+      sha,
+    });
+    return res.data.commit.sha ?? 'unknown';
+  } catch (err: unknown) {
+    const status = typeof err === 'object' && err !== null && 'status' in err ? err.status : undefined;
+    const message = err instanceof Error ? err.message : String(err);
+    if (status === 403 && message.includes('Resource not accessible by integration')) {
+      throw new Error(
+        'GitHub App lacks Contents write permission. In GitHub App settings set Repository permissions → Contents → Read and write, then approve the update on the app installation.',
+      );
+    }
+    if (status === 409 && message.includes('Changes must be made through a pull request')) {
+      throw new Error(
+        'Branch protection blocks direct commits on the configured branch. Allow the bonae-content-api GitHub App to bypass the pull request requirement for main (or point GITHUB_BRANCH at an unprotected branch).',
+      );
+    }
+    throw err;
+  }
 }
 
 export async function publishContent(
