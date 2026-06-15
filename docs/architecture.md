@@ -178,7 +178,7 @@ This ensures Cloudflare's native build (used for PR preview deployments) compile
 |--------|--------|---------|
 | `AWS_ROLE_ARN` | bootstrap Terraform | All AWS workflows |
 | `AWS_REGION` | bootstrap Terraform | All AWS workflows |
-| `CLOUDFLARE_API_TOKEN` | manual | `deploy-site.yml` |
+| `CLOUDFLARE_API_TOKEN` | manual (environment secret on `prod`) | `deploy-site.yml` |
 
 **Repository variables** (set automatically after each `deploy-infra` run):
 
@@ -354,7 +354,7 @@ flowchart LR
 ### `deploy-site.yml` — Marketing site deploy
 
 **Paths:** `apps/static/**`, `packages/content/**`
-**Secrets:** `CLOUDFLARE_API_TOKEN`
+**Secrets:** `CLOUDFLARE_API_TOKEN` (environment secret on `prod`; the deploy job declares `environment: prod` so GitHub injects it)
 
 ```mermaid
 flowchart LR
@@ -453,7 +453,7 @@ No Lambda redeploy needed.
 ### Rotating the Cloudflare API token
 
 1. Generate a new token in the Cloudflare dashboard (Cloudflare Pages: Edit permission)
-2. Update `CLOUDFLARE_API_TOKEN` in GitHub Settings → Secrets and variables → Actions
+2. Update `CLOUDFLARE_API_TOKEN` in GitHub Settings → Environments → **prod** → Environment secrets
 3. The next `deploy-site.yml` run will use the new token
 
 ### Applying infrastructure changes
