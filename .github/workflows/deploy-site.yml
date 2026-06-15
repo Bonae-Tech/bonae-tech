@@ -16,6 +16,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Environment secrets (e.g. CLOUDFLARE_API_TOKEN) are only exposed when the job
+    # declares the matching environment name.
+    environment: prod
     permissions:
       contents: read
     steps:
@@ -37,6 +40,15 @@ jobs:
 
       - run: npm run build
         working-directory: apps/static
+
+      - name: Verify Cloudflare API token
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Missing CLOUDFLARE_API_TOKEN for the prod environment. Add it under GitHub Settings → Environments → prod → Environment secrets."
+            exit 1
+          fi
 
       - name: Deploy to Cloudflare Pages
         run: npx wrangler pages deploy dist --project-name bonae-tech
