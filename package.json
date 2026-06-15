@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "BONAE TECH static marketing site with git-backed content admin",
   "scripts": {
-    "content:build": "npm --prefix packages/content run build",
+    "content:build": "npm ci --prefix packages/content && npm --prefix packages/content run build",
     "content:validate": "npm --prefix packages/content run validate:published",
     "dev": "npm --prefix apps/static run dev",
     "build": "npm --prefix apps/static run build",
