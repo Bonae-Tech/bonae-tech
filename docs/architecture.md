@@ -179,6 +179,7 @@ This ensures Cloudflare's native build (used for PR preview deployments) compile
 | `AWS_ROLE_ARN` | bootstrap Terraform | All AWS workflows |
 | `AWS_REGION` | bootstrap Terraform | All AWS workflows |
 | `CLOUDFLARE_API_TOKEN` | manual (environment secret on `prod`) | `deploy-site.yml` |
+| `CLOUDFLARE_ACCOUNT_ID` | manual (environment secret on `prod`) | `deploy-site.yml` |
 
 **Repository variables** (set automatically after each `deploy-infra` run):
 
@@ -354,7 +355,7 @@ flowchart LR
 ### `deploy-site.yml` — Marketing site deploy
 
 **Paths:** `apps/static/**`, `packages/content/**`
-**Secrets:** `CLOUDFLARE_API_TOKEN` (environment secret on `prod`; the deploy job declares `environment: prod` so GitHub injects it)
+**Secrets:** `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (both as **prod** environment secrets; the deploy job declares `environment: prod`)
 
 ```mermaid
 flowchart LR
@@ -452,9 +453,11 @@ No Lambda redeploy needed.
 
 ### Rotating the Cloudflare API token
 
-1. Generate a new token in the Cloudflare dashboard (Cloudflare Pages: Edit permission)
+1. Generate a new token in the Cloudflare dashboard with **Account → Cloudflare Pages → Edit** (and **Account → Account Settings → Read** if prompted)
 2. Update `CLOUDFLARE_API_TOKEN` in GitHub Settings → Environments → **prod** → Environment secrets
 3. The next `deploy-site.yml` run will use the new token
+
+**Account ID (required for CI):** Wrangler needs `CLOUDFLARE_ACCOUNT_ID` when using API tokens in GitHub Actions — otherwise it calls `/memberships` to look up the account, which fails with authentication error 10000. Add `CLOUDFLARE_ACCOUNT_ID` as a **prod** environment secret (find it in the Cloudflare dashboard sidebar on any account page). Alternative: add **User → Memberships → Read** to a user-owned API token instead of setting the account ID.
 
 ### Applying infrastructure changes
 

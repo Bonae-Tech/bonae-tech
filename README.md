@@ -174,6 +174,7 @@ All deploy workflows require these secrets/variables set in the GitHub repositor
 | `AWS_ROLE_ARN` | bootstrap Terraform | All AWS workflows |
 | `AWS_REGION` | bootstrap Terraform | All AWS workflows |
 | `CLOUDFLARE_API_TOKEN` | manual (environment secret on `prod`) | `deploy-site.yml` |
+| `CLOUDFLARE_ACCOUNT_ID` | manual (environment secret on `prod`) | `deploy-site.yml` |
 | `COGNITO_USER_POOL_ID` | `deploy-infra.yml` output | `deploy-admin.yml` |
 | `COGNITO_CLIENT_ID` | `deploy-infra.yml` output | `deploy-admin.yml` |
 | `API_BASE_URL` | `deploy-infra.yml` output | `deploy-admin.yml` |

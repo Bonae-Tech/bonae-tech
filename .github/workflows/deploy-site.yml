@@ -41,12 +41,17 @@ jobs:
       - run: npm run build
         working-directory: apps/static
 
-      - name: Verify Cloudflare API token
+      - name: Verify Cloudflare credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
             echo "::error::Missing CLOUDFLARE_API_TOKEN for the prod environment. Add it under GitHub Settings → Environments → prod → Environment secrets."
+            exit 1
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Missing CLOUDFLARE_ACCOUNT_ID for the prod environment. Add your Cloudflare account ID (Dashboard → any account page → Account ID in the sidebar) as a prod environment secret. Without it, Wrangler calls /memberships which account tokens cannot access."
             exit 1
           fi
 
@@ -55,3 +60,4 @@ jobs:
         working-directory: apps/static
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
