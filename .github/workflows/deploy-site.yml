@@ -41,17 +41,39 @@ jobs:
       - run: npm run build
         working-directory: apps/static
 
-      - name: Verify Cloudflare credentials
+      - name: Resolve Cloudflare account ID
+        id: cf_account
+        env:
+          FROM_VAR: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          FROM_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$FROM_VAR" ]; then
+            echo "source=repository variable CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_OUTPUT"
+            echo "id=$FROM_VAR" >> "$GITHUB_OUTPUT"
+          elif [ -n "$FROM_SECRET" ]; then
+            echo "source=prod environment secret CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_OUTPUT"
+            echo "id=$FROM_SECRET" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Missing CLOUDFLARE_ACCOUNT_ID. Wrangler will call /memberships and fail with account-scoped API tokens. Add it as a prod environment secret OR repository variable named exactly CLOUDFLARE_ACCOUNT_ID (Cloudflare dashboard → Account ID in sidebar)."
+            exit 1
+          fi
+
+      - name: Configure Wrangler account
+        run: |
+          ACCOUNT_ID="${{ steps.cf_account.outputs.id }}"
+          if grep -q '^account_id' wrangler.toml; then
+            sed -i "s/^account_id = .*/account_id = \"${ACCOUNT_ID}\"/" wrangler.toml
+          else
+            printf '\naccount_id = "%s"\n' "$ACCOUNT_ID" >> wrangler.toml
+          fi
+          echo "Wrangler account_id configured from ${{ steps.cf_account.outputs.source }}"
+
+      - name: Verify Cloudflare API token
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
             echo "::error::Missing CLOUDFLARE_API_TOKEN for the prod environment. Add it under GitHub Settings → Environments → prod → Environment secrets."
-            exit 1
-          fi
-          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::error::Missing CLOUDFLARE_ACCOUNT_ID for the prod environment. Add your Cloudflare account ID (Dashboard → any account page → Account ID in the sidebar) as a prod environment secret. Without it, Wrangler calls /memberships which account tokens cannot access."
             exit 1
           fi
 
@@ -60,4 +82,4 @@ jobs:
         working-directory: apps/static
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cf_account.outputs.id }}
