@@ -20,10 +20,10 @@ Fill in `.env`:
 
 | Variable | Description |
 |---|---|
-| `VITE_API_BASE_URL` | Content API base URL |
+| `VITE_API_BASE_URL` | Content API base URL (leave empty for same-origin `/content/*` on Cloudflare Pages) |
 | `VITE_COGNITO_USER_POOL_ID` | Cognito User Pool ID |
 | `VITE_COGNITO_CLIENT_ID` | Cognito App Client ID |
-| `VITE_AWS_REGION` | AWS region (default: `us-east-1`) |
+| `VITE_AWS_REGION` | AWS region (default: `sa-east-1`) |
 
 ## Dev
 
@@ -189,6 +189,6 @@ Drafts are never visible on the public marketing site until published.
 
 ## Deploy
 
-Deployments are handled automatically by `deploy-admin.yml` on push to `main`. Env vars (`VITE_COGNITO_USER_POOL_ID`, `VITE_COGNITO_CLIENT_ID`, `VITE_API_BASE_URL`) are baked in at build time from GitHub repository variables set by Terraform.
+Deployments are handled by `deploy-admin.yml` on push to `main` (Cloudflare Pages project `bonae-admin`). Cognito IDs are baked in at build time from GitHub repository variables. Leave `API_BASE_URL` empty for same-origin API routing via Pages service binding.
 
-See [infra/README.md](../../infra/README.md) for manual deploy steps and first-time bootstrap.
+See [docs/admin-spa.md](../../docs/admin-spa.md) and [infra/README.md](../../infra/README.md).

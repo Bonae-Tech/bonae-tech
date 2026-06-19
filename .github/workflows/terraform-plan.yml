@@ -4,8 +4,6 @@ on:
   pull_request:
     paths:
       - 'infra/terraform/**'
-      - 'services/content-api/**'
-      - 'packages/content/**'
       - '.github/workflows/terraform-plan.yml'
 
 permissions:
@@ -19,31 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - uses: hashicorp/setup-terraform@v3
-
-      - name: Build content package
-        run: npm ci && npm run build
-        working-directory: packages/content
-
-      - name: Build Lambda
-        run: npm ci && npm run build
-        working-directory: services/content-api
-
-      - name: Resolve Terraform variables
-        id: tfvars
-        run: |
-          if [ -n "${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" ]; then
-            echo "cors_origin=https://${{ vars.ADMIN_CLOUDFRONT_DOMAIN }}" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: Terraform init
         run: terraform init
@@ -53,11 +32,7 @@ jobs:
         id: plan
         run: |
           set -o pipefail
-          args=(-no-color -var-file=terraform.tfvars)
-          if [ -n "${{ steps.tfvars.outputs.cors_origin }}" ]; then
-            args+=(-var "cors_origin=${{ steps.tfvars.outputs.cors_origin }}")
-          fi
-          terraform plan "${args[@]}" 2>&1 | tee plan_output.txt
+          terraform plan -no-color 2>&1 | tee plan_output.txt
           exit ${PIPESTATUS[0]}
         working-directory: infra/terraform
         continue-on-error: true

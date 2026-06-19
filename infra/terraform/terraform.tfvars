@@ -1,4 +1,1 @@
-github_repo         = "mpiantella/bonae"
-github_branch       = "main"
-cors_origin         = "https://drv8mwhyuin4t.cloudfront.net"
-content_path_prefix = "apps/static/content"
+# Cognito identity resources only. Hosting and API run on Cloudflare.

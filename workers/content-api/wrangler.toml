@@ -1,0 +1,21 @@
+name = "bonae-content-api"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+GITHUB_REPO = "mpiantella/bonae"
+GITHUB_BRANCH = "main"
+CONTENT_PATH_PREFIX = "apps/static/content"
+COGNITO_REGION = "sa-east-1"
+# Set via wrangler secret or dashboard: GITHUB_APP_ID, GITHUB_INSTALLATION_ID, GITHUB_PRIVATE_KEY
+# Set via wrangler vars or CI: COGNITO_USER_POOL_ID, COGNITO_CLIENT_ID
+
+[env.staging]
+name = "bonae-content-api-staging"
+
+[env.staging.vars]
+GITHUB_REPO = "mpiantella/bonae"
+GITHUB_BRANCH = "main"
+CONTENT_PATH_PREFIX = "apps/static/content"
+COGNITO_REGION = "sa-east-1"

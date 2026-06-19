@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository structure
 
-This is a monorepo with four workspaces managed via npm scripts (no workspace hoisting — each package has its own `node_modules`):
+This is a monorepo with five workspaces managed via npm scripts (no workspace hoisting — each package has its own `node_modules`):
 
 ```
-apps/admin/        — Content admin SPA (React + Vite + Tailwind)
-apps/static/       — Public marketing site (Astro + Tailwind)
-services/content-api/ — Lambda handler (Node.js 20, esbuild bundle)
-packages/content/  — Shared content schema, types, and validation (consumed by all three above)
-infra/             — Terraform infrastructure (bootstrap + main module, sa-east-1)
+apps/admin/           — Content admin SPA (React + Vite + Tailwind, Cloudflare Pages)
+apps/static/          — Public marketing site (Astro + Tailwind, Cloudflare Pages)
+workers/content-api/  — Content API Cloudflare Worker (Cognito JWT + GitHub App)
+packages/content/     — Shared content schema, types, and validation (consumed by all above)
+infra/                — Terraform infrastructure (bootstrap + Cognito-only module, sa-east-1)
 ```
 
 ## Commands
@@ -33,20 +33,28 @@ npm run admin:build      # tsc --noEmit + vite build
 
 ### Content package (`packages/content`)
 ```bash
-npm run content:build    # tsc — must run before admin mock mode or content-api build
+npm run content:build    # tsc — must run before admin mock mode or worker build
 npm --prefix packages/content run test       # node --test (built files must exist first)
 npm --prefix packages/content run validate   # validate a content dir via CLI
 ```
 
-### Lambda (`services/content-api`)
+### Content API Worker (`workers/content-api`)
 ```bash
-npm run api:build    # builds @bonae/content then esbundles src/handler.ts → dist/handler.js
+npm run worker:build    # builds @bonae/content then typechecks worker
+npm run worker:test     # vitest security tests
+npm run worker:dev      # wrangler dev
 ```
 
 ### Infrastructure (`infra/terraform/`)
 ```bash
-terraform plan -var-file=terraform.tfvars
-terraform apply -var-file=terraform.tfvars
+terraform plan
+terraform apply
+```
+
+### Root orchestration (`Makefile`)
+```bash
+make build-all      # content + static + admin + worker
+make deploy-all     # worker then admin Pages
 ```
 
 ## Architecture
@@ -59,7 +67,7 @@ drafts/    es.json  en.json  settings.json   ← edited by admin
 published/ es.json  en.json  settings.json   ← consumed by Astro site
 ```
 
-**In production:** editing in the admin → API Gateway → Lambda → GitHub API (via GitHub App in Secrets Manager) → commits JSON to the repo → CI rebuilds the static site.
+**In production:** editing in the admin → Cloudflare Pages `/content/*` middleware → `bonae-content-api` Worker → GitHub API (via GitHub App secrets) → commits JSON to the repo → CI rebuilds the static site.
 
 **In mock mode (`dev:mock`):** the Vite plugin `contentApiMockPlugin` (`apps/admin/vite.mockApi.ts`) intercepts all `/content/*` routes and reads/writes these files directly on disk.
 
@@ -75,21 +83,23 @@ published/ es.json  en.json  settings.json   ← consumed by Astro site
 
 `auth.ts` lazy-loads either `auth.mock.ts` (sessionStorage, no-op) or `auth.cognito.ts` (amazon-cognito-identity-js SRP flow) based on `VITE_USE_MOCK`. `signIn` returns a discriminated union: `{ type: 'success' }` or `{ type: 'newPasswordRequired', completeChallenge }`. The latter handles invite-only Cognito users who must set a permanent password on first login.
 
-### Lambda handler (`services/content-api/src/handler.ts`)
+### Content API Worker (`workers/content-api/`)
 
-Receives API Gateway v2 JWT-authorizer events. Requires callers to be in the `Administrators` Cognito group. All GitHub operations go through `@octokit/auth-app` (GitHub App credentials from Secrets Manager). Every save commits to `drafts/`; publish validates ES/EN parity + settings then copies `drafts/` → `published/` in a single commit.
+Verifies Cognito JWTs via JWKS (`jose`). Requires callers to be in the `Administrators` Cognito group. All GitHub operations go through `@octokit/auth-app` (GitHub App credentials from Worker secrets). Every save commits to `drafts/`; publish validates ES/EN parity + settings then copies `drafts/` → `published/` in a single commit.
+
+Admin Pages proxies `/content/*` to this Worker via `functions/content/_middleware.ts` and the `CONTENT_API` service binding in `apps/admin/wrangler.toml`.
 
 ### Infrastructure
 
 Two Terraform modules applied in order:
 1. `infra/terraform/bootstrap/` — S3 state bucket, DynamoDB lock table, GitHub OIDC provider, IAM deploy role, GitHub Actions secrets. **Local state, run once.**
-2. `infra/terraform/` — Cognito, API Gateway + Lambda, Secrets Manager, S3 + CloudFront for admin SPA. Uses S3 backend from bootstrap.
+2. `infra/terraform/` — Cognito user pool, SPA client, `Administrators` group. Uses S3 backend from bootstrap.
 
-The GitHub App credentials in Secrets Manager (`bonae/github-app-content`) are populated manually after first apply and protected by `ignore_changes = [secret_string]`.
+Admin hosting and the content API run on Cloudflare (Pages + Worker), not AWS.
 
 ## Key constraints
 
-- **`packages/content` must be built before** running admin mock mode or building the Lambda. The `admin:dev:mock` and `api:build` scripts do this automatically.
+- **`packages/content` must be built before** running admin mock mode or building the Worker. The `admin:dev:mock` and `worker:build` scripts do this automatically.
 - **Locale parity is enforced** on every draft save (ES and EN must have matching array lengths at all mapped paths) and again on publish. Errors surface as 400 responses from the API.
 - **The static site validates published content** before `dev` and `build` via `predev`/`prebuild` hooks. If `apps/static/content/published/` is invalid, the site will not build.
 - **Admin users are invite-only** (`allow_admin_create_user_only = true`). Create users via `aws cognito-idp admin-create-user` and add to the `Administrators` group.

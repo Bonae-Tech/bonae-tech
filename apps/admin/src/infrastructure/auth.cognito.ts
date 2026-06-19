@@ -5,6 +5,18 @@ import {
   CognitoUserSession,
 } from 'amazon-cognito-identity-js';
 import { config } from '../config.js';
+import { SessionExpiredError } from './session.js';
+
+let sessionExpiredHandler: (() => void) | null = null;
+
+export function onSessionExpired(handler: () => void): void {
+  sessionExpiredHandler = handler;
+}
+
+function notifySessionExpired(): void {
+  signOut();
+  sessionExpiredHandler?.();
+}
 
 const pool = new CognitoUserPool({
   UserPoolId: config.userPoolId,
@@ -54,32 +66,24 @@ export function getCurrentSession(): Promise<CognitoUserSession | null> {
   });
 }
 
-export async function getIdToken(): Promise<string> {
-  const session = await getCurrentSession();
-  if (!session?.isValid()) {
-    throw new Error('Not authenticated');
-  }
-  return session.getIdToken().getJwtToken();
+export function isSessionExpired(session: CognitoUserSession): boolean {
+  const exp = session.getIdToken().getExpiration();
+  return exp * 1000 <= Date.now();
 }
 
-export function refreshSession(): Promise<CognitoUserSession> {
-  const user = pool.getCurrentUser();
-  if (!user) return Promise.reject(new Error('Not authenticated'));
+export async function getSessionExpiresAt(): Promise<number | null> {
+  const session = await getCurrentSession();
+  if (!session?.isValid() || isSessionExpired(session)) {
+    return null;
+  }
+  return session.getIdToken().getExpiration() * 1000;
+}
 
-  return new Promise((resolve, reject) => {
-    user.getSession((err: Error | null, session: CognitoUserSession | null) => {
-      if (err || !session) {
-        reject(err ?? new Error('Not authenticated'));
-        return;
-      }
-
-      user.refreshSession(session.getRefreshToken(), (refreshErr, newSession) => {
-        if (refreshErr || !newSession) {
-          reject(refreshErr ?? new Error('Session refresh failed'));
-          return;
-        }
-        resolve(newSession);
-      });
-    });
-  });
+export async function getIdToken(): Promise<string> {
+  const session = await getCurrentSession();
+  if (!session?.isValid() || isSessionExpired(session)) {
+    notifySessionExpired();
+    throw new SessionExpiredError('Not authenticated');
+  }
+  return session.getIdToken().getJwtToken();
 }

@@ -1,0 +1,7 @@
+name = "bonae-admin"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-11-01"
+
+[[services]]
+binding = "CONTENT_API"
+service = "bonae-content-api"

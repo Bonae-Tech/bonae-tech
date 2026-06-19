@@ -32,8 +32,13 @@ resource "aws_cognito_user_pool_client" "spa" {
 
   explicit_auth_flows = [
     "ALLOW_USER_SRP_AUTH",
-    "ALLOW_REFRESH_TOKEN_AUTH",
   ]
+
+  token_validity_units {
+    id_token = "hours"
+  }
+
+  id_token_validity = 1
 
   prevent_user_existence_errors = "ENABLED"
 }

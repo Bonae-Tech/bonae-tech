@@ -1,16 +1,17 @@
 # BONAE Tech
 
-Git-backed content platform for the BONAE Tech marketing site. Editors update copy through a React admin backed by a minimal AWS stack; published content triggers an Astro static site rebuild on Cloudflare Pages.
+Git-backed content platform for the BONAE Tech marketing site. Editors update copy through a React admin; the content API runs on Cloudflare Workers; identity stays on AWS Cognito.
 
 ## Repository structure
 
 ```
-apps/static/          — Marketing site (Astro + Tailwind, Cloudflare Pages)
-apps/admin/           — Content admin SPA (React + Vite + Cognito)
+apps/static/          — Marketing site (Astro + Tailwind, Cloudflare Pages bonae-tech)
+apps/admin/           — Content admin SPA (React + Vite + Cognito, Cloudflare Pages bonae-admin)
+workers/content-api/  — Content API (Cloudflare Worker, Cognito JWT + GitHub App)
 packages/content/     — Shared Zod schema and validators (built before everything else)
-services/content-api/ — Lambda handler (Node.js 20, esbuild)
-infra/terraform/      — Cognito, API Gateway, Lambda, S3 + CloudFront for admin
+infra/terraform/      — Cognito identity only (AWS sa-east-1)
 infra/terraform/bootstrap/ — One-time state backend + GitHub OIDC setup
+Makefile              — Root build/deploy orchestration (make build-all, make deploy-all)
 ```
 
 Content lives in `apps/static/content/`:
@@ -33,7 +34,7 @@ published/ es.json  en.json  settings.json   ← read by Astro at build time
 
 ### Build order
 
-`packages/content` must be compiled before anything that imports it (admin, static site, Lambda) because all packages import from `dist/`. The scripts below handle this automatically, but if you run steps manually: **always build content first.**
+`packages/content` must be compiled before anything that imports it. Use `make build-all` from the repository root, or `npm run build:all`.
 
 ### Local development — static site
 
@@ -65,17 +66,15 @@ npm ci --prefix apps/admin
 npm run admin:dev        # http://localhost:5173
 ```
 
-### First-time infrastructure bootstrap
+### First-time setup
 
-See **[infra/README.md](infra/README.md)** for the full step-by-step guide. Summary:
+1. Run `infra/terraform/bootstrap/` once — creates S3 state backend and GitHub OIDC role
+2. Apply Cognito Terraform: `terraform apply` in `infra/terraform/` (or GitHub **Deploy cognito** workflow)
+3. Set Worker secrets: `GITHUB_APP_ID`, `GITHUB_INSTALLATION_ID`, `GITHUB_PRIVATE_KEY` via `wrangler secret put`
+4. Deploy Worker, then admin Pages: `make deploy-all` (or GitHub **Deploy** workflow)
+5. Create the first Cognito admin user (see below)
 
-1. Run `infra/terraform/bootstrap/` once locally — creates S3 state backend, DynamoDB lock table, GitHub OIDC provider, and IAM deploy role
-2. Create `infra/terraform/terraform.tfvars` with repo, branch, and a placeholder `cors_origin`
-3. Build the Lambda: `npm ci && npm run build` in `services/content-api/`
-4. Apply the main module: `terraform apply -var-file=terraform.tfvars` in `infra/terraform/`
-5. Populate Secrets Manager with GitHub App credentials (see infra/README.md step 6)
-6. Create the first Cognito admin user (see below)
-7. Trigger the `deploy-admin` workflow or deploy the admin SPA manually
+See **[infra/README.md](infra/README.md)** and **[docs/admin-cutover.md](docs/admin-cutover.md)** for full details.
 
 ---
 
@@ -123,29 +122,16 @@ aws cognito-idp admin-delete-user  --user-pool-id $POOL_ID --username editor@exa
 
 ### Infrastructure changes
 
-Changes to `infra/terraform/**` or `services/content-api/**` pushed to `main` trigger the `deploy-infra` workflow automatically. The `apply` job is gated by the `infra-production` GitHub environment (requires manual approval — configure reviewers in GitHub Settings → Environments).
-
-To plan locally:
-
-```bash
-cd infra/terraform
-terraform plan -var-file=terraform.tfvars
-```
+Changes to `infra/terraform/cognito.tf` pushed to `main` trigger the `deploy-cognito` workflow. The apply job is gated by the `infra-production` GitHub environment.
 
 ### Rotating GitHub App credentials
 
-The Lambda reads GitHub App credentials from Secrets Manager (`bonae/github-app-content`). Terraform never overwrites this value after initial creation (`ignore_changes = [secret_string]`).
-
-To rotate:
-
 ```bash
-aws secretsmanager put-secret-value \
-  --secret-id bonae/github-app-content \
-  --secret-string '{"appId":"<ID>","installationId":"<ID>","privateKey":"<PEM>"}' \
-  --region sa-east-1
+cd workers/content-api
+npx wrangler secret put GITHUB_PRIVATE_KEY
 ```
 
-No infrastructure redeploy is needed — Lambda reads the secret on each invocation.
+No Worker redeploy is required for secret updates to take effect on the next request.
 
 ### Validating content locally
 
@@ -160,27 +146,20 @@ npm --prefix packages/content run validate -- ../../apps/static/content drafts  
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| `ci.yml` | Push / PR touching app or package code | Builds all workspaces in order; validates published content |
-| `content-pr-check.yml` | PR touching `apps/static/content/**` or `packages/content/**` | Validates published + draft JSON |
-| `deploy-site.yml` | Push to `main` touching `apps/static/**` or `packages/content/**` | Builds static site, deploys to Cloudflare Pages |
-| `deploy-admin.yml` | Push to `main` touching `apps/admin/**` or `packages/content/**` | Builds admin SPA, syncs to S3, invalidates CloudFront |
-| `terraform-plan.yml` | PR touching `infra/terraform/**` or `services/content-api/**` | Posts Terraform plan as PR comment |
-| `deploy-infra.yml` | Push to `main` touching `infra/terraform/**` or `services/content-api/**` | Applies Terraform (gated by `infra-production` environment), stores outputs as GitHub vars |
+| `ci.yml` | Push / PR | Builds all workspaces; validates published content |
+| `deploy.yml` | Manual (`workflow_dispatch`) | Orchestrates site, admin, worker, or cognito deploys |
+| `deploy-site.yml` | Push to `main` (static paths) | Builds marketing site, deploys to Cloudflare Pages |
+| `deploy-admin.yml` | Push to `main` (admin paths) | Builds admin SPA, deploys to Cloudflare Pages |
+| `deploy-worker.yml` | Push to `main` (worker paths) | Deploys content API Worker |
+| `deploy-cognito.yml` | Push to `main` (cognito.tf paths) | Applies Cognito Terraform |
+| `terraform-plan.yml` | PR touching `infra/terraform/**` | Posts Terraform plan as PR comment |
 
-All deploy workflows require these secrets/variables set in the GitHub repository:
-
-| Secret / Variable | Set by | Used by |
-|-------------------|--------|---------|
-| `AWS_ROLE_ARN` | bootstrap Terraform | All AWS workflows |
-| `AWS_REGION` | bootstrap Terraform | All AWS workflows |
-| `CLOUDFLARE_API_TOKEN` | manual (environment secret on `prod`) | `deploy-site.yml` |
-| `CLOUDFLARE_ACCOUNT_ID` | manual (environment secret on `prod`) | `deploy-site.yml` |
-| `COGNITO_USER_POOL_ID` | `deploy-infra.yml` output | `deploy-admin.yml` |
-| `COGNITO_CLIENT_ID` | `deploy-infra.yml` output | `deploy-admin.yml` |
-| `API_BASE_URL` | `deploy-infra.yml` output | `deploy-admin.yml` |
-| `ADMIN_S3_BUCKET` | `deploy-infra.yml` output | `deploy-admin.yml` |
-| `ADMIN_CLOUDFRONT_ID` | `deploy-infra.yml` output | `deploy-admin.yml` |
-| `ADMIN_CLOUDFRONT_DOMAIN` | `deploy-infra.yml` output | `deploy-infra.yml` (CORS) |
+| Secret / Variable | Used by |
+|-------------------|---------|
+| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Cloudflare deploy workflows |
+| `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | Admin SPA build, Worker deploy |
+| `AWS_ROLE_ARN`, `AWS_REGION` | Cognito Terraform workflows |
+| `GH_REPO_VARIABLES_TOKEN` | Storing Cognito outputs as repo variables |
 
 ---
 
@@ -188,15 +167,15 @@ All deploy workflows require these secrets/variables set in the GitHub repositor
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Astro dev server (validates published content first) |
-| `npm run build` | Build marketing site → `apps/static/dist/` |
-| `npm run preview` | Preview production build locally |
-| `npm run content:build` | Compile `packages/content` (required before other builds) |
+| `make build-all` | Build content, static site, admin SPA, and Worker |
+| `make deploy-all` | Deploy Worker then admin Pages |
+| `make deploy-site` | Build and deploy marketing site |
+| `make deploy-worker` | Build and deploy content API Worker |
+| `make deploy-admin` | Build and deploy admin SPA |
+| `make dev-admin-mock` | Admin SPA in mock mode (no AWS) |
+| `make dev-worker` | Local Worker dev server |
+| `npm run build:all` | Alias for `make build-all` |
 | `npm run content:validate` | Validate published JSON |
-| `npm run admin:dev:mock` | Admin SPA in mock mode (no AWS, reads/writes disk) |
-| `npm run admin:dev` | Admin SPA against real AWS (requires `.env`) |
-| `npm run admin:build` | Build admin SPA → `apps/admin/dist/` |
-| `npm run api:build` | Bundle Lambda → `services/content-api/dist/` |
 
 ---
 
