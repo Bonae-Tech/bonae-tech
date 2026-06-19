@@ -69,12 +69,13 @@ npm run admin:dev        # http://localhost:5173
 ### First-time setup
 
 1. Run `infra/terraform/bootstrap/` once — creates S3 state backend and GitHub OIDC role
-2. Apply Cognito Terraform: `terraform apply` in `infra/terraform/` (or GitHub **Deploy cognito** workflow)
-3. Set Worker secrets: `GITHUB_APP_ID`, `GITHUB_INSTALLATION_ID`, `GITHUB_PRIVATE_KEY` via `wrangler secret put`
-4. Deploy Worker, then admin Pages: `make deploy-all` (or GitHub **Deploy** workflow)
-5. Create the first Cognito admin user (see below)
+2. Apply Cognito Terraform: **Deploy cognito** workflow (or `terraform apply` in `infra/terraform/`)
+3. Add GitHub App credentials to **prod** environment secrets (`WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`) — see [docs/worker-setup.md](docs/worker-setup.md)
+4. Run **Setup worker** workflow (`action: setup`) — deploys Worker and syncs secrets to Cloudflare
+5. Deploy admin Pages: `make deploy-admin` or **Deploy** workflow (`target: admin`)
+6. Create the first Cognito admin user (see below)
 
-See **[infra/README.md](infra/README.md)** and **[docs/admin-cutover.md](docs/admin-cutover.md)** for full details.
+See **[infra/README.md](infra/README.md)**, **[docs/worker-setup.md](docs/worker-setup.md)**, and **[docs/admin-cutover.md](docs/admin-cutover.md)** for full details.
 
 ---
 
@@ -126,12 +127,10 @@ Changes to `infra/terraform/cognito.tf` pushed to `main` trigger the `deploy-cog
 
 ### Rotating GitHub App credentials
 
-```bash
-cd workers/content-api
-npx wrangler secret put GITHUB_PRIVATE_KEY
-```
+1. Update `WORKER_GITHUB_*` secrets on the `prod` GitHub environment.
+2. Run **Setup worker** with `action: sync-secrets`.
 
-No Worker redeploy is required for secret updates to take effect on the next request.
+See [docs/worker-setup.md](docs/worker-setup.md).
 
 ### Validating content locally
 
@@ -147,7 +146,8 @@ npm --prefix packages/content run validate -- ../../apps/static/content drafts  
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
 | `ci.yml` | Push / PR | Builds all workspaces; validates published content |
-| `deploy.yml` | Manual (`workflow_dispatch`) | Orchestrates site, admin, worker, or cognito deploys |
+| `deploy.yml` | Manual (`workflow_dispatch`) | Orchestrates site, admin, worker, worker-setup, or cognito |
+| `setup-worker.yml` | Manual (`workflow_dispatch`) | Onboard Worker — deploy, sync/remove secrets, or destroy |
 | `deploy-site.yml` | Push to `main` (static paths) | Builds marketing site, deploys to Cloudflare Pages |
 | `deploy-admin.yml` | Push to `main` (admin paths) | Builds admin SPA, deploys to Cloudflare Pages |
 | `deploy-worker.yml` | Push to `main` (worker paths) | Deploys content API Worker |
@@ -157,6 +157,7 @@ npm --prefix packages/content run validate -- ../../apps/static/content drafts  
 | Secret / Variable | Used by |
 |-------------------|---------|
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Cloudflare deploy workflows |
+| `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY` | Setup worker (`prod` environment secrets) |
 | `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | Admin SPA build, Worker deploy |
 | `AWS_ROLE_ARN`, `AWS_REGION` | Cognito Terraform workflows |
 | `GH_REPO_VARIABLES_TOKEN` | Storing Cognito outputs as repo variables |

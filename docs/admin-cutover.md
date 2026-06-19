@@ -4,20 +4,11 @@ Use this checklist when switching production traffic from AWS (S3 + CloudFront +
 
 ## Pre-cutover
 
-1. Deploy the content API Worker: `make deploy-worker` (or GitHub Actions **Deploy worker**).
-2. Set Worker secrets in Cloudflare (one-time):
-   ```bash
-   cd workers/content-api
-   npx wrangler secret put GITHUB_APP_ID
-   npx wrangler secret put GITHUB_INSTALLATION_ID
-   npx wrangler secret put GITHUB_PRIVATE_KEY
-   ```
-3. Set Worker vars (via deploy workflow or `wrangler deploy --var`):
-   - `COGNITO_USER_POOL_ID`
-   - `COGNITO_CLIENT_ID`
-4. Deploy admin Pages: `make deploy-admin` (creates/updates `bonae-admin` project).
-5. Clear or empty the `API_BASE_URL` repository variable so the SPA uses same-origin `/content/*`.
-6. Verify staging:
+1. Add GitHub App credentials to **prod** environment secrets (`WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`). See [worker-setup.md](./worker-setup.md).
+2. Run **Setup worker** (`action: setup`) — deploys Worker, sets Cognito vars, and syncs GitHub App secrets to Cloudflare.
+3. Deploy admin Pages: `make deploy-admin` or **Deploy admin** workflow (creates/updates `bonae-admin` project).
+4. Clear or empty the `API_BASE_URL` repository variable so the SPA uses same-origin `/content/*`.
+5. Verify staging:
    - Login via Cognito on the Pages preview URL
    - Save a draft and publish
    - Confirm `deploy-site.yml` runs after publish (git push to `main`)
@@ -47,3 +38,11 @@ If issues occur before AWS decommission:
 3. Re-enable traffic to CloudFront/S3 if DNS was switched.
 
 After Terraform destroy, rollback requires redeploying the removed AWS resources from git history.
+
+## Teardown (Cloudflare Worker)
+
+To remove GitHub App credentials without deleting the Worker: **Setup worker** → `action: remove-secrets`.
+
+To delete the Worker entirely: **Setup worker** → `action: destroy`, `confirm: bonae-content-api`.
+
+See [worker-setup.md](./worker-setup.md).

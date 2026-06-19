@@ -92,14 +92,16 @@ Invite-only user pool. SPA client uses SRP auth with 1-hour ID tokens and **no r
 
 ## Deployment
 
-From repository root:
+From repository root (after **Setup worker** has run once):
 
 ```bash
 make build-all
-make deploy-worker   # deploy API first (Pages binding depends on it)
+make deploy-worker   # code deploy only; secrets via setup-worker workflow
 make deploy-admin
 ```
 
-Or use GitHub Actions **Deploy** workflow with target `all`.
+First-time onboarding: **Setup worker** (`action: setup`) before admin deploy. See [worker-setup.md](./worker-setup.md).
+
+Or use GitHub Actions **Deploy** workflow with target `all` (assumes Worker secrets already synced).
 
 See [admin-cutover.md](./admin-cutover.md) for production cutover steps.

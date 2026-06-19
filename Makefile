@@ -1,6 +1,6 @@
 .PHONY: build-all build-content build-site build-admin build-worker \
         deploy-site deploy-admin deploy-worker deploy-all \
-        dev-admin-mock dev-worker test-worker
+        dev-admin-mock dev-worker test-worker setup-worker
 
 build-content:
 	cd packages/content && npm ci && npm run build
@@ -35,3 +35,6 @@ dev-worker:
 
 test-worker:
 	cd workers/content-api && npm test
+
+setup-worker:
+	@echo "Run GitHub Actions → Setup worker (action: setup). See docs/worker-setup.md"

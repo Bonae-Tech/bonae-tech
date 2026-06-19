@@ -11,6 +11,7 @@ on:
           - site
           - admin
           - worker
+          - worker-setup
           - cognito
         default: all
 
@@ -38,4 +39,11 @@ jobs:
   deploy-cognito:
     if: inputs.target == 'cognito'
     uses: ./.github/workflows/deploy-cognito.yml
+    secrets: inherit
+
+  setup-worker:
+    if: inputs.target == 'worker-setup'
+    uses: ./.github/workflows/setup-worker.yml
+    with:
+      action: setup
     secrets: inherit

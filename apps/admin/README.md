@@ -69,7 +69,7 @@ graph TD
 
     subgraph "Real mode"
         Cognito["AWS Cognito\n(User Pool)"]
-        ContentAPI["Content API\n(Lambda / API GW)"]
+        ContentAPI["Content API\n(Cloudflare Worker)"]
         GitHub["GitHub\n(git-backed content)"]
     end
 

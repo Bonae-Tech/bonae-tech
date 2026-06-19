@@ -150,7 +150,7 @@ The root `wrangler.toml` sets:
 
 Production deployments use `wrangler pages deploy` from GitHub Actions (`deploy-site.yml`, `deploy-admin.yml`). The admin Pages project includes `functions/content/_middleware.ts`, which forwards `/content/*` to the `bonae-content-api` Worker binding.
 
-Worker secrets (`GITHUB_APP_ID`, `GITHUB_INSTALLATION_ID`, `GITHUB_PRIVATE_KEY`) are set via `wrangler secret put`. Cognito pool/client IDs are passed as Worker vars at deploy time.
+Worker secrets (`GITHUB_APP_ID`, `GITHUB_INSTALLATION_ID`, `GITHUB_PRIVATE_KEY`) are synced from GitHub **prod** environment secrets via `setup-worker.yml`. Cognito pool/client IDs are passed as Worker vars at deploy time.
 
 ### 3.3 GitHub configuration
 
@@ -162,6 +162,7 @@ Worker secrets (`GITHUB_APP_ID`, `GITHUB_INSTALLATION_ID`, `GITHUB_PRIVATE_KEY`)
 | `AWS_REGION` | bootstrap Terraform | All AWS workflows |
 | `CLOUDFLARE_API_TOKEN` | manual (environment secret on `prod`) | Cloudflare deploy workflows |
 | `CLOUDFLARE_ACCOUNT_ID` | manual (environment secret on `prod`) | Cloudflare deploy workflows |
+| `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY` | manual (`prod` environment secrets) | `setup-worker.yml` |
 | `GH_REPO_VARIABLES_TOKEN` | manual | `deploy-cognito.yml` (store Terraform outputs) |
 
 **Repository variables** (set automatically after each `deploy-cognito` run):
@@ -300,6 +301,7 @@ flowchart TD
 | `deploy-cognito.yml` | ✓ cognito.tf paths | — | ✓ |
 | `terraform-plan.yml` | — | ✓ infra paths | — |
 | `deploy.yml` | — | — | ✓ (orchestrator) |
+| `setup-worker.yml` | — | — | ✓ |
 
 ### `ci.yml` — Build verification
 
@@ -425,18 +427,24 @@ aws cognito-idp admin-add-user-to-group \
 
 The user receives a temporary password by email and is prompted to set a permanent one on first login.
 
+### `setup-worker.yml` — Worker onboarding & secrets
+
+**Trigger:** Manual (`workflow_dispatch`) only
+**Secrets:** `CLOUDFLARE_*`, `WORKER_GITHUB_*` (prod environment)
+**Variables:** `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` (for `setup` action)
+
+| Action | Purpose |
+|--------|---------|
+| `setup` | Build, test, deploy Worker, sync GitHub App secrets |
+| `sync-secrets` | Re-push GitHub App secrets (rotation) |
+| `remove-secrets` | Delete GitHub App secrets from Worker |
+| `destroy` | Delete Worker (requires name confirmation) |
+
+See [worker-setup.md](./worker-setup.md).
+
 ### Rotating GitHub App credentials
 
-The Worker reads GitHub App credentials from Cloudflare Worker secrets on every request.
-
-```bash
-cd workers/content-api
-npx wrangler secret put GITHUB_APP_ID
-npx wrangler secret put GITHUB_INSTALLATION_ID
-npx wrangler secret put GITHUB_PRIVATE_KEY
-```
-
-No Worker redeploy is required for secret updates to take effect on the next request.
+Update `WORKER_GITHUB_*` prod environment secrets, then run **Setup worker** with `action: sync-secrets`.
 
 ### Rotating the Cloudflare API token
 
@@ -491,7 +499,7 @@ See [infra/README.md](../infra/README.md) for the full step-by-step guide. At a 
 
 1. Run `infra/terraform/bootstrap/` once with personal AWS credentials
 2. Apply Cognito Terraform (`deploy-cognito` workflow or local `terraform apply`)
-3. Set Worker secrets via `wrangler secret put`
+3. Add `WORKER_GITHUB_*` secrets to GitHub `prod` environment; run **Setup worker** (`action: setup`)
 4. Deploy Worker, then admin Pages: `make deploy-all`
 5. Create first Cognito user
 6. Verify admin login and content save/publish flow

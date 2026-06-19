@@ -88,14 +88,9 @@ Assign consumers to Cognito groups (`site-{tenantId}`) or set `custom:site_id`. 
 
 ## GitHub App credentials (Worker secrets)
 
-The content API Worker reads GitHub App credentials from Cloudflare Worker secrets (not AWS Secrets Manager):
+Store credentials as **prod** GitHub environment secrets (`WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`), then run the **Setup worker** workflow to push them to Cloudflare.
 
-```bash
-cd workers/content-api
-npx wrangler secret put GITHUB_APP_ID
-npx wrangler secret put GITHUB_INSTALLATION_ID
-npx wrangler secret put GITHUB_PRIVATE_KEY
-```
+See [docs/worker-setup.md](../docs/worker-setup.md) for the full onboarding and teardown checklist.
 
 ## Decommissioning legacy AWS resources
 
