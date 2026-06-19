@@ -3,12 +3,13 @@ export const config = {
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') ?? '',
   userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID ?? '',
   clientId: import.meta.env.VITE_COGNITO_CLIENT_ID ?? '',
-  region: import.meta.env.VITE_AWS_REGION ?? 'us-east-1',
+  region: import.meta.env.VITE_AWS_REGION ?? 'sa-east-1',
 };
 
 export function isConfigured(): boolean {
   if (config.useMock) {
     return true;
   }
-  return Boolean(config.apiBaseUrl && config.userPoolId && config.clientId);
+  // apiBaseUrl may be empty for same-origin /content/* via Cloudflare Pages service binding
+  return Boolean(config.userPoolId && config.clientId);
 }

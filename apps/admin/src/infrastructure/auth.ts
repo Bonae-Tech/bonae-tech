@@ -33,10 +33,19 @@ export async function getIdToken(): Promise<string> {
   return (await getAuth()).getIdToken();
 }
 
-export async function refreshSession() {
+export async function getSessionExpiresAt(): Promise<number | null> {
   const auth = await getAuth();
-  if (!('refreshSession' in auth) || typeof auth.refreshSession !== 'function') {
-    return;
+  if ('getSessionExpiresAt' in auth && typeof auth.getSessionExpiresAt === 'function') {
+    return auth.getSessionExpiresAt();
   }
-  return auth.refreshSession();
+  return null;
 }
+
+export async function onSessionExpired(handler: () => void): Promise<void> {
+  const auth = await getAuth();
+  if ('onSessionExpired' in auth && typeof auth.onSessionExpired === 'function') {
+    auth.onSessionExpired(handler);
+  }
+}
+
+export { SessionExpiredError } from './session.js';

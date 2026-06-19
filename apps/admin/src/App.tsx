@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { config, isConfigured } from './config.js';
-import { getCurrentSession, signIn, signOut } from './infrastructure/auth.js';
+import { getCurrentSession, getSessionExpiresAt, signIn, signOut } from './infrastructure/auth.js';
+import { registerSessionExpiredHandler } from './infrastructure/contentApi.js';
 import { ConfigMissing } from './ui/ConfigMissing.js';
 import { LoginForm } from './ui/LoginForm.js';
 import { Dashboard } from './ui/Dashboard.js';
@@ -9,6 +10,51 @@ export default function App() {
   const [ready, setReady] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [newPasswordChallenge, setNewPasswordChallenge] = useState<((pw: string) => Promise<void>) | null>(null);
+  const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleLogout = useCallback(() => {
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = null;
+    }
+    void signOut();
+    setAuthenticated(false);
+  }, []);
+
+  const scheduleLogoutAt = useCallback(
+    async (expiresAt: number | null) => {
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+        logoutTimerRef.current = null;
+      }
+      if (!expiresAt) return;
+
+      const delay = Math.max(0, expiresAt - Date.now() - 30_000);
+      logoutTimerRef.current = setTimeout(() => {
+        handleLogout();
+      }, delay);
+    },
+    [handleLogout],
+  );
+
+  const checkSession = useCallback(async () => {
+    const session = await getCurrentSession();
+    if (!session?.isValid()) {
+      handleLogout();
+      return;
+    }
+    const expiresAt = await getSessionExpiresAt();
+    if (!expiresAt) {
+      handleLogout();
+      return;
+    }
+    setAuthenticated(true);
+    await scheduleLogoutAt(expiresAt);
+  }, [handleLogout, scheduleLogoutAt]);
+
+  useEffect(() => {
+    registerSessionExpiredHandler(handleLogout);
+  }, [handleLogout]);
 
   useEffect(() => {
     if (!isConfigured()) {
@@ -16,10 +62,18 @@ export default function App() {
       return;
     }
 
-    getCurrentSession()
-      .then((session) => setAuthenticated(Boolean(session?.isValid())))
-      .finally(() => setReady(true));
-  }, []);
+    checkSession().finally(() => setReady(true));
+  }, [checkSession]);
+
+  useEffect(() => {
+    function onVisibilityChange() {
+      if (document.visibilityState === 'visible' && authenticated) {
+        void checkSession();
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, [authenticated, checkSession]);
 
   if (!isConfigured()) {
     return <ConfigMissing />;
@@ -38,6 +92,8 @@ export default function App() {
             await newPasswordChallenge(newPassword);
             setNewPasswordChallenge(null);
             setAuthenticated(true);
+            const expiresAt = await getSessionExpiresAt();
+            await scheduleLogoutAt(expiresAt);
           }}
         />
       </>
@@ -54,6 +110,8 @@ export default function App() {
             const result = await signIn(email, password);
             if (result.type === 'success') {
               setAuthenticated(true);
+              const expiresAt = await getSessionExpiresAt();
+              await scheduleLogoutAt(expiresAt);
             } else {
               setNewPasswordChallenge(() => result.completeChallenge);
             }
@@ -66,12 +124,7 @@ export default function App() {
   return (
     <>
       {config.useMock && <MockModeBanner />}
-      <Dashboard
-        onLogout={() => {
-          void signOut();
-          setAuthenticated(false);
-        }}
-      />
+      <Dashboard onLogout={handleLogout} />
     </>
   );
 }

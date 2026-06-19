@@ -1,6 +1,7 @@
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from '@octokit/rest';
-import type { GitHubSecretPayload } from './secrets.js';
+import type { GitHubSecretPayload } from './types.js';
+import type { Env } from './types.js';
 
 export interface GitHubConfig {
   appId: string;
@@ -12,10 +13,10 @@ export interface GitHubConfig {
   contentPathPrefix: string;
 }
 
-export function parseGitHubConfig(secrets: GitHubSecretPayload): GitHubConfig {
-  const repoFull = process.env.GITHUB_REPO;
-  const branch = process.env.GITHUB_BRANCH ?? 'main';
-  const contentPathPrefix = process.env.CONTENT_PATH_PREFIX ?? 'apps/static/content';
+export function parseGitHubConfig(secrets: GitHubSecretPayload, env: Env): GitHubConfig {
+  const repoFull = env.GITHUB_REPO;
+  const branch = env.GITHUB_BRANCH ?? 'main';
+  const contentPathPrefix = env.CONTENT_PATH_PREFIX ?? 'apps/static/content';
 
   if (!repoFull) {
     throw new Error('GITHUB_REPO is not configured');

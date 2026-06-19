@@ -1,6 +1,6 @@
 # @bonae/content
 
-Shared Zod schema, types, and validators consumed by `apps/static`, `apps/admin`, and `services/content-api`. This package must be **built before** any workspace that imports it.
+Shared Zod schema, types, and validators consumed by `apps/static`, `apps/admin`, and `workers/content-api`. This package must be **built before** any workspace that imports it.
 
 ## Build
 

@@ -6,14 +6,14 @@ on:
       - 'apps/static/**'
       - 'apps/admin/**'
       - 'packages/content/**'
-      - 'services/content-api/**'
+      - 'workers/content-api/**'
       - '.github/workflows/ci.yml'
   pull_request:
     paths:
       - 'apps/static/**'
       - 'apps/admin/**'
       - 'packages/content/**'
-      - 'services/content-api/**'
+      - 'workers/content-api/**'
       - '.github/workflows/ci.yml'
 
 jobs:
@@ -29,12 +29,9 @@ jobs:
             packages/content/package-lock.json
             apps/static/package-lock.json
             apps/admin/package-lock.json
-            services/content-api/package-lock.json
+            workers/content-api/package-lock.json
 
-      - run: npm ci
-        working-directory: packages/content
-      - run: npm run build
-        working-directory: packages/content
+      - uses: ./.github/actions/build-content
       - run: npm run validate:published
         working-directory: packages/content
 
@@ -49,6 +46,8 @@ jobs:
         working-directory: apps/admin
 
       - run: npm ci
-        working-directory: services/content-api
+        working-directory: workers/content-api
       - run: npm run build
-        working-directory: services/content-api
+        working-directory: workers/content-api
+      - run: npm test
+        working-directory: workers/content-api

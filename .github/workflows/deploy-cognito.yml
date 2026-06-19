@@ -1,0 +1,100 @@
+name: Deploy cognito
+
+on:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/terraform/cognito.tf'
+      - 'infra/terraform/outputs.tf'
+      - 'infra/terraform/providers.tf'
+      - 'infra/terraform/backend.tf'
+      - 'infra/terraform/variables.tf'
+      - '.github/workflows/deploy-cognito.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cognito
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Verify GitHub variables token
+        env:
+          GH_TOKEN: ${{ secrets.GH_REPO_VARIABLES_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Missing repository secret GH_REPO_VARIABLES_TOKEN."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/actions/variables" --jq .total_count >/dev/null
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: infra/terraform
+
+      - name: Terraform plan
+        run: terraform plan -no-color -out=tfplan
+        working-directory: infra/terraform
+
+      - name: Upload Terraform plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: infra/terraform/tfplan
+          retention-days: 1
+
+  apply:
+    name: Terraform apply
+    needs: [plan]
+    runs-on: ubuntu-latest
+    environment: infra-production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Download Terraform plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: infra/terraform/
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: infra/terraform
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: infra/terraform
+
+      - name: Store Cognito outputs as GitHub repository variables
+        env:
+          GH_TOKEN: ${{ secrets.GH_REPO_VARIABLES_TOKEN }}
+        run: |
+          cd infra/terraform
+          gh variable set COGNITO_USER_POOL_ID --body "$(terraform output -raw user_pool_id)" -R "$GITHUB_REPOSITORY"
+          gh variable set COGNITO_CLIENT_ID --body "$(terraform output -raw user_pool_client_id)" -R "$GITHUB_REPOSITORY"

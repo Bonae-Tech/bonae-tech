@@ -12,7 +12,14 @@
     "admin:dev": "npm --prefix apps/admin run dev",
     "admin:dev:mock": "npm run content:build && npm --prefix apps/admin run dev:mock",
     "admin:build": "npm --prefix apps/admin run build",
-    "api:build": "npm --prefix services/content-api run build"
+    "worker:build": "npm --prefix workers/content-api run build",
+    "worker:dev": "npm --prefix workers/content-api run dev",
+    "worker:test": "npm --prefix workers/content-api run test",
+    "build:all": "make build-all",
+    "deploy:site": "make deploy-site",
+    "deploy:admin": "make deploy-admin",
+    "deploy:worker": "make deploy-worker",
+    "deploy:all": "make deploy-all"
   },
   "license": "Apache-2.0",
   "engines": {

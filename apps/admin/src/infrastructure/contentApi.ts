@@ -1,6 +1,6 @@
 import type { ContentDocument, Locale, SiteSettings } from '@bonae/content';
 import { config } from '../config.js';
-import { getIdToken, refreshSession } from './auth.js';
+import { getIdToken, onSessionExpired, SessionExpiredError } from './auth.js';
 
 export type ContentResource = Locale | 'settings';
 
@@ -11,8 +11,27 @@ export interface ContentResponse<T> {
   commitSha?: string;
 }
 
-async function apiFetch<T>(path: string, init?: RequestInit, retried = false): Promise<T> {
-  const token = await getIdToken();
+let sessionExpiredCallback: (() => void) | null = null;
+
+void onSessionExpired(() => {
+  sessionExpiredCallback?.();
+});
+
+export function registerSessionExpiredHandler(handler: () => void): void {
+  sessionExpiredCallback = handler;
+}
+
+async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  let token: string;
+  try {
+    token = await getIdToken();
+  } catch (err) {
+    if (err instanceof SessionExpiredError) {
+      sessionExpiredCallback?.();
+    }
+    throw err;
+  }
+
   const res = await fetch(`${config.apiBaseUrl}${path}`, {
     ...init,
     headers: {
@@ -24,13 +43,9 @@ async function apiFetch<T>(path: string, init?: RequestInit, retried = false): P
 
   const body = (await res.json()) as T & { error?: string };
   if (!res.ok) {
-    if (
-      !retried &&
-      res.status === 403 &&
-      body.error?.includes('Administrators group required')
-    ) {
-      await refreshSession();
-      return apiFetch(path, init, true);
+    if (res.status === 401) {
+      sessionExpiredCallback?.();
+      throw new SessionExpiredError(body.error ?? 'Session expired');
     }
     throw new Error(body.error ?? `Request failed (${res.status})`);
   }

@@ -1,0 +1,36 @@
+name: Resolve Cloudflare account
+description: Resolve CLOUDFLARE_ACCOUNT_ID from repository variable or prod environment secret
+
+outputs:
+  account_id:
+    description: Cloudflare account ID for Wrangler
+    value: ${{ steps.cf_account.outputs.id }}
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve Cloudflare account ID
+      id: cf_account
+      shell: bash
+      env:
+        FROM_VAR: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        FROM_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      run: |
+        if [ -n "$FROM_VAR" ]; then
+          echo "id=$FROM_VAR" >> "$GITHUB_OUTPUT"
+        elif [ -n "$FROM_SECRET" ]; then
+          echo "id=$FROM_SECRET" >> "$GITHUB_OUTPUT"
+        else
+          echo "::error::Missing CLOUDFLARE_ACCOUNT_ID. Add it as a prod environment secret or repository variable."
+          exit 1
+        fi
+
+    - name: Verify Cloudflare API token
+      shell: bash
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      run: |
+        if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+          echo "::error::Missing CLOUDFLARE_API_TOKEN for the prod environment."
+          exit 1
+        fi

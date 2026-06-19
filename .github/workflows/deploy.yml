@@ -1,0 +1,49 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Component to deploy
+        type: choice
+        options:
+          - all
+          - site
+          - admin
+          - worker
+          - worker-setup
+          - cognito
+        default: all
+
+concurrency:
+  group: deploy-orchestrator-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-worker:
+    if: inputs.target == 'all' || inputs.target == 'worker'
+    uses: ./.github/workflows/deploy-worker.yml
+    secrets: inherit
+
+  deploy-admin:
+    needs: [deploy-worker]
+    if: ${{ (inputs.target == 'all' || inputs.target == 'admin') && (needs.deploy-worker.result == 'success' || needs.deploy-worker.result == 'skipped') }}
+    uses: ./.github/workflows/deploy-admin.yml
+    secrets: inherit
+
+  deploy-site:
+    if: inputs.target == 'all' || inputs.target == 'site'
+    uses: ./.github/workflows/deploy-site.yml
+    secrets: inherit
+
+  deploy-cognito:
+    if: inputs.target == 'cognito'
+    uses: ./.github/workflows/deploy-cognito.yml
+    secrets: inherit
+
+  setup-worker:
+    if: inputs.target == 'worker-setup'
+    uses: ./.github/workflows/setup-worker.yml
+    with:
+      action: setup
+    secrets: inherit

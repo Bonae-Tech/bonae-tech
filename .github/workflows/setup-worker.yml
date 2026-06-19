@@ -1,0 +1,214 @@
+name: Setup worker
+
+on:
+  workflow_call:
+    inputs:
+      action:
+        description: setup | sync-secrets | remove-secrets | destroy
+        type: string
+        default: setup
+      environment:
+        description: Wrangler environment (empty = production, staging = staging)
+        type: string
+        default: ''
+      confirm:
+        description: Required for destroy — must match the Worker name
+        type: string
+        default: ''
+  workflow_dispatch:
+    inputs:
+      action:
+        description: What to do
+        type: choice
+        options:
+          - setup
+          - sync-secrets
+          - remove-secrets
+          - destroy
+        default: setup
+      environment:
+        description: Wrangler environment (empty = production, staging = staging)
+        type: string
+        default: ''
+      confirm:
+        description: Required for destroy — type the Worker name (bonae-content-api or bonae-content-api-staging)
+        type: string
+        default: ''
+
+concurrency:
+  group: setup-worker-${{ inputs.action }}-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Resolve Worker name
+        id: worker
+        run: |
+          if [ "${{ inputs.environment }}" = "staging" ]; then
+            echo "name=bonae-content-api-staging" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=bonae-content-api" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate destroy confirmation
+        if: inputs.action == 'destroy'
+        run: |
+          expected="${{ steps.worker.outputs.name }}"
+          if [ "${{ inputs.confirm }}" != "$expected" ]; then
+            echo "::error::Destroy requires confirm input to match Worker name exactly: $expected"
+            exit 1
+          fi
+
+      - name: Verify GitHub App secrets (prod environment)
+        if: inputs.action == 'setup' || inputs.action == 'sync-secrets'
+        env:
+          WORKER_GITHUB_APP_ID: ${{ secrets.WORKER_GITHUB_APP_ID }}
+          WORKER_GITHUB_INSTALLATION_ID: ${{ secrets.WORKER_GITHUB_INSTALLATION_ID }}
+          WORKER_GITHUB_PRIVATE_KEY: ${{ secrets.WORKER_GITHUB_PRIVATE_KEY }}
+        run: |
+          missing=()
+          [ -z "$WORKER_GITHUB_APP_ID" ] && missing+=("WORKER_GITHUB_APP_ID")
+          [ -z "$WORKER_GITHUB_INSTALLATION_ID" ] && missing+=("WORKER_GITHUB_INSTALLATION_ID")
+          [ -z "$WORKER_GITHUB_PRIVATE_KEY" ] && missing+=("WORKER_GITHUB_PRIVATE_KEY")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::Missing prod environment secrets: ${missing[*]}"
+            echo "Add them under Settings → Environments → prod → Environment secrets."
+            echo "See docs/worker-setup.md"
+            exit 1
+          fi
+
+      - name: Verify Cognito repository variables
+        if: inputs.action == 'setup'
+        run: |
+          missing=()
+          [ -z "${{ vars.COGNITO_USER_POOL_ID }}" ] && missing+=("COGNITO_USER_POOL_ID")
+          [ -z "${{ vars.COGNITO_CLIENT_ID }}" ] && missing+=("COGNITO_CLIENT_ID")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::Missing repository variables: ${missing[*]}"
+            echo "Run Deploy cognito first, or set them manually."
+            exit 1
+          fi
+
+      - uses: ./.github/actions/build-content
+        if: inputs.action == 'setup'
+
+      - name: Install worker dependencies
+        if: inputs.action == 'setup'
+        run: npm ci
+        working-directory: workers/content-api
+
+      - name: Typecheck worker
+        if: inputs.action == 'setup'
+        run: npm run build
+        working-directory: workers/content-api
+
+      - name: Run security tests
+        if: inputs.action == 'setup'
+        run: npm test
+        working-directory: workers/content-api
+
+      - id: cloudflare
+        uses: ./.github/actions/cloudflare-account
+
+      - name: Install Wrangler
+        run: npm ci
+        working-directory: workers/content-api
+
+      - name: Deploy Worker
+        if: inputs.action == 'setup'
+        run: |
+          args=(--var "COGNITO_USER_POOL_ID:${{ vars.COGNITO_USER_POOL_ID }}" --var "COGNITO_CLIENT_ID:${{ vars.COGNITO_CLIENT_ID }}")
+          if [ -n "${{ inputs.environment }}" ]; then
+            npx wrangler deploy --env "${{ inputs.environment }}" "${args[@]}"
+          else
+            npx wrangler deploy "${args[@]}"
+          fi
+        working-directory: workers/content-api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}
+
+      - name: Sync GitHub App secrets to Worker
+        if: inputs.action == 'setup' || inputs.action == 'sync-secrets'
+        working-directory: workers/content-api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}
+          WORKER_GITHUB_APP_ID: ${{ secrets.WORKER_GITHUB_APP_ID }}
+          WORKER_GITHUB_INSTALLATION_ID: ${{ secrets.WORKER_GITHUB_INSTALLATION_ID }}
+          WORKER_GITHUB_PRIVATE_KEY: ${{ secrets.WORKER_GITHUB_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const payload = {
+            GITHUB_APP_ID: process.env.WORKER_GITHUB_APP_ID,
+            GITHUB_INSTALLATION_ID: process.env.WORKER_GITHUB_INSTALLATION_ID,
+            GITHUB_PRIVATE_KEY: process.env.WORKER_GITHUB_PRIVATE_KEY,
+          };
+          fs.writeFileSync('/tmp/worker-secrets.json', JSON.stringify(payload));
+          NODE
+          wrangler_args=(secret bulk /tmp/worker-secrets.json)
+          if [ -n "${{ inputs.environment }}" ]; then
+            wrangler_args+=(--env "${{ inputs.environment }}")
+          fi
+          npx wrangler "${wrangler_args[@]}"
+          rm -f /tmp/worker-secrets.json
+
+      - name: Remove GitHub App secrets from Worker
+        if: inputs.action == 'remove-secrets'
+        working-directory: workers/content-api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}
+        run: |
+          for key in GITHUB_APP_ID GITHUB_INSTALLATION_ID GITHUB_PRIVATE_KEY; do
+            delete_args=(secret delete "$key")
+            if [ -n "${{ inputs.environment }}" ]; then
+              delete_args+=(--env "${{ inputs.environment }}")
+            fi
+            npx wrangler "${delete_args[@]}" || true
+          done
+
+      - name: Destroy Worker
+        if: inputs.action == 'destroy'
+        working-directory: workers/content-api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}
+        run: |
+          delete_args=(delete --name "${{ steps.worker.outputs.name }}" --force)
+          if [ -n "${{ inputs.environment }}" ]; then
+            delete_args+=(--env "${{ inputs.environment }}")
+          fi
+          npx wrangler "${delete_args[@]}"
+
+      - name: Summary
+        if: always()
+        run: |
+          case "${{ inputs.action }}" in
+            setup)
+              echo "Worker ${{ steps.worker.outputs.name }} deployed with Cognito vars and GitHub App secrets."
+              echo "Next: run Deploy admin (or make deploy-admin) so Pages can bind to the Worker."
+              ;;
+            sync-secrets)
+              echo "GitHub App secrets synced to ${{ steps.worker.outputs.name }}."
+              ;;
+            remove-secrets)
+              echo "GitHub App secrets removed from ${{ steps.worker.outputs.name }}. Worker code remains deployed."
+              ;;
+            destroy)
+              echo "Worker ${{ steps.worker.outputs.name }} deleted from Cloudflare."
+              ;;
+          esac
