@@ -53,6 +53,10 @@ jobs:
 
       - id: cloudflare
         uses: ./.github/actions/cloudflare-account
+        with:
+          cloudflare_account_id_var: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          cloudflare_account_id_secret: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Deploy to Cloudflare Workers
         run: |
