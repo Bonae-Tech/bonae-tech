@@ -152,7 +152,7 @@ Builds admin SPA with Cognito IDs baked in (`VITE_*`), ensures `bonae-admin` Pag
 
 **Paths:** `apps/admin/**`, `packages/content/**`  
 **Secrets:** `CLOUDFLARE_*` (prod environment)  
-**Variables:** `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`, `API_BASE_URL` (optional — leave empty for same-origin `/content/*`)
+**Variables:** `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`. Do not set `API_BASE_URL` for Cloudflare (delete it if present) — same-origin `/content/*` via Pages service binding.
 
 ### Deploy worker
 
@@ -188,7 +188,7 @@ Posts Cognito Terraform plan as a PR comment. No apply.
 | `CLOUDFLARE_ACCOUNT_ID` | prod secret or repo variable | All Cloudflare workflows |
 | `WORKER_GITHUB_*` (3 secrets) | prod secret | Setup worker |
 | `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | repo variable | Admin build, Worker deploy |
-| `API_BASE_URL` | repo variable (optional) | Admin build |
+| `API_BASE_URL` | repo variable (omit for Cloudflare) | Legacy cross-origin API only |
 
 ---
 
