@@ -33,12 +33,36 @@ runs:
         PRODUCTION_BRANCH: ${{ inputs.production_branch }}
       run: |
         set -euo pipefail
-        if ! curl -sf \
+
+        list_json="$(curl -sS \
           -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-          "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=100" \
-          | jq -e --arg name "$PROJECT_NAME" '.result[] | select(.name == $name)' >/dev/null; then
-          echo "Creating Cloudflare Pages project ${PROJECT_NAME}..."
-          npx wrangler pages project create "$PROJECT_NAME" --production-branch "$PRODUCTION_BRANCH"
-        else
+          "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=100")"
+
+        if echo "$list_json" | jq -e --arg name "$PROJECT_NAME" '.result[]? | select(.name == $name)' >/dev/null; then
           echo "Cloudflare Pages project ${PROJECT_NAME} already exists."
+          exit 0
         fi
+
+        if ! echo "$list_json" | jq -e '.success == true' >/dev/null; then
+          echo "::warning::Pages project list failed; will try create-if-needed."
+          echo "$list_json" | jq -r '.errors[]? | "\(.code): \(.message)"' || true
+        fi
+
+        echo "Creating Cloudflare Pages project ${PROJECT_NAME}..."
+        set +e
+        create_out="$(npx wrangler pages project create "$PROJECT_NAME" --production-branch "$PRODUCTION_BRANCH" 2>&1)"
+        create_code=$?
+        set -e
+
+        if [ "$create_code" -eq 0 ]; then
+          echo "$create_out"
+          exit 0
+        fi
+
+        echo "$create_out"
+        if echo "$create_out" | grep -qE 'already exists|8000002'; then
+          echo "Cloudflare Pages project ${PROJECT_NAME} already exists (confirmed on create)."
+          exit 0
+        fi
+
+        exit "$create_code"
