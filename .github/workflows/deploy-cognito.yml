@@ -1,3 +1,8 @@
+# One-time (or when Cognito Terraform changes): apply Cognito via Terraform.
+# Part of bootstrap step 1. Requires infra-production approval for apply.
+#
+# See docs/workflows.md
+
 name: Deploy cognito
 
 on:

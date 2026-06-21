@@ -88,13 +88,13 @@ Assign consumers to Cognito groups (`site-{tenantId}`) or set `custom:site_id`. 
 
 ## GitHub App credentials (Worker secrets)
 
-Store credentials as **prod** GitHub environment secrets (`WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`), then run the **Setup worker** workflow to push them to Cloudflare.
+Store credentials as **prod** GitHub environment secrets (`WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`), then run **Setup worker** to push them to Cloudflare.
 
-See [docs/worker-setup.md](../docs/worker-setup.md) for the full onboarding and teardown checklist.
+Install and workflow reference: [docs/workflows.md](../docs/workflows.md). Platform overview: [docs/architecture.md](../docs/architecture.md).
 
 ## Decommissioning legacy AWS resources
 
-If S3/CloudFront/Lambda/API Gateway resources still exist from the previous architecture, run `terraform destroy` after applying this Cognito-only module. See [docs/admin-cutover.md](../docs/admin-cutover.md).
+If S3/CloudFront/Lambda/API Gateway resources still exist from the previous architecture, destroy them in AWS after migrating to Cloudflare. See [docs/architecture.md §3.1](../docs/architecture.md#31-aws-sa-east-1).
 
 ## Variables
 

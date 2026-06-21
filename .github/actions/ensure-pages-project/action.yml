@@ -1,0 +1,44 @@
+name: Ensure Cloudflare Pages project
+description: Create a Cloudflare Pages project if it does not already exist
+
+inputs:
+  project_name:
+    description: Pages project name (e.g. bonae-admin)
+    required: true
+  production_branch:
+    description: Production branch name
+    required: false
+    default: main
+  cloudflare_api_token:
+    description: CLOUDFLARE_API_TOKEN
+    required: true
+  cloudflare_account_id:
+    description: CLOUDFLARE_ACCOUNT_ID
+    required: true
+  working_directory:
+    description: Directory to run wrangler from
+    required: false
+    default: .
+
+runs:
+  using: composite
+  steps:
+    - name: Ensure Cloudflare Pages project exists
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ inputs.cloudflare_api_token }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ inputs.cloudflare_account_id }}
+        PROJECT_NAME: ${{ inputs.project_name }}
+        PRODUCTION_BRANCH: ${{ inputs.production_branch }}
+      run: |
+        set -euo pipefail
+        if ! curl -sf \
+          -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+          "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=100" \
+          | jq -e --arg name "$PROJECT_NAME" '.result[] | select(.name == $name)' >/dev/null; then
+          echo "Creating Cloudflare Pages project ${PROJECT_NAME}..."
+          npx wrangler pages project create "$PROJECT_NAME" --production-branch "$PRODUCTION_BRANCH"
+        else
+          echo "Cloudflare Pages project ${PROJECT_NAME} already exists."
+        fi

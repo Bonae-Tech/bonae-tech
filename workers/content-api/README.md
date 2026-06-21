@@ -22,7 +22,7 @@ Use the **Setup worker** GitHub Actions workflow — do not run `wrangler secret
 1. Store GitHub App credentials as **prod** environment secrets: `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`
 2. Run **Setup worker** with `action: setup`
 
-Full checklist: [docs/worker-setup.md](../../docs/worker-setup.md)
+Full install guide: [docs/workflows.md](../../docs/workflows.md)
 
 ## Local development
 

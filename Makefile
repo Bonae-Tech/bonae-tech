@@ -37,4 +37,4 @@ test-worker:
 	cd workers/content-api && npm test
 
 setup-worker:
-	@echo "Run GitHub Actions → Setup worker (action: setup). See docs/worker-setup.md"
+	@echo "Run GitHub Actions → Bootstrap (one-time install). See docs/workflows.md"

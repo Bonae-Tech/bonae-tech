@@ -1,3 +1,9 @@
+# Recurring deploy: admin SPA to Cloudflare Pages (bonae-admin).
+# First-time bootstrap: use "Setup admin" (creates project if missing, verifies Worker exists).
+# Auto-triggers on push to main.
+#
+# See docs/workflows.md
+
 name: Deploy admin
 
 on:
@@ -45,6 +51,13 @@ jobs:
           cloudflare_account_id_var: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           cloudflare_account_id_secret: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - uses: ./.github/actions/ensure-pages-project
+        with:
+          project_name: bonae-admin
+          cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare_account_id: ${{ steps.cloudflare.outputs.account_id }}
+          working_directory: apps/admin
 
       - name: Deploy to Cloudflare Pages
         run: npx wrangler pages deploy dist --project-name bonae-admin

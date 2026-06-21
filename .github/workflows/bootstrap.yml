@@ -1,0 +1,69 @@
+# One-time (or re-run) platform install. Runs AWS Cognito, Cloudflare Worker + admin bootstrap,
+# then marketing site deploy.
+#
+# For day-to-day code deploys, use the individual "Deploy *" workflows (push to main)
+# or "Deploy (manual)" to redeploy one component.
+#
+# See docs/workflows.md
+
+name: Bootstrap (one-time install)
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: Full sequence or a single bootstrap step
+        type: choice
+        options:
+          - full
+          - cognito
+          - setup-worker
+          - setup-admin
+          - deploy-site
+        default: full
+
+run-name: Bootstrap — ${{ inputs.step }}
+
+concurrency:
+  group: bootstrap-${{ inputs.step }}
+  cancel-in-progress: false
+
+jobs:
+  cognito:
+    if: inputs.step == 'full' || inputs.step == 'cognito'
+    uses: ./.github/workflows/deploy-cognito.yml
+    secrets: inherit
+
+  setup-worker:
+    needs: [cognito]
+    if: >-
+      ${{
+        (inputs.step == 'full' || inputs.step == 'setup-worker') &&
+        (needs.cognito.result == 'success' || needs.cognito.result == 'skipped')
+      }}
+    uses: ./.github/workflows/setup-worker.yml
+    with:
+      action: setup
+    secrets: inherit
+
+  setup-admin:
+    needs: [setup-worker]
+    if: >-
+      ${{
+        (inputs.step == 'full' || inputs.step == 'setup-admin') &&
+        (needs.setup-worker.result == 'success' || needs.setup-worker.result == 'skipped')
+      }}
+    uses: ./.github/workflows/setup-admin.yml
+    with:
+      action: setup
+    secrets: inherit
+
+  deploy-site:
+    needs: [setup-admin]
+    if: >-
+      ${{
+        (inputs.step == 'full' || inputs.step == 'deploy-site') &&
+        (needs.setup-admin.result == 'success' || needs.setup-admin.result == 'skipped')
+      }}
+    uses: ./.github/workflows/deploy-site.yml
+    secrets: inherit

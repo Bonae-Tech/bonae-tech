@@ -191,4 +191,4 @@ Drafts are never visible on the public marketing site until published.
 
 Deployments are handled by `deploy-admin.yml` on push to `main` (Cloudflare Pages project `bonae-admin`). Cognito IDs are baked in at build time from GitHub repository variables. Leave `API_BASE_URL` empty for same-origin API routing via Pages service binding.
 
-See [docs/admin-spa.md](../../docs/admin-spa.md) and [infra/README.md](../../infra/README.md).
+See [docs/architecture.md](../../docs/architecture.md) and [docs/workflows.md](../../docs/workflows.md).

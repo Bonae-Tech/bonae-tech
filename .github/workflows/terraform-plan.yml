@@ -1,3 +1,7 @@
+# Terraform plan on infra PRs. No apply.
+#
+# See docs/workflows.md
+
 name: Terraform plan
 
 on:

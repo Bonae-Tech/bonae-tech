@@ -1,0 +1,111 @@
+# One-time bootstrap for admin Pages (bonae-admin): verify prerequisites, then deploy.
+# Does not delete or recreate existing Pages projects — create is skipped if present.
+# Recurring code deploys: use "Deploy admin" (push to main or Deploy manual).
+#
+# See docs/workflows.md
+
+name: Setup admin
+
+on:
+  workflow_call:
+    inputs:
+      action:
+        description: setup | verify
+        type: string
+        default: setup
+  workflow_dispatch:
+    inputs:
+      action:
+        description: What to do
+        type: choice
+        options:
+          - setup
+          - verify
+        default: setup
+
+run-name: Setup admin — ${{ inputs.action }}
+
+concurrency:
+  group: setup-admin-${{ inputs.action }}
+  cancel-in-progress: false
+
+jobs:
+  prerequisites:
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      contents: read
+    steps:
+      - name: Verify Cognito repository variables
+        run: |
+          missing=()
+          [ -z "${{ vars.COGNITO_USER_POOL_ID }}" ] && missing+=("COGNITO_USER_POOL_ID")
+          [ -z "${{ vars.COGNITO_CLIENT_ID }}" ] && missing+=("COGNITO_CLIENT_ID")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::Missing repository variables: ${missing[*]}"
+            echo "Run Deploy cognito first, or set them manually."
+            exit 1
+          fi
+
+      - id: cloudflare
+        uses: ./.github/actions/cloudflare-account
+        with:
+          cloudflare_account_id_var: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          cloudflare_account_id_secret: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Verify content API Worker exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}
+        run: |
+          set -euo pipefail
+          resp="$(curl -sS \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/services/bonae-content-api")"
+          if ! echo "$resp" | jq -e '.success == true' >/dev/null; then
+            code="$(echo "$resp" | jq -r '.errors[0].code // empty')"
+            msg="$(echo "$resp" | jq -r '.errors[0].message // empty')"
+            echo "::error::Worker bonae-content-api not found or not accessible (${code}: ${msg})."
+            echo "Run Setup worker (action: setup) before Setup admin."
+            exit 1
+          fi
+          echo "Worker bonae-content-api is deployed."
+
+      - name: Verify admin Pages project
+        if: inputs.action == 'verify'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}
+        run: |
+          set -euo pipefail
+          if ! curl -sf \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=100" \
+            | jq -e '.result[] | select(.name == "bonae-admin")' >/dev/null; then
+            echo "::error::Pages project bonae-admin does not exist. Run Setup admin (action: setup)."
+            exit 1
+          fi
+          echo "Pages project bonae-admin exists."
+
+      - name: Summary
+        if: inputs.action == 'verify'
+        run: echo "Admin bootstrap prerequisites OK (Worker + Pages project bonae-admin)."
+
+  deploy:
+    needs: [prerequisites]
+    if: inputs.action == 'setup'
+    uses: ./.github/workflows/deploy-admin.yml
+    secrets: inherit
+
+  summary:
+    needs: [prerequisites, deploy]
+    if: always() && inputs.action == 'setup'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        if: needs.deploy.result == 'success'
+        run: |
+          echo "Admin Pages bonae-admin is ready."
+          echo "Service binding: CONTENT_API → bonae-content-api (/content/* via functions/content/_middleware.ts)"
+          echo "Next: create a Cognito admin user, then open the Pages preview URL to sign in."

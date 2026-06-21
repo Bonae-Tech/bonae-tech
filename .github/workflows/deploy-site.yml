@@ -1,3 +1,8 @@
+# Recurring deploy: marketing site to Cloudflare Pages (bonae-tech).
+# Creates the Pages project on first run. Auto-triggers on push to main.
+#
+# See docs/workflows.md
+
 name: Deploy site
 
 on:
@@ -42,35 +47,23 @@ jobs:
       - run: npm run build
         working-directory: apps/static
 
-      - name: Resolve Cloudflare account ID
-        id: cf_account
-        env:
-          FROM_VAR: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          FROM_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          if [ -n "$FROM_VAR" ]; then
-            echo "source=repository variable CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_OUTPUT"
-            echo "id=$FROM_VAR" >> "$GITHUB_OUTPUT"
-          elif [ -n "$FROM_SECRET" ]; then
-            echo "source=prod environment secret CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_OUTPUT"
-            echo "id=$FROM_SECRET" >> "$GITHUB_OUTPUT"
-          else
-            echo "::error::Missing CLOUDFLARE_ACCOUNT_ID. Wrangler will call /memberships and fail with account-scoped API tokens. Add it as a prod environment secret OR repository variable named exactly CLOUDFLARE_ACCOUNT_ID (Cloudflare dashboard → Account ID in sidebar)."
-            exit 1
-          fi
+      - id: cloudflare
+        uses: ./.github/actions/cloudflare-account
+        with:
+          cloudflare_account_id_var: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          cloudflare_account_id_secret: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
-      - name: Verify Cloudflare API token
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "::error::Missing CLOUDFLARE_API_TOKEN for the prod environment. Add it under GitHub Settings → Environments → prod → Environment secrets."
-            exit 1
-          fi
+      - uses: ./.github/actions/ensure-pages-project
+        with:
+          project_name: bonae-tech
+          cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare_account_id: ${{ steps.cloudflare.outputs.account_id }}
+          working_directory: apps/static
 
       - name: Deploy to Cloudflare Pages
         run: npx wrangler pages deploy dist --project-name bonae-tech
         working-directory: apps/static
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cf_account.outputs.id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}

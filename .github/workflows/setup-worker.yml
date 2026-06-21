@@ -1,3 +1,9 @@
+# Bootstrap: deploy Worker, sync GitHub App secrets, optional teardown.
+# First-time install: use "Bootstrap (one-time install)" or run with action=setup.
+# Code-only redeploys: use "Deploy worker" (does not sync secrets).
+#
+# See docs/workflows.md
+
 name: Setup worker
 
 on:
@@ -84,7 +90,7 @@ jobs:
           if [ "${#missing[@]}" -gt 0 ]; then
             echo "::error::Missing prod environment secrets: ${missing[*]}"
             echo "Add them under Settings → Environments → prod → Environment secrets."
-            echo "See docs/worker-setup.md"
+            echo "See docs/workflows.md"
             exit 1
           fi
 
@@ -204,7 +210,7 @@ jobs:
           case "${{ inputs.action }}" in
             setup)
               echo "Worker ${{ steps.worker.outputs.name }} deployed with Cognito vars and GitHub App secrets."
-              echo "Next: run Deploy admin (or make deploy-admin) so Pages can bind to the Worker."
+              echo "Next: run Setup admin so Pages can bind to the Worker."
               ;;
             sync-secrets)
               echo "GitHub App secrets synced to ${{ steps.worker.outputs.name }}."

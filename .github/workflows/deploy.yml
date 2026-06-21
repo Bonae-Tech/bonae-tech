@@ -1,49 +1,43 @@
-name: Deploy
+# Manual redeploy of a single runtime component. Does not run bootstrap steps
+# (Cognito, Worker secrets, Pages project creation). Use "Bootstrap (one-time install)"
+# for first-time setup.
+#
+# Push to main still auto-deploys site, admin, and worker when their paths change.
+#
+# See docs/workflows.md
+
+name: Deploy (manual)
 
 on:
   workflow_dispatch:
     inputs:
       target:
-        description: Component to deploy
+        description: Component to redeploy
         type: choice
         options:
-          - all
           - site
           - admin
           - worker
-          - worker-setup
-          - cognito
-        default: all
+        default: site
+
+run-name: Deploy — ${{ inputs.target }}
 
 concurrency:
-  group: deploy-orchestrator-${{ inputs.target }}
+  group: deploy-manual-${{ inputs.target }}
   cancel-in-progress: false
 
 jobs:
-  deploy-worker:
-    if: inputs.target == 'all' || inputs.target == 'worker'
-    uses: ./.github/workflows/deploy-worker.yml
-    secrets: inherit
-
-  deploy-admin:
-    needs: [deploy-worker]
-    if: ${{ (inputs.target == 'all' || inputs.target == 'admin') && (needs.deploy-worker.result == 'success' || needs.deploy-worker.result == 'skipped') }}
-    uses: ./.github/workflows/deploy-admin.yml
-    secrets: inherit
-
   deploy-site:
-    if: inputs.target == 'all' || inputs.target == 'site'
+    if: inputs.target == 'site'
     uses: ./.github/workflows/deploy-site.yml
     secrets: inherit
 
-  deploy-cognito:
-    if: inputs.target == 'cognito'
-    uses: ./.github/workflows/deploy-cognito.yml
+  deploy-admin:
+    if: inputs.target == 'admin'
+    uses: ./.github/workflows/deploy-admin.yml
     secrets: inherit
 
-  setup-worker:
-    if: inputs.target == 'worker-setup'
-    uses: ./.github/workflows/setup-worker.yml
-    with:
-      action: setup
+  deploy-worker:
+    if: inputs.target == 'worker'
+    uses: ./.github/workflows/deploy-worker.yml
     secrets: inherit

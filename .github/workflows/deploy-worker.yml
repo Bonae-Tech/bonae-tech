@@ -1,3 +1,9 @@
+# Recurring deploy: content API Worker code (bonae-content-api).
+# Does not sync GitHub App secrets — use Setup worker for that.
+# Auto-triggers on push to main.
+#
+# See docs/workflows.md
+
 name: Deploy worker
 
 on:

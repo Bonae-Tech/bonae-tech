@@ -1,3 +1,7 @@
+# Validate content JSON on PRs. No deploy.
+#
+# See docs/workflows.md
+
 name: Content PR check
 
 on:

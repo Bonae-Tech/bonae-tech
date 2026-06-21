@@ -1,3 +1,7 @@
+# Build verification on push / PR. No deploy.
+#
+# See docs/workflows.md
+
 name: CI
 
 on:
