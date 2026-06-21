@@ -36,6 +36,8 @@ jobs:
     permissions:
       contents: read
     steps:
+      - uses: actions/checkout@v4
+
       - name: Verify Cognito repository variables
         run: |
           missing=()
