@@ -2,10 +2,10 @@
 
 Git-backed content platform for the BONAE Tech marketing site. Editors update copy through a React admin; the content API runs on Cloudflare Workers; identity stays on AWS Cognito.
 
-## Repository structure formal
+## Repository structure
 
 ```
-apps/static/main          — Marketing site (Astro + Tailwind, Cloudflare Pages bonae-tech)
+apps/static/          — Marketing site (Astro + Tailwind, Cloudflare Pages bonae-tech)
 apps/admin/           — Content admin SPA (React + Vite + Cognito, Cloudflare Pages bonae-admin)
 workers/content-api/  — Content API (Cloudflare Worker, Cognito JWT + GitHub App)
 packages/content/     — Shared Zod schema and validators (built before everything else)
