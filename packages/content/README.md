@@ -1,11 +1,19 @@
 # @bonae/content
 
-Shared Zod schema, types, and validators consumed by `apps/static`, `apps/admin`, and `workers/content-api`. This package must be **built before** any workspace that imports it.
+Shared Zod schema, types, and validators consumed by `apps/static`, `apps/admin`, and `workers/content-api`. Turborepo builds this package before any consumer via `dependsOn: ["^build"]`.
 
 ## Build
 
+From the repo root:
+
 ```bash
 npm ci
+npm run content:build    # turbo run build --filter=@bonae/content
+```
+
+Or from this directory (workspace context):
+
+```bash
 npm run build    # tsc → dist/
 ```
 
@@ -23,19 +31,12 @@ npm run build    # tsc → dist/
 ## Validate content
 
 ```bash
-# Validate published JSON
-npm run validate:published
+# From repo root
+npm run content:validate
 
 # Validate any content dir and tier
-npm run validate -- ../../apps/static/content drafts
-npm run validate -- ../../apps/static/content published
-```
-
-## Test
-
-```bash
-npm run build    # tests run against dist/ — build first
-npm test
+npm run validate -w @bonae/content -- apps/static/content drafts
+npm run validate -w @bonae/content -- apps/static/content published
 ```
 
 ## Rules

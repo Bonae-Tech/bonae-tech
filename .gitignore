@@ -1,10 +1,13 @@
 # Dependencies
 node_modules/
 
+# Turborepo
+.turbo/
+
 # Build output
 apps/static/dist/
 apps/admin/dist/
-services/content-api/dist/
+workers/content-api/dist/
 packages/content/dist/
 
 # Astro internals

@@ -11,7 +11,7 @@ workers/content-api/  — Content API (Cloudflare Worker, Cognito JWT + GitHub A
 packages/content/     — Shared Zod schema and validators (built before everything else)
 infra/terraform/      — Cognito identity only (AWS sa-east-1)
 infra/terraform/bootstrap/ — One-time state backend + GitHub OIDC setup
-Makefile              — Root build/deploy orchestration (make build-all, make deploy-all)
+package.json + turbo.json — Root orchestration (npm workspaces + Turborepo)
 ```
 
 Content lives in `apps/static/content/`:
@@ -34,13 +34,19 @@ published/ es.json  en.json  settings.json   ← read by Astro at build time
 
 ### Build order
 
-`packages/content` must be compiled before anything that imports it. Use `make build-all` from the repository root, or `npm run build:all`.
+`packages/content` must be compiled before anything that imports it. From the repository root:
+
+```bash
+npm ci
+npm run build        # or npm run build:all
+```
+
+Turborepo runs `@bonae/content` first via `dependsOn: ["^build"]`, then builds apps and workers in parallel.
 
 ### Local development — static site
 
 ```bash
-npm ci --prefix packages/content && npm run content:build
-npm ci --prefix apps/static
+npm ci
 npm run dev          # http://localhost:4321
 ```
 
@@ -62,7 +68,7 @@ Requires deployed infrastructure and a Cognito user in the `Administrators` grou
 cp apps/admin/.env.example apps/admin/.env
 # Fill in: VITE_API_BASE_URL, VITE_COGNITO_USER_POOL_ID, VITE_COGNITO_CLIENT_ID, VITE_AWS_REGION
 
-npm ci --prefix apps/admin
+npm ci
 npm run admin:dev        # http://localhost:5173
 ```
 
@@ -134,7 +140,7 @@ See [docs/workflows.md](docs/workflows.md).
 
 ```bash
 npm run content:validate          # validate published JSON
-npm --prefix packages/content run validate -- ../../apps/static/content drafts  # validate drafts
+npm run validate -w @bonae/content -- apps/static/content drafts  # validate drafts
 ```
 
 ---
@@ -149,15 +155,27 @@ See **[docs/workflows.md](docs/workflows.md)** for all GitHub Actions workflows,
 
 | Command | Description |
 |---------|-------------|
-| `make build-all` | Build content, static site, admin SPA, and Worker |
-| `make deploy-all` | Deploy Worker then admin Pages |
-| `make deploy-site` | Build and deploy marketing site |
-| `make deploy-worker` | Build and deploy content API Worker |
-| `make deploy-admin` | Build and deploy admin SPA |
-| `make dev-admin-mock` | Admin SPA in mock mode (no AWS) |
-| `make dev-worker` | Local Worker dev server |
-| `npm run build:all` | Alias for `make build-all` |
+| `npm ci` | Install all workspace dependencies (run from repo root) |
+| `npm run build` | Build content, static site, admin SPA, and Worker |
+| `npm run build:all` | Alias for `npm run build` |
+| `npm run test` | Run Worker security tests |
+| `npm run deploy:all` | Deploy Worker then admin Pages |
+| `npm run deploy:site` | Build and deploy marketing site |
+| `npm run deploy:worker` | Build and deploy content API Worker |
+| `npm run deploy:admin` | Build and deploy admin SPA |
+| `npm run dev:admin:mock` | Admin SPA in mock mode (no AWS) |
+| `npm run dev:worker` | Local Worker dev server |
+| `npm run dev` | Marketing site dev server |
 | `npm run content:validate` | Validate published JSON |
+
+## Adding a new package
+
+1. Create a `package.json` under `apps/*`, `packages/*`, or `workers/*` — npm workspaces discovers it automatically.
+2. If consuming shared schema: `"@bonae/content": "*"` in `dependencies`.
+3. Add `build`, `dev`, and/or `test` scripts — Turborepo picks them up via `turbo.json`.
+4. Add path filters to relevant `.github/workflows/*.yml` if the package should trigger CI or deploy.
+
+**CI growth path:** use `npx turbo run build test --filter=[origin/main...]` on PRs to build only affected packages. Remote cache can be added later via `TURBO_TOKEN` / `TURBO_TEAM` in GitHub Actions.
 
 ---
 

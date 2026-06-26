@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npm run build --prefix ../../packages/content && tsc --noEmit",
+    "build": "tsc --noEmit",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "test": "vitest run"
   },
   "dependencies": {
-    "@bonae/content": "file:../../packages/content",
+    "@bonae/content": "*",
     "@octokit/auth-app": "^7.1.4",
     "@octokit/rest": "^21.1.0",
     "jose": "^5.9.6"

@@ -4,17 +4,12 @@ BONAE Tech marketing site — Astro 4 + Tailwind CSS, deployed to Cloudflare Pag
 
 ## Prerequisites
 
-Build `packages/content` before running any commands here (the `prebuild`/`predev` hooks call the content validator, which requires `dist/cli.js` to exist):
-
-```bash
-npm ci --prefix ../../packages/content && npm run build --prefix ../../packages/content
-```
+Install from the repo root (`npm ci`). Turborepo builds `@bonae/content` before this package when using root scripts.
 
 ## Dev
 
 ```bash
-npm ci
-npm run dev      # http://localhost:4321
+npm run dev      # from repo root — http://localhost:4321
 ```
 
 Validates published JSON before starting (`predev` hook). The site reads only `content/published/` — drafts are never visible here.
@@ -22,7 +17,7 @@ Validates published JSON before starting (`predev` hook). The site reads only `c
 ## Build
 
 ```bash
-npm run build    # validates published JSON, then astro build → dist/
+npm run build    # from repo root — validates published JSON, then astro build → dist/
 npm run preview  # preview the production build locally
 ```
 
@@ -45,7 +40,7 @@ content/
 ## Validate published content
 
 ```bash
-npm run content:validate
+npm run content:validate    # from repo root
 ```
 
 This is the same check run by the `predev` and `prebuild` hooks. If `published/` is invalid, the site will not build.
@@ -53,5 +48,5 @@ This is the same check run by the `predev` and `prebuild` hooks. If `published/`
 ## Seeding content
 
 ```bash
-npm run content:seed    # runs scripts/seed-content.ts via tsx
+npm run content:seed -w bonae-static    # runs scripts/seed-content.ts via tsx
 ```

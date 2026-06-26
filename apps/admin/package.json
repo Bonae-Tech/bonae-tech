@@ -7,10 +7,11 @@
     "dev": "vite",
     "dev:mock": "vite --mode mock",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "wrangler pages deploy dist --project-name bonae-admin"
   },
   "dependencies": {
-    "@bonae/content": "file:../../packages/content",
+    "@bonae/content": "*",
     "@hookform/resolvers": "^3.9.1",
     "@tanstack/react-query": "^5.62.8",
     "amazon-cognito-identity-js": "^6.3.12",

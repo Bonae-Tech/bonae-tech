@@ -27,9 +27,7 @@ Full install guide: [docs/workflows.md](../../docs/workflows.md)
 ## Local development
 
 ```bash
-make dev-worker
-# or
-cd workers/content-api && npx wrangler dev
+npm run dev:worker    # from repo root
 ```
 
 Set secrets locally via `.dev.vars` (gitignored):
@@ -45,15 +43,15 @@ COGNITO_CLIENT_ID=
 ## Tests
 
 ```bash
-make test-worker
+npm run worker:test    # from repo root
 ```
 
 Security tests cover authorization policy and JWT header parsing (no network calls).
 
 ## Deploy (code only)
 
-Day-to-day code deploys use **Deploy worker** (push to `main` or `make deploy-worker`). That workflow updates Worker code and Cognito vars but does **not** rotate GitHub App secrets — use **Setup worker** → `sync-secrets` for that.
+Day-to-day code deploys use **Deploy worker** (push to `main` or `npm run deploy:worker`). That workflow updates Worker code and Cognito vars but does **not** rotate GitHub App secrets — use **Setup worker** → `sync-secrets` for that.
 
 ```bash
-make deploy-worker
+npm run deploy:worker    # from repo root (requires Cloudflare credentials)
 ```

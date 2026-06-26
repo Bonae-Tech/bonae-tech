@@ -295,7 +295,7 @@ aws cognito-idp admin-add-user-to-group \
 
 ```bash
 npm run content:validate
-npm --prefix packages/content run validate -- ../../apps/static/content drafts
+npm run validate -w @bonae/content -- apps/static/content drafts
 ```
 
 ### Custom domains
@@ -305,9 +305,9 @@ Add `admin.<domain>` and marketing domain on the respective Cloudflare Pages pro
 ### Local development
 
 ```bash
-make dev-admin-mock    # admin SPA, no AWS
-make dev-worker        # Worker (requires workers/content-api/.dev.vars)
-npm run dev            # marketing site
+npm run dev:admin:mock    # admin SPA, no AWS
+npm run dev:worker        # Worker (requires workers/content-api/.dev.vars)
+npm run dev               # marketing site
 ```
 
 See [workflows.md](./workflows.md) for install and deploy procedures.

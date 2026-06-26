@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository structure
 
-This is a monorepo with five workspaces managed via npm scripts (no workspace hoisting — each package has its own `node_modules`):
+This is a monorepo with npm workspaces and Turborepo. Install and run commands from the repo root unless noted.
 
 ```
 apps/admin/           — Content admin SPA (React + Vite + Tailwind, Cloudflare Pages)
@@ -20,27 +20,26 @@ All commands are run from the repo root unless noted.
 
 ### Static site (`apps/static`)
 ```bash
-npm run dev          # astro dev (validates published content first via predev hook)
-npm run build        # astro build (validates published content first via prebuild hook)
+npm run dev          # turbo: builds @bonae/content, validates published JSON, starts astro dev
+npm run build        # turbo run build --filter=bonae-static
 ```
 
 ### Admin SPA (`apps/admin`)
 ```bash
-npm run admin:dev:mock   # mock mode: builds @bonae/content then starts Vite with VITE_USE_MOCK=true
+npm run admin:dev:mock   # mock mode: turbo builds @bonae/content then starts Vite with VITE_USE_MOCK=true
 npm run admin:dev        # real mode: requires .env in apps/admin/ with Cognito + API config
 npm run admin:build      # tsc --noEmit + vite build
 ```
 
 ### Content package (`packages/content`)
 ```bash
-npm run content:build    # tsc — must run before admin mock mode or worker build
-npm --prefix packages/content run test       # node --test (built files must exist first)
-npm --prefix packages/content run validate   # validate a content dir via CLI
+npm run content:build    # turbo run build --filter=@bonae/content
+npm run validate -w @bonae/content -- apps/static/content drafts   # validate a content dir via CLI
 ```
 
 ### Content API Worker (`workers/content-api`)
 ```bash
-npm run worker:build    # builds @bonae/content then typechecks worker
+npm run worker:build    # turbo run build (typecheck; content built via ^build dep)
 npm run worker:test     # vitest security tests
 npm run worker:dev      # wrangler dev
 ```
@@ -51,10 +50,11 @@ terraform plan
 terraform apply
 ```
 
-### Root orchestration (`Makefile`)
+### Root orchestration (npm workspaces + Turborepo)
 ```bash
-make build-all      # content + static + admin + worker
-make deploy-all     # worker then admin Pages
+npm ci
+npm run build       # content + static + admin + worker
+npm run deploy:all  # worker then admin Pages
 ```
 
 ## Architecture
@@ -99,7 +99,7 @@ Admin hosting and the content API run on Cloudflare (Pages + Worker), not AWS.
 
 ## Key constraints
 
-- **`packages/content` must be built before** running admin mock mode or building the Worker. The `admin:dev:mock` and `worker:build` scripts do this automatically.
+- **`packages/content` must be built before** running admin mock mode or building consumers. Turborepo `dependsOn: ["^build"]` handles this automatically; `admin:dev:mock` and `worker:build` also trigger content builds via Turbo.
 - **Locale parity is enforced** on every draft save (ES and EN must have matching array lengths at all mapped paths) and again on publish. Errors surface as 400 responses from the API.
 - **The static site validates published content** before `dev` and `build` via `predev`/`prebuild` hooks. If `apps/static/content/published/` is invalid, the site will not build.
 - **Admin users are invite-only** (`allow_admin_create_user_only = true`). Create users via `aws cognito-idp admin-create-user` and add to the `Administrators` group.

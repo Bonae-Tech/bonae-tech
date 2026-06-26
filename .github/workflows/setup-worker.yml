@@ -57,8 +57,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Resolve Worker name
+      - run: npm ci
         id: worker
         run: |
           if [ "${{ inputs.environment }}" = "staging" ]; then
@@ -106,23 +108,8 @@ jobs:
             exit 1
           fi
 
-      - uses: ./.github/actions/build-content
+      - run: npx turbo run build test --filter=@bonae/content-api-worker
         if: inputs.action == 'setup'
-
-      - name: Install worker dependencies
-        if: inputs.action == 'setup'
-        run: npm ci
-        working-directory: workers/content-api
-
-      - name: Typecheck worker
-        if: inputs.action == 'setup'
-        run: npm run build
-        working-directory: workers/content-api
-
-      - name: Run security tests
-        if: inputs.action == 'setup'
-        run: npm test
-        working-directory: workers/content-api
 
       - id: cloudflare
         uses: ./.github/actions/cloudflare-account
@@ -130,10 +117,6 @@ jobs:
           cloudflare_account_id_var: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           cloudflare_account_id_secret: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      - name: Install Wrangler
-        run: npm ci
-        working-directory: workers/content-api
 
       - name: Deploy Worker
         if: inputs.action == 'setup'

@@ -4,7 +4,6 @@ description: Install dependencies and build @bonae/content (required before apps
 runs:
   using: composite
   steps:
-    - name: Install and build packages/content
+    - name: Install and build @bonae/content
       shell: bash
-      run: npm ci && npm run build
-      working-directory: packages/content
+      run: npm ci && npx turbo run build --filter=@bonae/content
