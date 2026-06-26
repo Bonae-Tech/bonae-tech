@@ -6,7 +6,7 @@
   "nav": {
     "home": "Home",
     "about": "About Us",
-    "services": "Services",
+    "valueProp": "Services",
     "portfolio": "Portfolio",
     "blog": "Blog",
     "contact": "Contact",
@@ -27,6 +27,7 @@
   "valueProp": {
     "sectionBadge": "Our proposition",
     "title": "Technology as your competitive advantage",
+    "subheadline": "We offer technology solutions to help your brand connect, sell, and grow.",
     "items": [
       {
         "icon": "accessible",
@@ -50,33 +51,6 @@
       }
     ]
   },
-  "servicesSummary": {
-    "sectionBadge": "What do we do for you?",
-    "title": "Our services",
-    "subtitle": "Technology solutions so your brand can connect, sell, and grow.",
-    "items": [
-      {
-        "icon": "web",
-        "title": "High-Impact Web Presence",
-        "description": "We create, design, and maintain your website so it becomes a constant sales tool."
-      },
-      {
-        "icon": "social",
-        "title": "Social Media",
-        "description": "We create and optimize WhatsApp Business, Instagram, Facebook, and more so you never miss a contact opportunity."
-      },
-      {
-        "icon": "crm",
-        "title": "CRM",
-        "description": "Customer management and sales tracking with systems that are easy to access and use."
-      },
-      {
-        "icon": "consulting",
-        "title": "Digital Consulting",
-        "description": "Assessment and support for your digital transformation, based on your priorities and goals."
-      }
-    ]
-  },
   "keyFigures": {
     "years": "30+",
     "yearsLabel": "Years of combined experience",
@@ -93,28 +67,6 @@
   "about": {
     "sectionBadge": "Who we are",
     "title": "About Us",
-    "history": {
-      "title": "Our story",
-      "content": "Where technology meets hospitality. We are professionals who decided to combine technical training and entrepreneurial vision with years of experience in hospitality and technology. We understand that behind every screen there is a person looking for a solution. Focused on closing the digital gap in Venezuela and Latin America, we transform everyday challenges into growth tools for others."
-    },
-    "mission": {
-      "title": "Mission",
-      "content": "To drive the digital evolution of small and medium businesses in Venezuela and around the world by offering accessible, effective, and human technology solutions that remove the barriers to modernization."
-    },
-    "vision": {
-      "title": "Vision",
-      "content": "To become the strategic technology ally of reference for Venezuelan and Latin American small and medium businesses, recognized for blending global innovation standards with a deep, empathetic understanding of local realities."
-    },
-    "values": {
-      "title": "Our values",
-      "items": [
-        "Empathetic proximity: we are not just providers, we are allies. We understand your context because we live it with you.",
-        "Purpose-driven innovation: we do not implement technology because it is trendy, but to solve real problems and generate tangible results.",
-        "Integral accessibility: we believe high-level digitalization should be within everyone's reach, affordable and easy to use.",
-        "Integrity and transparency: we build trust-based relationships, with clear communication and honest processes at every stage.",
-        "Security and trust: we protect what is most valuable in your business, your information and your customers' information, as if it were our own."
-      ]
-    },
     "members": [
       {
         "initials": "IS",
@@ -149,83 +101,6 @@
     ],
     "foundersTitle": "Founders"
   },
-  "services": {
-    "sectionBadge": "Service Catalog",
-    "title": "Our services",
-    "subtitle": "Everything you need to digitalize your brand in one place.",
-    "categories": [
-      {
-        "title": "Digital Presence",
-        "columns": 3,
-        "items": [
-          {
-            "icon": "web",
-            "title": "High-Impact Web Presence",
-            "description": "We create, design, and maintain your website so it becomes your best presentation card and a constant sales tool."
-          },
-          {
-            "icon": "social",
-            "title": "Social Media",
-            "description": "We create and optimize your channels, including WhatsApp Business, Instagram, Facebook, and more, so you never miss a contact opportunity."
-          },
-          {
-            "icon": "growth",
-            "title": "Advertising and Growth",
-            "description": "We design digital strategies so your ideal customers find you and your brand gains sustainable visibility."
-          }
-        ]
-      },
-      {
-        "title": "Education, Loyalty, and Organization",
-        "columns": 3,
-        "items": [
-          {
-            "icon": "education",
-            "title": "Education Without Borders",
-            "description": "We digitalize your courses and classes so your knowledge can reach anywhere in the world."
-          },
-          {
-            "icon": "loyalty",
-            "title": "Loyalty and Organization",
-            "description": "We help you organize your digital structure and create service plans that turn buyers into loyal fans."
-          },
-          {
-            "icon": "seo",
-            "title": "SEO and Organic Growth",
-            "description": "We decode algorithm behavior so your brand climbs positions naturally and sustainably."
-          }
-        ]
-      },
-      {
-        "title": "CRM Solutions",
-        "columns": 3,
-        "items": [
-          {
-            "icon": "crm",
-            "title": "Customer and Sales Management",
-            "description": "We implement systems that are easy to access and use to manage customers, track sales, and strengthen every business relationship."
-          }
-        ]
-      },
-      {
-        "title": "Digital Consulting and Strategy",
-        "columns": 2,
-        "items": [
-          {
-            "icon": "assessment",
-            "title": "Digital assessment and priorities",
-            "description": "We evaluate your business and design a digital transformation roadmap based on your priorities, goals, and resources."
-          },
-          {
-            "icon": "consulting",
-            "title": "Strategic support",
-            "description": "We guide you step by step to professionalize your image, maximize your visibility, and build real connections with your customers."
-          }
-        ]
-      }
-    ],
-    "expansion": "We turn technology into your competitive advantage 24 hours a day."
-  },
   "portfolio": {
     "sectionBadge": "Our work",
     "title": "Portfolio",
@@ -253,20 +128,6 @@
     "sectionBadge": "Plans",
     "title": "Plans and pricing",
     "subtitle": "Our prices are designed so that digitalizing your business is not a luxury but a smart investment.",
-    "packages": [
-      {
-        "name": "Basic",
-        "description": "Essential digital presence: simple website and social media setup."
-      },
-      {
-        "name": "Professional",
-        "description": "Complete website + social media + basic CRM."
-      },
-      {
-        "name": "Enterprise",
-        "description": "Comprehensive customized solution."
-      }
-    ],
     "cta": "Request quote",
     "ctaSub": "Schedule a free consultation",
     "note": "Contact us for a personalized quote based on your business needs."
