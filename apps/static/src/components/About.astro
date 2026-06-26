@@ -23,36 +23,6 @@ const avatarColors = [
       <h2 class="section-title">{t.about.title}</h2>
     </div>
 
-    <div class="space-y-12 mb-16">
-      <div class="card max-w-3xl mx-auto">
-        <h3 class="text-lg font-bold text-dark-blue mb-3">{t.about.history.title}</h3>
-        <p class="text-pacificblue leading-relaxed">{t.about.history.content}</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="card">
-          <h3 class="text-lg font-bold text-dark-blue mb-3">{t.about.mission.title}</h3>
-          <p class="text-pacificblue leading-relaxed">{t.about.mission.content}</p>
-        </div>
-        <div class="card">
-          <h3 class="text-lg font-bold text-dark-blue mb-3">{t.about.vision.title}</h3>
-          <p class="text-pacificblue leading-relaxed">{t.about.vision.content}</p>
-        </div>
-      </div>
-
-      <div class="card max-w-3xl mx-auto">
-        <h3 class="text-lg font-bold text-dark-blue mb-4">{t.about.values.title}</h3>
-        <ul class="space-y-2">
-          {t.about.values.items.map((v) => (
-            <li class="flex items-start gap-2 text-pacificblue">
-              <span class="w-1.5 h-1.5 rounded-full bg-terracotta flex-shrink-0 mt-2"></span>
-              {v}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-
     <h3 class="text-xl font-bold text-dark-blue text-center mb-10">
       {t.about.foundersTitle}
     </h3>

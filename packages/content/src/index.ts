@@ -8,14 +8,7 @@ export {
   type SiteSettings,
   type Locale,
 } from './schema.js';
-export {
-  valuePropIcons,
-  serviceSummaryIcons,
-  serviceCardIcons,
-  type ValuePropIcon,
-  type ServiceSummaryIcon,
-  type ServiceCardIcon,
-} from './icons.js';
+export { valuePropIcons, type ValuePropIcon } from './icons.js';
 export { checkLocaleParity, assertLocaleParity } from './validate.js';
 export {
   loadPublishedFromDir,

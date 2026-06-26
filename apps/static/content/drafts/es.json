@@ -6,7 +6,7 @@
   "nav": {
     "home": "Inicio",
     "about": "Nosotras",
-    "services": "Servicios",
+    "valueProp": "Servicios",
     "portfolio": "Portafolio",
     "blog": "Blog",
     "contact": "Contacto",
@@ -27,53 +27,27 @@
   "valueProp": {
     "sectionBadge": "Nuestra propuesta",
     "title": "Tecnología como ventaja competitiva",
+    "subheadline": "Ofrecemos soluciones tecnológicas para que tu marca conecte, venda y crezca.",
     "items": [
       {
         "icon": "accessible",
-        "title": "Accesible",
+        "title": "Presencia Web de alto impacto",
         "description": "Precios acordes al mercado, desde planes básicos hasta soluciones completas, con opciones de financiación."
       },
       {
         "icon": "simple",
-        "title": "Estratégico",
+        "title": "Redes Sociales",
         "description": "Estructuramos ecosistemas digitales de alto rendimiento con SEO avanzado y crecimiento orgánico sostenible."
       },
       {
         "icon": "secure",
-        "title": "Seguro",
+        "title": "Sistemas de Gestión Comercial (CRM)",
         "description": "Optimizamos cada proceso técnico y estratégico para profesionalizar tu imagen y proteger la confianza de tus clientes."
       },
       {
         "icon": "close",
-        "title": "Cercano",
+        "title": "Consultoría digital",
         "description": "Entendemos los retos y oportunidades de nuestra región, hablamos tu idioma y ofrecemos soporte técnico cercano, real y eficiente."
-      }
-    ]
-  },
-  "servicesSummary": {
-    "sectionBadge": "¿Qué hacemos por ti?",
-    "title": "Nuestros servicios",
-    "subtitle": "Soluciones tecnológicas para que tu marca conecte, venda y crezca.",
-    "items": [
-      {
-        "icon": "web",
-        "title": "Presencia Web de Alto Impacto",
-        "description": "Creamos, diseñamos y mantenemos tu sitio web para que sea una herramienta de ventas constante."
-      },
-      {
-        "icon": "social",
-        "title": "Redes sociales",
-        "description": "Creamos y optimizamos WhatsApp Business, Instagram, Facebook y más para que no pierdas oportunidades de contacto."
-      },
-      {
-        "icon": "crm",
-        "title": "CRM",
-        "description": "Gestión de clientes y seguimiento de ventas con sistemas de fácil acceso y manejo."
-      },
-      {
-        "icon": "consulting",
-        "title": "Consultoría Digital",
-        "description": "Evaluación y acompañamiento en tu transformación digital, tomando en cuenta tus prioridades y objetivos."
       }
     ]
   },
@@ -93,28 +67,6 @@
   "about": {
     "sectionBadge": "Quiénes somos",
     "title": "Nosotras",
-    "history": {
-      "title": "Nuestra historia",
-      "content": "Donde la tecnología se encuentra con la hospitalidad. Somos profesionales que decidimos fusionar nuestra formación técnica y visión emprendedora con años de experiencia en hospitalidad y tecnología. Entendemos que, detrás de cada pantalla, hay una persona buscando una solución. Enfocadas en cerrar la brecha digital en Venezuela y Latinoamérica, transformamos los desafíos diarios en herramientas de crecimiento para otros."
-    },
-    "mission": {
-      "title": "Misión",
-      "content": "Impulsar la evolución digital de las pequeñas y medianas empresas en Venezuela y el mundo, ofreciendo soluciones tecnológicas accesibles, efectivas y humanas que eliminen las barreras de la modernización."
-    },
-    "vision": {
-      "title": "Visión",
-      "content": "Convertirnos en el aliado tecnológico estratégico de referencia para las pequeñas y medianas empresas venezolanas y latinoamericanas, reconocidas por fusionar estándares de innovación global con un entendimiento profundo y empático de las realidades locales."
-    },
-    "values": {
-      "title": "Nuestros valores",
-      "items": [
-        "Cercanía empática: no solo somos proveedoras, somos aliadas. Entendemos tu contexto porque lo vivimos contigo.",
-        "Innovación con propósito: no implementamos tecnología por moda, sino para resolver problemas reales y generar resultados tangibles.",
-        "Accesibilidad integral: creemos que la digitalización de alto nivel debe estar al alcance de todos, siendo asequible y fácil de usar.",
-        "Integridad y transparencia: construimos relaciones basadas en la confianza, con comunicación clara y procesos honestos en cada etapa.",
-        "Seguridad y confianza: protegemos lo más valioso de tu negocio, tu información y la de tus clientes, como si fuera la nuestra."
-      ]
-    },
     "members": [
       {
         "initials": "IS",
@@ -149,83 +101,6 @@
     ],
     "foundersTitle": "Cofundadoras"
   },
-  "services": {
-    "sectionBadge": "Catálogo de Servicios",
-    "title": "Nuestros servicios",
-    "subtitle": "Todo lo que necesitas para digitalizar tu marca en un solo lugar.",
-    "categories": [
-      {
-        "title": "Presencia Digital",
-        "columns": 3,
-        "items": [
-          {
-            "icon": "web",
-            "title": "Presencia Web de Alto Impacto",
-            "description": "Creamos, diseñamos y mantenemos tu sitio web para que sea tu mejor carta de presentación y una herramienta de ventas constante."
-          },
-          {
-            "icon": "social",
-            "title": "Redes sociales",
-            "description": "Creamos y optimizamos tus redes, incluyendo WhatsApp Business, Instagram, Facebook y más, para que nunca pierdas una oportunidad de contacto."
-          },
-          {
-            "icon": "growth",
-            "title": "Publicidad y Crecimiento",
-            "description": "Diseñamos estrategias digitales para que los clientes ideales te encuentren a ti y tu marca gane visibilidad de forma sostenible."
-          }
-        ]
-      },
-      {
-        "title": "Educación, fidelización y organización",
-        "columns": 3,
-        "items": [
-          {
-            "icon": "education",
-            "title": "Educación sin Fronteras",
-            "description": "Digitalizamos tus cursos y clases para que tu conocimiento llegue a cualquier parte del mundo."
-          },
-          {
-            "icon": "loyalty",
-            "title": "Fidelización y Organización",
-            "description": "Te ayudamos a organizar tu estructura digital y a crear planes de atención que conviertan a tus compradores en fans leales."
-          },
-          {
-            "icon": "seo",
-            "title": "SEO y crecimiento orgánico",
-            "description": "Desciframos el comportamiento de los algoritmos para que tu marca escale posiciones de forma natural y sostenible."
-          }
-        ]
-      },
-      {
-        "title": "Soluciones CRM",
-        "columns": 3,
-        "items": [
-          {
-            "icon": "crm",
-            "title": "Gestión de clientes y ventas",
-            "description": "Implementamos sistemas de fácil acceso y manejo para gestionar clientes, dar seguimiento a ventas y fortalecer cada relación comercial."
-          }
-        ]
-      },
-      {
-        "title": "Consultoría y Estrategia Digital",
-        "columns": 2,
-        "items": [
-          {
-            "icon": "assessment",
-            "title": "Evaluación y prioridades digitales",
-            "description": "Evaluamos tu negocio y diseñamos una ruta de transformación digital tomando en cuenta tus prioridades, objetivos y recursos."
-          },
-          {
-            "icon": "consulting",
-            "title": "Acompañamiento estratégico",
-            "description": "Te guiamos paso a paso para profesionalizar tu imagen, maximizar tu visibilidad y estrechar vínculos reales con tus clientes."
-          }
-        ]
-      }
-    ],
-    "expansion": "Convertimos la tecnología en tu ventaja competitiva las 24 horas del día."
-  },
   "portfolio": {
     "sectionBadge": "Nuestro trabajo",
     "title": "Portafolio",
@@ -251,22 +126,8 @@
   },
   "plans": {
     "sectionBadge": "Planes",
-    "title": "Planes y precios",
-    "subtitle": "Nuestros precios están diseñados para que digitalizar tu negocio no sea un lujo sino una inversión inteligente.",
-    "packages": [
-      {
-        "name": "Básico",
-        "description": "Presencia digital esencial: sitio web sencillo y configuración de redes."
-      },
-      {
-        "name": "Profesional",
-        "description": "Sitio web completo + redes sociales + CRM básico."
-      },
-      {
-        "name": "Empresarial",
-        "description": "Solución integral personalizada."
-      }
-    ],
+    "title": "¿Listo para digitalizar y automatizar tu marca?",
+    "subtitle": "El impulso tecnológico que tu empresa necesita está a solo un clic de distancia. Obtén un presupuesto personalizado hoy mismo.",
     "cta": "Solicitar cotización",
     "ctaSub": "Agenda una consulta gratuita",
     "note": "Contáctanos para una cotización personalizada según las necesidades de tu negocio."

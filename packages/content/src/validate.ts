@@ -13,17 +13,10 @@ function arrayLengthAt(obj: unknown, path: string[]): number | null {
 
 const arrayPaths: string[][] = [
   ['valueProp', 'items'],
-  ['servicesSummary', 'items'],
-  ['about', 'values', 'items'],
   ['about', 'members'],
   ['portfolio', 'industries', 'items'],
-  ['plans', 'packages'],
   ['contact', 'form', 'serviceOptions'],
 ];
-
-function memberHighlightsLength(doc: ContentDocument): number {
-  return doc.about.members[0]?.highlights.length ?? 0;
-}
 
 export function checkLocaleParity(es: ContentDocument, en: ContentDocument): ParityIssue[] {
   const issues: ParityIssue[] = [];
@@ -40,25 +33,6 @@ export function checkLocaleParity(es: ContentDocument, en: ContentDocument): Par
     }
   }
 
-  const esCategories = es.services.categories;
-  const enCategories = en.services.categories;
-  if (esCategories.length !== enCategories.length) {
-    issues.push({
-      path: 'services.categories',
-      message: `Array length mismatch for services.categories: es=${esCategories.length}, en=${enCategories.length}`,
-    });
-  }
-  for (let i = 0; i < Math.min(esCategories.length, enCategories.length); i++) {
-    const esItems = esCategories[i]?.items.length ?? 0;
-    const enItems = enCategories[i]?.items.length ?? 0;
-    if (esItems !== enItems) {
-      issues.push({
-        path: `services.categories[${i}].items`,
-        message: `Array length mismatch: es=${esItems}, en=${enItems}`,
-      });
-    }
-  }
-
   for (let i = 0; i < es.about.members.length; i++) {
     const esHighlights = es.about.members[i]?.highlights.length ?? 0;
     const enHighlights = en.about.members[i]?.highlights.length ?? 0;
@@ -68,12 +42,6 @@ export function checkLocaleParity(es: ContentDocument, en: ContentDocument): Par
         message: `Highlight count mismatch: es=${esHighlights}, en=${enHighlights}`,
       });
     }
-  }
-
-  const esFirstHighlights = memberHighlightsLength(es);
-  const enFirstHighlights = memberHighlightsLength(en);
-  if (esFirstHighlights !== enFirstHighlights && es.about.members.length === en.about.members.length) {
-    // already covered per-member above
   }
 
   if (es.lang !== 'es') {
