@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { serviceSummaryIcons, valuePropIcons } from './icons.js';
+import { serviceCardIcons, serviceSummaryIcons, valuePropIcons } from './icons.js';
 
 export const localeSchema = z.enum(['es', 'en']);
 
@@ -16,8 +16,15 @@ const serviceSummaryItemSchema = z.object({
 });
 
 const serviceItemSchema = z.object({
+  icon: z.enum(serviceCardIcons),
   title: z.string().min(1),
   description: z.string().min(1),
+});
+
+const serviceCategorySchema = z.object({
+  title: z.string().min(1),
+  columns: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  items: z.array(serviceItemSchema).min(1),
 });
 
 const memberSchema = z.object({
@@ -115,22 +122,7 @@ export const contentDocumentSchema = z.object({
     sectionBadge: z.string().min(1),
     title: z.string().min(1),
     subtitle: z.string().min(1),
-    presenceDigital: z.object({
-      title: z.string().min(1),
-      items: z.array(serviceItemSchema).length(3),
-    }),
-    webDigital: z.object({
-      title: z.string().min(1),
-      items: z.array(serviceItemSchema).length(3),
-    }),
-    crm: z.object({
-      title: z.string().min(1),
-      items: z.array(serviceItemSchema).length(1),
-    }),
-    consulting: z.object({
-      title: z.string().min(1),
-      items: z.array(serviceItemSchema).length(2),
-    }),
+    categories: z.array(serviceCategorySchema).min(1),
     expansion: z.string().min(1),
   }),
 

@@ -16,10 +16,6 @@ const arrayPaths: string[][] = [
   ['servicesSummary', 'items'],
   ['about', 'values', 'items'],
   ['about', 'members'],
-  ['services', 'presenceDigital', 'items'],
-  ['services', 'webDigital', 'items'],
-  ['services', 'crm', 'items'],
-  ['services', 'consulting', 'items'],
   ['portfolio', 'industries', 'items'],
   ['plans', 'packages'],
   ['contact', 'form', 'serviceOptions'],
@@ -40,6 +36,25 @@ export function checkLocaleParity(es: ContentDocument, en: ContentDocument): Par
       issues.push({
         path: label,
         message: `Array length mismatch for ${label}: es=${esLen}, en=${enLen}`,
+      });
+    }
+  }
+
+  const esCategories = es.services.categories;
+  const enCategories = en.services.categories;
+  if (esCategories.length !== enCategories.length) {
+    issues.push({
+      path: 'services.categories',
+      message: `Array length mismatch for services.categories: es=${esCategories.length}, en=${enCategories.length}`,
+    });
+  }
+  for (let i = 0; i < Math.min(esCategories.length, enCategories.length); i++) {
+    const esItems = esCategories[i]?.items.length ?? 0;
+    const enItems = enCategories[i]?.items.length ?? 0;
+    if (esItems !== enItems) {
+      issues.push({
+        path: `services.categories[${i}].items`,
+        message: `Array length mismatch: es=${esItems}, en=${enItems}`,
       });
     }
   }

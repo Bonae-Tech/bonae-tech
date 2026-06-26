@@ -1,11 +1,18 @@
 ---
 import type { Translations } from '@bonae/content';
+import ServiceCard from './ServiceCard.astro';
 
 interface Props {
   t: Translations;
 }
 
 const { t } = Astro.props;
+
+const columnClasses = {
+  1: 'md:grid-cols-1',
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-3',
+} as const;
 ---
 
 <section id="servicios-completos" class="py-20 bg-white">
@@ -19,57 +26,16 @@ const { t } = Astro.props;
     </div>
 
     <div class="space-y-16">
-      <!-- Presencia Digital -->
-      <div>
-        <h3 class="text-xl font-bold text-dark-blue mb-6">{t.services.presenceDigital.title}</h3>
-        <div class="grid md:grid-cols-3 gap-6">
-          {t.services.presenceDigital.items.map((item) => (
-            <article class="card">
-              <h4 class="font-bold text-pacificblue mb-2">{item.title}</h4>
-              <p class="text-pacificblue text-sm leading-relaxed">{item.description}</p>
-            </article>
-          ))}
+      {t.services.categories.map((category) => (
+        <div>
+          <h3 class="text-xl font-bold text-dark-blue mb-6">{category.title}</h3>
+          <div class={`grid gap-6 ${columnClasses[category.columns]}`}>
+            {category.items.map((item) => (
+              <ServiceCard icon={item.icon} title={item.title} description={item.description} />
+            ))}
+          </div>
         </div>
-      </div>
-
-      <!-- Servicios Web Digitales -->
-      <div>
-        <h3 class="text-xl font-bold text-dark-blue mb-6">{t.services.webDigital.title}</h3>
-        <div class="grid md:grid-cols-3 gap-6">
-          {t.services.webDigital.items.map((item) => (
-            <article class="card">
-              <h4 class="font-bold text-pacificblue mb-2">{item.title}</h4>
-              <p class="text-pacificblue text-sm leading-relaxed">{item.description}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-
-      <!-- Soluciones CRM -->
-      <div>
-        <h3 class="text-xl font-bold text-dark-blue mb-6">{t.services.crm.title}</h3>
-        <div class="grid md:grid-cols-3 gap-6">
-          {t.services.crm.items.map((item) => (
-            <article class="card">
-              <h4 class="font-bold text-pacificblue mb-2">{item.title}</h4>
-              <p class="text-pacificblue text-sm leading-relaxed">{item.description}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-
-      <!-- Consultoría -->
-      <div>
-        <h3 class="text-xl font-bold text-dark-blue mb-6">{t.services.consulting.title}</h3>
-        <div class="grid md:grid-cols-2 gap-6">
-          {t.services.consulting.items.map((item) => (
-            <article class="card">
-              <h4 class="font-bold text-pacificblue mb-2">{item.title}</h4>
-              <p class="text-pacificblue text-sm leading-relaxed">{item.description}</p>
-            </article>
-          ))}
-        </div>
-      </div>
+      ))}
 
       <p class="text-center text-pacificblue text-sm italic max-w-2xl mx-auto">
         {t.services.expansion}

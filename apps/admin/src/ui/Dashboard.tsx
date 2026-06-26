@@ -6,10 +6,11 @@ import { HeroSectionForm } from './sections/HeroSectionForm.js';
 import { ValuePropSectionForm } from './sections/ValuePropSectionForm.js';
 import { AboutSectionForm } from './sections/AboutSectionForm.js';
 import { ContactSectionForm } from './sections/ContactSectionForm.js';
+import { ServicesSectionForm } from './sections/ServicesSectionForm.js';
 import { SettingsSectionForm } from './sections/SettingsSectionForm.js';
 import { JsonSectionEditor } from './components/JsonSectionEditor.js';
 
-type SectionId = 'hero' | 'valueProp' | 'about' | 'contact' | 'settings' | 'advanced';
+type SectionId = 'hero' | 'valueProp' | 'services' | 'about' | 'contact' | 'settings' | 'advanced';
 
 interface Props {
   onLogout: () => void;
@@ -65,6 +66,7 @@ export function Dashboard({ onLogout }: Props) {
   const navItems: [SectionId, string][] = [
     ['hero', 'Hero'],
     ['valueProp', 'Value proposition'],
+    ['services', 'Services'],
     ['about', 'About / team'],
     ['contact', 'Contact'],
     ['settings', 'Site settings'],
@@ -132,6 +134,9 @@ export function Dashboard({ onLogout }: Props) {
           )}
           {doc && section === 'valueProp' && (
             <ValuePropSectionForm doc={doc} onSave={(next) => saveMutation.mutate(next)} saving={saveMutation.isPending} />
+          )}
+          {doc && section === 'services' && (
+            <ServicesSectionForm doc={doc} onSave={(next) => saveMutation.mutate(next)} saving={saveMutation.isPending} />
           )}
           {doc && section === 'about' && (
             <AboutSectionForm doc={doc} onSave={(next) => saveMutation.mutate(next)} saving={saveMutation.isPending} />

@@ -3,7 +3,7 @@
         dev-admin-mock dev-worker test-worker setup-worker
 
 build-content:
-	cd packages/content && npm ci && npm run build
+cd 	cd packages/content && npm ci && npm run build
 
 build-site: build-content
 	cd apps/static && npm ci && npm run build
