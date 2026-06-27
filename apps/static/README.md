@@ -1,52 +1,52 @@
 # bonae-static
 
-BONAE Tech marketing site — Astro 4 + Tailwind CSS, deployed to Cloudflare Pages.
+Sitio de marketing de BONAE Tech — Astro 4 + Tailwind CSS, desplegado en Cloudflare Pages.
 
-## Prerequisites
+## Requisitos previos
 
-Install from the repo root (`npm ci`). Turborepo builds `@bonae/content` before this package when using root scripts.
+Instalar desde la raíz del repo (`npm ci`). Turborepo compila `@bonae/content` antes de este paquete cuando se usan scripts de la raíz.
 
-## Dev
+## Desarrollo
 
 ```bash
-npm run dev      # from repo root — http://localhost:4321
+npm run dev      # desde la raíz del repo — http://localhost:4321
 ```
 
-Validates published JSON before starting (`predev` hook). The site reads only `content/published/` — drafts are never visible here.
+Valida el JSON publicado antes de iniciar (hook `predev`). El sitio lee solo `content/published/` — los borradores nunca son visibles aquí.
 
 ## Build
 
 ```bash
-npm run build    # from repo root — validates published JSON, then astro build → dist/
-npm run preview  # preview the production build locally
+npm run build    # desde la raíz del repo — valida JSON publicado, luego astro build → dist/
+npm run preview  # previsualizar el build de producción localmente
 ```
 
-## Content structure
+## Estructura del contenido
 
 ```
 content/
   drafts/
-    es.json          ← edited via admin SPA
+    es.json          ← editado vía admin SPA
     en.json
     settings.json
   published/
-    es.json          ← read by Astro at build time
+    es.json          ← leído por Astro en tiempo de build
     en.json
     settings.json
 ```
 
-**Only `content/published/` is read by the site.** Changes to drafts are not visible until published via the admin. Schema and validation live in `packages/content`.
+**Solo `content/published/` es leído por el sitio.** Los cambios en borradores no son visibles hasta publicarlos vía el admin. El esquema y la validación viven en `packages/content`.
 
-## Validate published content
+## Validar contenido publicado
 
 ```bash
-npm run content:validate    # from repo root
+npm run content:validate    # desde la raíz del repo
 ```
 
-This is the same check run by the `predev` and `prebuild` hooks. If `published/` is invalid, the site will not build.
+Es la misma verificación que ejecutan los hooks `predev` y `prebuild`. Si `published/` es inválido, el sitio no compilará.
 
-## Seeding content
+## Sembrar contenido
 
 ```bash
-npm run content:seed -w bonae-static    # runs scripts/seed-content.ts via tsx
+npm run content:seed -w bonae-static    # ejecuta scripts/seed-content.ts vía tsx
 ```

@@ -10,7 +10,6 @@ export const es = {
     about: 'Nosotras',
     services: 'Servicios',
     portfolio: 'Portafolio',
-    blog: 'Blog',
     contact: 'Contacto',
     cta: 'Contáctanos',
     clients: 'Clientes',
@@ -285,7 +284,6 @@ export const es = {
       about: 'Nosotras',
       services: 'Servicios',
       portfolio: 'Portafolio',
-      blog: 'Blog',
       contact: 'Contacto',
     },
     services: {

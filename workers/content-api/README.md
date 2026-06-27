@@ -1,36 +1,36 @@
 # Content API Worker
 
-Cloudflare Worker that proxies authenticated content operations to GitHub via a GitHub App.
+Cloudflare Worker que hace proxy de operaciones de contenido autenticadas hacia GitHub vía una GitHub App.
 
-## Routes
+## Rutas
 
-| Method | Path | Action |
+| Método | Ruta | Acción |
 |--------|------|--------|
-| GET | `/content/drafts/{es\|en\|settings}` | Read draft JSON |
-| PUT | `/content/drafts/{es\|en\|settings}` | Validate and commit draft |
-| GET | `/content/published/{es\|en\|settings}` | Read published JSON |
-| POST | `/content/publish` | Copy drafts → published |
+| GET | `/content/drafts/{es\|en\|settings}` | Leer JSON de borrador |
+| PUT | `/content/drafts/{es\|en\|settings}` | Validar y confirmar borrador |
+| GET | `/content/published/{es\|en\|settings}` | Leer JSON publicado |
+| POST | `/content/publish` | Copiar drafts → published |
 
 ## Auth
 
-Every request requires a valid Cognito ID token (`Authorization: Bearer`). The Worker verifies JWTs via Cognito JWKS and checks group membership in `src/auth/authorize.ts`.
+Cada solicitud requiere un token ID de Cognito válido (`Authorization: Bearer`). El Worker verifica JWTs vía Cognito JWKS y comprueba membresía de grupo en `src/auth/authorize.ts`.
 
-## Production setup
+## Configuración de producción
 
-Use the **Setup worker** GitHub Actions workflow — do not run `wrangler secret put` manually in production.
+Usar el workflow de GitHub Actions **Setup worker** — no ejecutar `wrangler secret put` manualmente en producción.
 
-1. Store GitHub App credentials as **prod** environment secrets: `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`
-2. Run **Setup worker** with `action: setup`
+1. Almacenar credenciales de GitHub App como secretos del entorno **prod**: `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`
+2. Ejecutar **Setup worker** con `action: setup`
 
-Full install guide: [docs/workflows.md](../../docs/workflows.md)
+Guía completa de instalación: [docs/workflows.md](../../docs/workflows.md)
 
-## Local development
+## Desarrollo local
 
 ```bash
-npm run dev:worker    # from repo root
+npm run dev:worker    # desde la raíz del repo
 ```
 
-Set secrets locally via `.dev.vars` (gitignored):
+Configurar secretos localmente vía `.dev.vars` (gitignored):
 
 ```
 GITHUB_APP_ID=
@@ -43,15 +43,15 @@ COGNITO_CLIENT_ID=
 ## Tests
 
 ```bash
-npm run worker:test    # from repo root
+npm run worker:test    # desde la raíz del repo
 ```
 
-Security tests cover authorization policy and JWT header parsing (no network calls).
+Los tests de seguridad cubren política de autorización y parseo de headers JWT (sin llamadas de red).
 
-## Deploy (code only)
+## Deploy (solo código)
 
-Day-to-day code deploys use **Deploy worker** (push to `main` or `npm run deploy:worker`). That workflow updates Worker code and Cognito vars but does **not** rotate GitHub App secrets — use **Setup worker** → `sync-secrets` for that.
+Los deploys diarios de código usan **Deploy worker** (push a `main` o `npm run deploy:worker`). Ese workflow actualiza el código del Worker y las vars de Cognito pero **no** rota secretos de GitHub App — usar **Setup worker** → `sync-secrets` para eso.
 
 ```bash
-npm run deploy:worker    # from repo root (requires Cloudflare credentials)
+npm run deploy:worker    # desde la raíz del repo (requiere credenciales de Cloudflare)
 ```

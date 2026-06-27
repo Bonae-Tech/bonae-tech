@@ -8,7 +8,6 @@
     "about": "Nosotras",
     "valueProp": "Servicios",
     "portfolio": "Portafolio",
-    "blog": "Blog",
     "contact": "Contacto",
     "cta": "Contáctanos",
     "clients": "Clientes",
@@ -170,7 +169,6 @@
       "about": "Nosotras",
       "services": "Servicios",
       "portfolio": "Portafolio",
-      "blog": "Blog",
       "contact": "Contacto"
     },
     "services": {
@@ -192,10 +190,5 @@
     "accept": "Aceptar",
     "privacy": "Política de Privacidad",
     "ariaLabel": "Aviso de cookies"
-  },
-  "blog": {
-    "title": "Blog y Recursos",
-    "subtitle": "Consejos, guías y actualizaciones para PyMEs latinoamericanas.",
-    "comingSoon": "Artículos y recursos descargables próximamente."
   }
 }

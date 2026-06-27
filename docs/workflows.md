@@ -1,202 +1,202 @@
-# GitHub Actions workflows
+# Workflows de GitHub Actions
 
-All workflow files live in [`.github/workflows/`](../.github/workflows/). Platform architecture: [architecture.md](./architecture.md).
+Todos los archivos de workflow están en [`.github/workflows/`](../.github/workflows/). Arquitectura de la plataforma: [architecture.md](./architecture.md).
 
 ---
 
-## Quick reference
+## Referencia rápida
 
-| Workflow | Trigger | Frequency |
+| Workflow | Disparador | Frecuencia |
 |----------|---------|-----------|
-| [Bootstrap (one-time install)](../.github/workflows/bootstrap.yml) | Manual | **Once** per environment |
-| [Setup worker](../.github/workflows/setup-worker.yml) | Manual | **Once** at install; secret rotation / teardown |
-| [Setup admin](../.github/workflows/setup-admin.yml) | Manual | **Once** at install; verify only |
-| [Deploy cognito](../.github/workflows/deploy-cognito.yml) | Push (TF paths) / manual | **Once** at install; when Cognito TF changes |
-| [Deploy admin](../.github/workflows/deploy-admin.yml) | Push (admin paths) / manual | Recurring |
-| [Deploy site](../.github/workflows/deploy-site.yml) | Push (static paths) / manual | Recurring |
-| [Deploy worker](../.github/workflows/deploy-worker.yml) | Push (worker paths) / manual | Recurring |
-| [Deploy (manual)](../.github/workflows/deploy.yml) | Manual | Recurring — one component only |
-| [CI](../.github/workflows/ci.yml) | Push / PR | Every code change |
-| [Content PR check](../.github/workflows/content-pr-check.yml) | Content PRs | Every content PR |
-| [Terraform plan](../.github/workflows/terraform-plan.yml) | Infra PRs | Plan only — no apply |
+| [Bootstrap (one-time install)](../.github/workflows/bootstrap.yml) | Manual | **Una vez** por entorno |
+| [Setup worker](../.github/workflows/setup-worker.yml) | Manual | **Una vez** en instalación; rotación de secretos / teardown |
+| [Setup admin](../.github/workflows/setup-admin.yml) | Manual | **Una vez** en instalación; solo verificación |
+| [Deploy cognito](../.github/workflows/deploy-cognito.yml) | Push (rutas TF) / manual | **Una vez** en instalación; cuando cambia TF de Cognito |
+| [Deploy admin](../.github/workflows/deploy-admin.yml) | Push (rutas admin) / manual | Recurrente |
+| [Deploy site](../.github/workflows/deploy-site.yml) | Push (rutas static) / manual | Recurrente |
+| [Deploy worker](../.github/workflows/deploy-worker.yml) | Push (rutas worker) / manual | Recurrente |
+| [Deploy (manual)](../.github/workflows/deploy.yml) | Manual | Recurrente — un solo componente |
+| [CI](../.github/workflows/ci.yml) | Push / PR | Cada cambio de código |
+| [Content PR check](../.github/workflows/content-pr-check.yml) | PRs de contenido | Cada PR de contenido |
+| [Terraform plan](../.github/workflows/terraform-plan.yml) | PRs de infra | Solo plan — sin apply |
 
 ---
 
-## One-time install
+## Instalación única
 
-### Step 0 — Terraform bootstrap (local, before any workflow)
+### Paso 0 — Bootstrap Terraform (local, antes de cualquier workflow)
 
-Run once from your machine with personal AWS credentials:
+Ejecutar una vez desde tu máquina con credenciales personales de AWS:
 
 ```bash
 cd infra/terraform/bootstrap && terraform init && terraform apply
 ```
 
-Creates S3 remote state, DynamoDB lock, GitHub OIDC role, and `infra-production` environment. Add GitHub secrets from outputs: `AWS_ROLE_ARN`, `AWS_REGION`, `GH_REPO_VARIABLES_TOKEN`.
+Crea estado remoto S3, bloqueo DynamoDB, rol GitHub OIDC y entorno `infra-production`. Agregar secretos de GitHub desde los outputs: `AWS_ROLE_ARN`, `AWS_REGION`, `GH_REPO_VARIABLES_TOKEN`.
 
-Not included in **Bootstrap (one-time install)** — CI cannot run until this completes. See [architecture.md §3.1](./architecture.md#31-aws-resources-sa-east-1).
+No está incluido en **Bootstrap (one-time install)** — CI no puede ejecutarse hasta completar esto. Ver [architecture.md §3.1](./architecture.md#31-aws-sa-east-1).
 
-### Step 0b — Manual GitHub / Cloudflare setup
+### Paso 0b — Configuración manual de GitHub / Cloudflare
 
-Before running workflows:
+Antes de ejecutar workflows:
 
-| Item | Where |
+| Elemento | Dónde |
 |------|--------|
-| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | GitHub **prod** environment secrets |
-| `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY` | GitHub **prod** environment secrets |
-| GitHub App (`Contents: Read & Write` on this repo) | GitHub Settings → Developer settings |
+| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Secretos del entorno GitHub **prod** |
+| `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY` | Secretos del entorno GitHub **prod** |
+| GitHub App (`Contents: Read & Write` en este repo) | GitHub Settings → Developer settings |
 
-**Cloudflare API token** — custom token scoped to your account:
+**Token API de Cloudflare** — token personalizado con alcance a tu cuenta:
 
-| Permission | Access |
+| Permiso | Acceso |
 |------------|--------|
 | Account → Workers Scripts | Edit |
 | Account → Cloudflare Pages | Edit |
 | Account → Account Settings | Read |
 
-`CLOUDFLARE_ACCOUNT_ID` is required in CI. Without it, Wrangler calls `/memberships` and fails with authentication error `10000`.
+`CLOUDFLARE_ACCOUNT_ID` es obligatorio en CI. Sin él, Wrangler llama a `/memberships` y falla con error de autenticación `10000`.
 
-### Steps 1–4 — GitHub Actions bootstrap
+### Pasos 1–4 — Bootstrap de GitHub Actions
 
-Run **Bootstrap (one-time install)** with `step: full`, or each step individually:
+Ejecutar **Bootstrap (one-time install)** con `step: full`, o cada paso individualmente:
 
 ```mermaid
 flowchart LR
-    TF["0. Terraform bootstrap\n(local)"] --> A["1. Deploy cognito"]
+    TF["0. Bootstrap Terraform\n(local)"] --> A["1. Deploy cognito"]
     A --> B["2. Setup worker"]
     B --> C["3. Setup admin"]
     C --> D["4. Deploy site"]
 ```
 
-| Step | Workflow | What it does |
+| Paso | Workflow | Qué hace |
 |------|----------|--------------|
-| 1 | **Deploy cognito** | `terraform apply` on Cognito module → `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` repo variables |
-| 2 | **Setup worker** (`action: setup`) | Deploy `bonae-content-api`, sync GitHub App secrets, set Cognito vars |
-| 3 | **Setup admin** (`action: setup`) | Verify Worker exists; create `bonae-admin` Pages project if missing; deploy SPA + `/content/*` binding |
-| 4 | **Deploy site** | Create `bonae-tech` Pages project if missing; deploy marketing site |
+| 1 | **Deploy cognito** | `terraform apply` en módulo Cognito → variables de repo `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` |
+| 2 | **Setup worker** (`action: setup`) | Desplegar `bonae-content-api`, sincronizar secretos de GitHub App, establecer vars de Cognito |
+| 3 | **Setup admin** (`action: setup`) | Verificar que el Worker existe; crear proyecto Pages `bonae-admin` si falta; desplegar SPA + binding `/content/*` |
+| 4 | **Deploy site** | Crear proyecto Pages `bonae-tech` si falta; desplegar sitio de marketing |
 
-After bootstrap: create the first Cognito admin user (CLI — see [architecture.md §6](./architecture.md#adding-a-cognito-user)).
+Después del bootstrap: crear el primer usuario admin de Cognito (CLI — ver [architecture.md §6](./architecture.md#agregar-un-usuario-cognito)).
 
 ---
 
-## Recurring deploys
+## Deploys recurrentes
 
-Auto-triggered on push to `main` when path filters match:
+Se disparan automáticamente en push a `main` cuando coinciden los filtros de ruta:
 
-| Workflow | Path filters |
+| Workflow | Filtros de ruta |
 |----------|--------------|
 | Deploy site | `apps/static/**`, `packages/content/**` |
 | Deploy admin | `apps/admin/**`, `packages/content/**` |
 | Deploy worker | `workers/content-api/**`, `packages/content/**` |
-| Deploy cognito | `infra/terraform/cognito.tf` and related TF files |
+| Deploy cognito | `infra/terraform/cognito.tf` y archivos TF relacionados |
 
-Publishing from the admin SPA commits to `content/published/` and triggers **Deploy site**.
+Publicar desde el admin SPA confirma en `content/published/` y dispara **Deploy site**.
 
-**Deploy (manual)** redeploys one of site / admin / worker. It does **not** apply Cognito Terraform or sync Worker secrets. Use **Setup admin** for first-time admin Pages bootstrap.
+**Deploy (manual)** redespliega uno de site / admin / worker. **No** aplica Terraform de Cognito ni sincroniza secretos del Worker. Usar **Setup admin** para el bootstrap inicial de admin Pages.
 
 ---
 
-## Workflow details
+## Detalle de workflows
 
 ### Bootstrap (one-time install)
 
-Orchestrates cognito → setup-worker → setup-admin → deploy-site. Re-run a single `step` if one stage failed.
+Orquesta cognito → setup-worker → setup-admin → deploy-site. Re-ejecutar un solo `step` si una etapa falló.
 
 ### Setup admin
 
-Manual only. Verifies Cognito vars and that `bonae-content-api` Worker exists, then runs **Deploy admin** (create-if-missing Pages project + deploy). **No teardown actions** — existing projects are never deleted.
+Solo manual. Verifica vars de Cognito y que el Worker `bonae-content-api` existe, luego ejecuta **Deploy admin** (crear proyecto Pages si falta + deploy). **Sin acciones de teardown** — los proyectos existentes nunca se eliminan.
 
-| Action | When to use |
+| Acción | Cuándo usar |
 |--------|-------------|
-| `setup` | First-time admin Pages bootstrap (or redeploy after Worker recreate) |
-| `verify` | Check prerequisites and that `bonae-admin` Pages project exists |
+| `setup` | Bootstrap inicial de admin Pages (o redeploy tras recrear Worker) |
+| `verify` | Verificar requisitos previos y que el proyecto Pages `bonae-admin` existe |
 
-**Deploy admin** is for recurring SPA code deploys (push to `main`). It still creates the Pages project if missing, but does not verify the Worker is deployed first.
+**Deploy admin** es para deploys recurrentes de código SPA (push a `main`). Aún crea el proyecto Pages si falta, pero no verifica que el Worker esté desplegado primero.
 
 ### Setup worker
 
-Manual only. Actions:
+Solo manual. Acciones:
 
-| Action | When to use |
+| Acción | Cuándo usar |
 |--------|-------------|
-| `setup` | First-time Worker bootstrap (build, test, deploy, sync secrets) |
-| `sync-secrets` | Rotate `WORKER_GITHUB_*` without redeploying code |
-| `remove-secrets` | Strip GitHub App secrets from Worker |
-| `destroy` | Delete Worker — requires typing the Worker name in `confirm` |
+| `setup` | Bootstrap inicial del Worker (build, test, deploy, sync secretos) |
+| `sync-secrets` | Rotar `WORKER_GITHUB_*` sin redesplegar código |
+| `remove-secrets` | Eliminar secretos de GitHub App del Worker |
+| `destroy` | Eliminar Worker — requiere escribir el nombre del Worker en `confirm` |
 
-Worker names:
+Nombres de Worker:
 
-| Environment input | Worker name | `confirm` for destroy |
+| Entrada environment | Nombre del Worker | `confirm` para destroy |
 |-------------------|-------------|----------------------|
-| _(empty)_ | `bonae-content-api` | `bonae-content-api` |
+| _(vacío)_ | `bonae-content-api` | `bonae-content-api` |
 | `staging` | `bonae-content-api-staging` | `bonae-content-api-staging` |
 
-**Deploy worker** pushes code only — it does not sync secrets. Use **Setup worker** after a fresh Cloudflare account or credential rotation.
+**Deploy worker** envía solo código — no sincroniza secretos. Usar **Setup worker** tras una cuenta Cloudflare nueva o rotación de credenciales.
 
 ### Deploy cognito
 
-Plan job → approval on `infra-production` → apply job → store Cognito outputs as repo variables.
+Job de plan → aprobación en `infra-production` → job de apply → almacenar outputs de Cognito como variables de repo.
 
-**Secrets:** `AWS_ROLE_ARN`, `AWS_REGION`, `GH_REPO_VARIABLES_TOKEN`
+**Secretos:** `AWS_ROLE_ARN`, `AWS_REGION`, `GH_REPO_VARIABLES_TOKEN`
 
 ### Deploy site
 
-Builds `@bonae/content`, validates published JSON, builds Astro, ensures `bonae-tech` Pages project exists, deploys via Wrangler.
+Compila `@bonae/content`, valida JSON publicado, compila Astro, asegura que el proyecto Pages `bonae-tech` existe, despliega vía Wrangler.
 
-**Paths:** `apps/static/**`, `packages/content/**`  
-**Secrets:** `CLOUDFLARE_*` (prod environment)
+**Rutas:** `apps/static/**`, `packages/content/**`  
+**Secretos:** `CLOUDFLARE_*` (entorno prod)
 
 ### Deploy admin
 
-Builds admin SPA with Cognito IDs baked in (`VITE_*`), ensures `bonae-admin` Pages project exists, deploys via Wrangler.
+Compila admin SPA con IDs de Cognito incluidos (`VITE_*`), asegura que el proyecto Pages `bonae-admin` existe, despliega vía Wrangler.
 
-**Paths:** `apps/admin/**`, `packages/content/**`  
-**Secrets:** `CLOUDFLARE_*` (prod environment)  
-**Variables:** `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`. Do not set `API_BASE_URL` for Cloudflare (delete it if present) — same-origin `/content/*` via Pages service binding.
+**Rutas:** `apps/admin/**`, `packages/content/**`  
+**Secretos:** `CLOUDFLARE_*` (entorno prod)  
+**Variables:** `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID`. No establecer `API_BASE_URL` para Cloudflare (eliminarlo si existe) — same-origin `/content/*` vía service binding de Pages.
 
 ### Deploy worker
 
-Builds, tests, and deploys Worker code with Cognito vars. Does not sync GitHub App secrets.
+Compila, prueba y despliega código del Worker con vars de Cognito. No sincroniza secretos de GitHub App.
 
-**Paths:** `workers/content-api/**`, `packages/content/**`
+**Rutas:** `workers/content-api/**`, `packages/content/**`
 
 ### Deploy (manual)
 
-Menu: site, admin, or worker. For redeploys after install — not for bootstrap.
+Menú: site, admin o worker. Para redeploys tras instalación — no para bootstrap.
 
 ### CI
 
-Builds all workspaces in dependency order; validates published content. No deploy.
+Compila todos los workspaces en orden de dependencias; valida contenido publicado. Sin deploy.
 
 ### Content PR check
 
-Validates published + draft JSON and ES/EN locale parity on PRs.
+Valida JSON publicado + borrador y paridad de locale ES/EN en PRs.
 
 ### Terraform plan
 
-Posts Cognito Terraform plan as a PR comment. No apply.
+Publica el plan Terraform de Cognito como comentario en el PR. Sin apply.
 
 ---
 
-## Secrets and variables
+## Secretos y variables
 
-| Name | Scope | Used by |
+| Nombre | Alcance | Usado por |
 |------|-------|---------|
-| `AWS_ROLE_ARN`, `AWS_REGION` | repo secret | Cognito Terraform workflows |
-| `GH_REPO_VARIABLES_TOKEN` | repo secret | Deploy cognito |
-| `CLOUDFLARE_API_TOKEN` | prod secret | All Cloudflare workflows |
-| `CLOUDFLARE_ACCOUNT_ID` | prod secret or repo variable | All Cloudflare workflows |
-| `WORKER_GITHUB_*` (3 secrets) | prod secret | Setup worker |
-| `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | repo variable | Admin build, Worker deploy |
-| `API_BASE_URL` | repo variable (omit for Cloudflare) | Legacy cross-origin API only |
+| `AWS_ROLE_ARN`, `AWS_REGION` | secreto de repo | Workflows Terraform de Cognito |
+| `GH_REPO_VARIABLES_TOKEN` | secreto de repo | Deploy cognito |
+| `CLOUDFLARE_API_TOKEN` | secreto prod | Todos los workflows de Cloudflare |
+| `CLOUDFLARE_ACCOUNT_ID` | secreto prod o variable de repo | Todos los workflows de Cloudflare |
+| `WORKER_GITHUB_*` (3 secretos) | secreto prod | Setup worker |
+| `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | variable de repo | Build del admin, deploy del Worker |
+| `API_BASE_URL` | variable de repo (omitir para Cloudflare) | Solo API cross-origin heredada |
 
 ---
 
-## What not to use
+## Qué no usar
 
-| Avoid | Use instead |
+| Evitar | Usar en su lugar |
 |-------|-------------|
-| **Deploy (manual)** for first-time install | **Bootstrap (one-time install)** |
-| **Deploy worker** on a fresh Cloudflare account | **Setup worker** first |
-| **Deploy admin** for first-time install | **Setup admin** first |
-| Re-running full bootstrap on every code change | Push to `main` or **Deploy (manual)** |
+| **Deploy (manual)** para instalación inicial | **Bootstrap (one-time install)** |
+| **Deploy worker** en cuenta Cloudflare nueva | **Setup worker** primero |
+| **Deploy admin** para instalación inicial | **Setup admin** primero |
+| Re-ejecutar bootstrap completo en cada cambio de código | Push a `main` o **Deploy (manual)** |

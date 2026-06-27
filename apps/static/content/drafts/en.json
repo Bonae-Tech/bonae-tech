@@ -8,7 +8,6 @@
     "about": "About Us",
     "valueProp": "Services",
     "portfolio": "Portfolio",
-    "blog": "Blog",
     "contact": "Contact",
     "cta": "Contact Us",
     "clients": "Clients",
@@ -170,7 +169,6 @@
       "about": "About Us",
       "services": "Services",
       "portfolio": "Portfolio",
-      "blog": "Blog",
       "contact": "Contact"
     },
     "services": {
@@ -192,10 +190,5 @@
     "accept": "Accept",
     "privacy": "Privacy Policy",
     "ariaLabel": "Cookie notice"
-  },
-  "blog": {
-    "title": "Blog & Resources",
-    "subtitle": "Tips, guides, and updates for Latin American SMEs.",
-    "comingSoon": "Articles and downloadable resources coming soon."
   }
 }

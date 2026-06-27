@@ -8,7 +8,6 @@ import About from '../components/About.astro';
 import Portfolio from '../components/Portfolio.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Plans from '../components/Plans.astro';
-import BlogPreview from '../components/BlogPreview.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
 import { publishedEs, siteSettings, whatsappHrefFor } from '../lib/content';
@@ -27,7 +26,6 @@ const whatsappHref = whatsappHrefFor(t);
     <Portfolio t={t} />
     <Testimonials t={t} />
     <Plans t={t} whatsappHref={whatsappHref} />
-    <BlogPreview t={t} />
     <Contact t={t} whatsappHref={whatsappHref} settings={siteSettings} />
   </main>
   <Footer t={t} settings={siteSettings} whatsappHref={whatsappHref} />
