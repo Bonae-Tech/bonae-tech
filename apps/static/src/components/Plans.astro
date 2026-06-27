@@ -19,15 +19,6 @@ const { t, whatsappHref } = Astro.props;
       <p class="text-lg text-light-blue max-w-2xl mx-auto">{t.plans.subtitle}</p>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-6 mb-10">
-      {t.plans.packages.map((pkg) => (
-        <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-center">
-          <h3 class="font-bold text-terracotta text-lg mb-3">{pkg.name}</h3>
-          <p class="text-light-blue text-sm">{pkg.description}</p>
-        </div>
-      ))}
-    </div>
-
     <p class="text-center text-light-blue text-sm mb-6">{t.plans.note}</p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
       <a href={whatsappHref} target="_blank" rel="noopener noreferrer" class="btn-whatsapp">

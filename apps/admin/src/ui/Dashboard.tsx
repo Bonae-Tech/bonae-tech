@@ -64,7 +64,7 @@ export function Dashboard({ onLogout }: Props) {
   const doc = contentQuery.data;
   const navItems: [SectionId, string][] = [
     ['hero', 'Hero'],
-    ['valueProp', 'Value proposition'],
+    ['valueProp', 'Services / value prop'],
     ['about', 'About / team'],
     ['contact', 'Contact'],
     ['settings', 'Site settings'],

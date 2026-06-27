@@ -12,6 +12,7 @@ export function ValuePropSectionForm({ doc, onSave, saving }: Props) {
     defaultValues: {
       sectionBadge: doc.valueProp.sectionBadge,
       title: doc.valueProp.title,
+      subheadline: doc.valueProp.subheadline,
       items: doc.valueProp.items,
     },
   });
@@ -24,6 +25,7 @@ export function ValuePropSectionForm({ doc, onSave, saving }: Props) {
       <h2 className="text-lg font-bold">Value proposition</h2>
       <input className="field-input" placeholder="Section badge" {...register('sectionBadge')} />
       <input className="field-input" placeholder="Title" {...register('title')} />
+      <textarea className="field-input min-h-[80px]" placeholder="Subheadline" {...register('subheadline')} />
       {doc.valueProp.items.map((item, index) => (
         <div key={item.icon} className="rounded-lg border border-slate-200 p-4 space-y-2">
           <p className="text-xs font-semibold uppercase text-slate-500">{item.icon}</p>

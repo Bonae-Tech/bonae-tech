@@ -13,21 +13,10 @@ function arrayLengthAt(obj: unknown, path: string[]): number | null {
 
 const arrayPaths: string[][] = [
   ['valueProp', 'items'],
-  ['servicesSummary', 'items'],
-  ['about', 'values', 'items'],
   ['about', 'members'],
-  ['services', 'presenceDigital', 'items'],
-  ['services', 'webDigital', 'items'],
-  ['services', 'crm', 'items'],
-  ['services', 'consulting', 'items'],
   ['portfolio', 'industries', 'items'],
-  ['plans', 'packages'],
   ['contact', 'form', 'serviceOptions'],
 ];
-
-function memberHighlightsLength(doc: ContentDocument): number {
-  return doc.about.members[0]?.highlights.length ?? 0;
-}
 
 export function checkLocaleParity(es: ContentDocument, en: ContentDocument): ParityIssue[] {
   const issues: ParityIssue[] = [];
@@ -53,12 +42,6 @@ export function checkLocaleParity(es: ContentDocument, en: ContentDocument): Par
         message: `Highlight count mismatch: es=${esHighlights}, en=${enHighlights}`,
       });
     }
-  }
-
-  const esFirstHighlights = memberHighlightsLength(es);
-  const enFirstHighlights = memberHighlightsLength(en);
-  if (esFirstHighlights !== enFirstHighlights && es.about.members.length === en.about.members.length) {
-    // already covered per-member above
   }
 
   if (es.lang !== 'es') {

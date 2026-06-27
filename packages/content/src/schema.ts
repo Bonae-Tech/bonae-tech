@@ -1,21 +1,10 @@
 import { z } from 'zod';
-import { serviceSummaryIcons, valuePropIcons } from './icons.js';
+import { valuePropIcons } from './icons.js';
 
 export const localeSchema = z.enum(['es', 'en']);
 
 const iconItemSchema = z.object({
   icon: z.enum(valuePropIcons),
-  title: z.string().min(1),
-  description: z.string().min(1),
-});
-
-const serviceSummaryItemSchema = z.object({
-  icon: z.enum(serviceSummaryIcons),
-  title: z.string().min(1),
-  description: z.string().min(1),
-});
-
-const serviceItemSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
 });
@@ -27,11 +16,6 @@ const memberSchema = z.object({
   highlights: z.array(z.string().min(1)).min(1),
 });
 
-const packageSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
-});
-
 export const contentDocumentSchema = z.object({
   lang: localeSchema,
   siteName: z.string().min(1),
@@ -41,7 +25,7 @@ export const contentDocumentSchema = z.object({
   nav: z.object({
     home: z.string().min(1),
     about: z.string().min(1),
-    services: z.string().min(1),
+    valueProp: z.string().min(1),
     portfolio: z.string().min(1),
     blog: z.string().min(1),
     contact: z.string().min(1),
@@ -64,14 +48,8 @@ export const contentDocumentSchema = z.object({
   valueProp: z.object({
     sectionBadge: z.string().min(1),
     title: z.string().min(1),
+    subheadline: z.string().min(1),
     items: z.array(iconItemSchema).length(4),
-  }),
-
-  servicesSummary: z.object({
-    sectionBadge: z.string().min(1),
-    title: z.string().min(1),
-    subtitle: z.string().min(1),
-    items: z.array(serviceSummaryItemSchema).length(4),
   }),
 
   keyFigures: z.object({
@@ -92,46 +70,7 @@ export const contentDocumentSchema = z.object({
     sectionBadge: z.string().min(1),
     title: z.string().min(1),
     foundersTitle: z.string().min(1),
-    history: z.object({
-      title: z.string().min(1),
-      content: z.string().min(1),
-    }),
-    mission: z.object({
-      title: z.string().min(1),
-      content: z.string().min(1),
-    }),
-    vision: z.object({
-      title: z.string().min(1),
-      content: z.string().min(1),
-    }),
-    values: z.object({
-      title: z.string().min(1),
-      items: z.array(z.string().min(1)).min(1),
-    }),
     members: z.array(memberSchema).length(3),
-  }),
-
-  services: z.object({
-    sectionBadge: z.string().min(1),
-    title: z.string().min(1),
-    subtitle: z.string().min(1),
-    presenceDigital: z.object({
-      title: z.string().min(1),
-      items: z.array(serviceItemSchema).length(3),
-    }),
-    webDigital: z.object({
-      title: z.string().min(1),
-      items: z.array(serviceItemSchema).length(3),
-    }),
-    crm: z.object({
-      title: z.string().min(1),
-      items: z.array(serviceItemSchema).length(1),
-    }),
-    consulting: z.object({
-      title: z.string().min(1),
-      items: z.array(serviceItemSchema).length(2),
-    }),
-    expansion: z.string().min(1),
   }),
 
   portfolio: z.object({
@@ -162,7 +101,6 @@ export const contentDocumentSchema = z.object({
     sectionBadge: z.string().min(1),
     title: z.string().min(1),
     subtitle: z.string().min(1),
-    packages: z.array(packageSchema).length(3),
     cta: z.string().min(1),
     ctaSub: z.string().min(1),
     note: z.string().min(1),
