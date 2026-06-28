@@ -14,7 +14,8 @@
   "scripts": {
     "build": "tsc",
     "validate": "node dist/cli.js",
-    "validate:published": "node dist/cli.js ../../apps/static/content published"
+    "validate:published": "node dist/cli.js ../../apps/static/content published",
+    "validate:drafts": "node dist/cli.js ../../apps/static/content drafts"
   },
   "dependencies": {
     "zod": "^3.24.2"

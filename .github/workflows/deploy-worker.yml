@@ -1,5 +1,5 @@
 # Recurring deploy: content API Worker code (bonae-content-api).
-# Does not sync GitHub App secrets — use Setup worker for that.
+# Solo código — no sincroniza secretos GitHub App (usar Setup worker).
 # Auto-triggers on push to main.
 #
 # See docs/workflows.md
@@ -41,14 +41,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - run: npm ci
+      - uses: ./.github/actions/setup-monorepo
       - run: npx turbo run build test --filter=@bonae/content-api-worker
 
       - id: cloudflare

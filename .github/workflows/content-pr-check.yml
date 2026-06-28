@@ -9,17 +9,15 @@ on:
     paths:
       - 'apps/static/content/**'
       - 'packages/content/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'turbo.json'
+      - '.github/workflows/content-pr-check.yml'
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci
-      - run: npx turbo run build validate:published --filter=@bonae/content
-      - run: npm run validate -w @bonae/content -- apps/static/content drafts
+      - uses: ./.github/actions/setup-monorepo
+      - run: npx turbo run build validate:published validate:drafts --filter=@bonae/content

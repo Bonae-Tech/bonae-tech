@@ -37,8 +37,8 @@ flowchart TD
     end
 
     subgraph GitHub["GitHub · mpiantella/bonae"]
-        Drafts["content/drafts/"]
-        Published["content/published/"]
+        Drafts["apps/static/content/drafts/"]
+        Published["apps/static/content/published/"]
         Actions["GitHub Actions"]
     end
 
@@ -110,7 +110,10 @@ Piezas clave: `config.ts` (IDs de Cognito en tiempo de build), `infrastructure/a
 | `src/routes.ts` | Rutas de contenido + validación `@bonae/content` |
 | `src/github.ts` | Cliente Octokit GitHub App |
 
-Rutas: `GET/PUT /content/drafts/{es|en|settings}`, `GET /content/published/{...}`, `POST /content/publish`.
+Rutas: 
+* `GET/PUT /content/drafts/{es|en|settings}`
+* `GET /content/published/{...}` 
+* `POST /content/publish`
 
 ### Modelo de seguridad
 
@@ -119,7 +122,9 @@ Rutas: `GET/PUT /content/drafts/{es|en|settings}`, `GET /content/published/{...}
 3. **Worker** — verificación JWKS + autorización en cada solicitud mutante
 4. **GitHub App** — credenciales con alcance limitado solo en secretos del Worker
 
-READMEs por app: [apps/admin/README.md](../apps/admin/README.md), [workers/content-api/README.md](../workers/content-api/README.md).
+READMEs por app: 
+* [apps/admin/README.md](../apps/admin/README.md)
+* [workers/content-api/README.md](../workers/content-api/README.md)
 
 ---
 
@@ -147,8 +152,6 @@ Archivo de estado: `infra/terraform/bootstrap/terraform.tfstate` (local, gitigno
 | Grupo `Administrators` | Acceso a la API |
 
 Solo por invitación (`allow_admin_create_user_only = true`). Los ID tokens expiran a la 1 hora; refresh tokens deshabilitados.
-
-Los recursos AWS heredados (API Gateway, Lambda, bucket S3 del admin, CloudFront) fueron eliminados de Terraform. Destruir cualquier superviviente en AWS después de migrar a Cloudflare.
 
 ### 3.2 Cloudflare
 
@@ -238,6 +241,8 @@ Los usuarios nuevos reciben una contraseña temporal por email. Cognito devuelve
 
 Archivos de workflow: `.github/workflows/`. Referencia completa: **[workflows.md](./workflows.md)**.
 
+Builds y validación usan **Turborepo** (`npx turbo run …`) con la composite action **setup-monorepo** (`npm ci` + caché local `.turbo`). Deploy final a Cloudflare sigue con Wrangler en cada workflow.
+
 ```mermaid
 flowchart TD
     PR["Pull Request"] --> CI["CI · content PR check · TF plan"]
@@ -264,25 +269,6 @@ flowchart TD
 
 Iniciar sesión → editar ES/EN → **Save draft** (confirma en `drafts/`) → **Publish** (copia `drafts/` → `published/`, dispara **Deploy site**).
 
-### Agregar un usuario Cognito
-
-```bash
-POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
-REGION=sa-east-1
-
-aws cognito-idp admin-create-user \
-  --user-pool-id $POOL_ID \
-  --username editor@example.com \
-  --desired-delivery-mediums EMAIL \
-  --region $REGION
-
-aws cognito-idp admin-add-user-to-group \
-  --user-pool-id $POOL_ID \
-  --username editor@example.com \
-  --group-name Administrators \
-  --region $REGION
-```
-
 ### Rotación de credenciales
 
 | Credencial | Acción |
@@ -295,7 +281,7 @@ aws cognito-idp admin-add-user-to-group \
 
 ```bash
 npm run content:validate
-npm run validate -w @bonae/content -- apps/static/content drafts
+npm run content:validate:drafts
 ```
 
 ### Dominios personalizados

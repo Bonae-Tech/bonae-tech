@@ -1,6 +1,7 @@
 # Bootstrap: deploy Worker, sync GitHub App secrets, optional teardown.
+# setup = guardrails + deploy + secretos (primera vez o rotación).
+# Deploy worker = solo código en cada push — no sincroniza secretos.
 # First-time install: use "Bootstrap (one-time install)" or run with action=setup.
-# Code-only redeploys: use "Deploy worker" (does not sync secrets).
 #
 # See docs/workflows.md
 
@@ -53,15 +54,9 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-monorepo
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - run: npm ci
-        id: worker
+      - id: worker
         run: |
           if [ "${{ inputs.environment }}" = "staging" ]; then
             echo "name=bonae-content-api-staging" >> "$GITHUB_OUTPUT"

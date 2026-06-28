@@ -1,9 +1,0 @@
-name: Build content package
-description: Install dependencies and build @bonae/content (required before apps, workers, or services)
-
-runs:
-  using: composite
-  steps:
-    - name: Install and build @bonae/content
-      shell: bash
-      run: npm ci && npx turbo run build --filter=@bonae/content

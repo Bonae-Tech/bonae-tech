@@ -21,6 +21,9 @@
     "validate:published": {
       "dependsOn": ["build"]
     },
+    "validate:drafts": {
+      "dependsOn": ["build"]
+    },
     "deploy": {
       "dependsOn": ["build"],
       "cache": false

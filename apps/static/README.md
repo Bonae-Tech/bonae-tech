@@ -45,8 +45,4 @@ npm run content:validate    # desde la raíz del repo
 
 Es la misma verificación que ejecutan los hooks `predev` y `prebuild`. Si `published/` es inválido, el sitio no compilará.
 
-## Sembrar contenido
-
-```bash
-npm run content:seed -w bonae-static    # ejecuta scripts/seed-content.ts vía tsx
-```
+Para borradores: `npm run content:validate:drafts` desde la raíz del repo.

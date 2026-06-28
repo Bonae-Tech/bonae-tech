@@ -1,85 +1,181 @@
 # BONAE Tech
 
-Plataforma de contenido respaldada por Git para el sitio de marketing de BONAE Tech. Los editores actualizan los textos mediante un admin en React; la API de contenido corre en Cloudflare Workers; la identidad permanece en AWS Cognito.
+Plataforma de contenido respaldada por Git para el sitio de marketing de [BONAE Tech](https://bonaetech.com/). Los editores actualizan los textos mediante un admin en React; la API de contenido corre en Cloudflare Workers; la identidad permanece en AWS Cognito.
 
 ## Estructura del repositorio
 
-```
-apps/static/          — Sitio de marketing (Astro + Tailwind, Cloudflare Pages bonae-tech)
-apps/admin/           — Admin de contenido SPA (React + Vite + Cognito, Cloudflare Pages bonae-admin)
-workers/content-api/  — API de contenido (Cloudflare Worker, Cognito JWT + GitHub App)
-packages/content/     — Esquema Zod compartido y validadores (se compila antes que todo lo demás)
-infra/terraform/      — Solo identidad Cognito (AWS sa-east-1)
-infra/terraform/bootstrap/ — Configuración única de backend de estado + GitHub OIDC
-package.json + turbo.json — Orquestación raíz (npm workspaces + Turborepo)
-```
+Monorepo npm workspaces + Turborepo. Componentes principales:
+
+- **apps/static** — Sitio de marketing estático (Astro). Lee JSON publicado en tiempo de build; despliegue en Cloudflare Pages.
+- **apps/admin** — SPA de administración de contenido (React/Vite). Edita borradores y ejecuta el flujo de publicación; autenticación Cognito en producción o mock local.
+- **workers/content-api** — Worker de Cloudflare: API de contenido con validación JWT y commits al repositorio vía GitHub App.
+- **packages/content** — Esquema Zod compartido, validación y paridad de locales; consumido por static, admin y worker.
+- **infra/terraform** — Infraestructura Terraform; solo identidad Cognito (AWS sa-east-1).
 
 El contenido vive en `apps/static/content/`:
 
 ```
-drafts/    es.json  en.json  settings.json   ← guardado por el admin
-published/ es.json  en.json  settings.json   ← leído por Astro en tiempo de build
+drafts/    
+  es.json  
+  en.json  
+  settings.json   ← guardado por el admin
+published/ 
+  es.json  
+  en.json  
+  settings.json   ← leído por Astro en tiempo de build
 ```
 
 ---
 
-## Configuración
+## Onboarding
 
 ### Requisitos previos
 
-- Node.js 20+
-- npm
-- Terraform ≥ 1.6 (para trabajo de infraestructura)
-- AWS CLI (para infraestructura y gestión de usuarios)
+- Node.js ≥ 20
+- npm 10.9.2 (`packageManager` en el root; con Corepack: `corepack enable`)
+- Turbo — incluido en devDependencies; CLI global opcional (`npm install -g turbo` o `npx turbo`)
+- Terraform ≥ 1.6 y AWS CLI — solo para infraestructura y usuarios Cognito (AWS)
 
-### Orden de compilación
+Todos los comandos siguientes se ejecutan en la raíz del repo.
 
-`packages/content` debe compilarse antes que cualquier cosa que lo importe. Desde la raíz del repositorio:
+### Turbo y comandos de arranque
+
+Turborepo orquesta los workspaces (`apps/*`, `packages/*`, `workers/*`) ejecutando tareas por nombre (`build`, `dev`, `dev:mock`, `validate:published`, `deploy`, `test`) definidas en `turbo.json`. Los scripts `npm run …` del root invocan `turbo run …`; ambos son válidos — `turbo run` es el modelo canónico.
+
+**Nombres para `--filter`** (campo `name` de cada `package.json`):
+
+| Ruta | `--filter` |
+|------|------------|
+| `apps/static` | `bonae-static` |
+| `apps/admin` | `bonae-admin` |
+| `packages/content` | `@bonae/content` |
+| `workers/content-api` | `@bonae/content-api-worker` |
+
+**`--filter`:** limita la tarea al workspace indicado. Turbo respeta `dependsOn: ["^build"]` y compila dependencias upstream cuando hace falta (p. ej. `@bonae/content` antes de static, admin o worker).
 
 ```bash
+turbo run build --filter=bonae-static              # solo sitio (+ @bonae/content vía ^build)
+turbo run dev:mock --filter=bonae-admin            # admin mock (+ @bonae/content)
+turbo run test --filter=@bonae/content-api-worker  # tests del worker (+ build previo)
+```
+
+#### Primera instalación
+
+Paso 1. Clonar e instalar dependencias:
+
+```bash
+git clone https://github.com/mpiantella/bonae
+cd bonae
 npm ci
-npm run build        # o npm run build:all
 ```
 
-Turborepo ejecuta `@bonae/content` primero vía `dependsOn: ["^build"]`, luego compila apps y workers en paralelo.
+Instala todos los workspaces según `package-lock.json`.
 
-### Desarrollo local — sitio estático
+Paso 2. Verificar compilación del monorepo:
 
 ```bash
-npm ci
-npm run dev          # http://localhost:4321
+turbo run build    # alias: npm run build
 ```
 
-El sitio lee solo `apps/static/content/published/`. No arrancará si el JSON publicado es inválido.
+Compila `@bonae/content`, `bonae-static`, `bonae-admin` y `@bonae/content-api-worker` en orden de dependencias. Fallo aquí indica entorno o código roto antes de arrancar dev servers.
 
-### Desarrollo local — admin de contenido (modo mock, sin AWS)
+#### Ciclo diario de desarrollo
+
+Paso 1. Validar contenido publicado (opcional si no se tocó `published/`; el sitio lo revalida en `predev`/`prebuild`):
 
 ```bash
-npm run admin:dev:mock   # http://localhost:5173
+turbo run validate:published --filter=@bonae/content    # alias: npm run content:validate
 ```
 
-Inicia sesión con cualquier email/contraseña. Los guardados escriben directamente en `apps/static/content/` en disco. Úsalo para desarrollar la UI del editor sin credenciales de AWS.
-
-### Desarrollo local — admin de contenido (AWS real)
-
-Requiere infraestructura desplegada y un usuario Cognito en el grupo `Administrators`.
+Paso 2. Sitio estático — lee `apps/static/content/published/`:
 
 ```bash
-cp apps/admin/.env.example apps/admin/.env
-# Completar: VITE_API_BASE_URL, VITE_COGNITO_USER_POOL_ID, VITE_COGNITO_CLIENT_ID, VITE_AWS_REGION
-
-npm ci
-npm run admin:dev        # http://localhost:5173
+turbo run dev --filter=bonae-static    # http://localhost:4321 — alias: npm run dev
 ```
 
-### Configuración inicial
+Paso 3. Admin mock — otra terminal; escribe en `apps/static/content/` en disco, sin Cognito:
 
-1. Ejecutar `infra/terraform/bootstrap/` una vez — crea el backend de estado S3 y el rol GitHub OIDC
-2. Agregar credenciales de Cloudflare y GitHub App a los secretos del entorno **prod** — ver [docs/workflows.md](docs/workflows.md#instalación-única)
-3. Ejecutar **Bootstrap (one-time install)** con `step: full` — Cognito → Worker → admin Pages → sitio
-4. Crear el primer usuario admin de Cognito (ver abajo)
+```bash
+turbo run dev:mock --filter=bonae-admin    # http://localhost:5173 — alias: npm run dev:admin:mock
+```
 
-Documentación de la plataforma: [docs/architecture.md](docs/architecture.md) · [docs/workflows.md](docs/workflows.md) · [infra/README.md](infra/README.md)
+Login mock: cualquier email/contraseña.
+
+Paso 4. (Opcional) Worker de contenido local:
+
+```bash
+turbo run dev --filter=@bonae/content-api-worker    # wrangler dev — alias: npm run dev:worker
+```
+
+Paso 5. (Opcional) Admin con Cognito — requiere `.env` en `apps/admin/`:
+
+```bash
+turbo run dev --filter=bonae-admin    # alias: npm run dev:admin
+```
+
+#### Build completo
+
+```bash
+turbo run build    # alias: npm run build / npm run build:all
+```
+
+Compila los cuatro workspaces. Usar tras cambios transversales, antes de deploy o para reproducir CI localmente.
+
+Compilar un solo componente:
+
+```bash
+turbo run build --filter=@bonae/content              # alias: npm run content:build
+turbo run build --filter=bonae-admin                 # alias: npm run admin:build
+turbo run build --filter=@bonae/content-api-worker   # alias: npm run worker:build
+```
+
+#### Validar contenido
+
+```bash
+turbo run validate:published --filter=@bonae/content    # published/ — alias: npm run content:validate
+turbo run validate:drafts --filter=@bonae/content       # drafts/ — alias: npm run content:validate:drafts
+```
+
+Contenido inválido en `published/` bloquea `dev` y `build` del sitio.
+
+#### Preview y deploy
+
+Preview local del sitio (requiere build previo):
+
+```bash
+turbo run build --filter=bonae-static
+npm run preview    # astro preview — sirve `dist/` del sitio estático
+```
+
+Workflows: Deploy a Cloudflare (requiere credenciales Wrangler configuradas):
+
+```bash
+turbo run deploy --filter=bonae-static                         # alias: npm run deploy:site
+turbo run deploy --filter=bonae-admin                          # alias: npm run deploy:admin
+turbo run deploy --filter=@bonae/content-api-worker            # alias: npm run deploy:worker
+turbo run deploy --filter=bonae-static --filter=bonae-admin --filter=@bonae/content-api-worker    # alias: npm run deploy:all
+```
+---
+
+## Instalación de plataforma (DevOps)
+
+Solo necesaria **una vez por entorno** (AWS Cognito + Cloudflare). No confundir con el onboarding de desarrollo local anterior.
+
+1. Bootstrap Terraform local → [`infra/terraform/bootstrap`](infra/terraform/bootstrap)
+2. Secretos GitHub entorno **prod**: `CLOUDFLARE_*`, `WORKER_GITHUB_*`
+3. Workflow **Bootstrap (one-time install)** con `step: full`
+
+Guía completa: [docs/workflows.md#instalación-única](docs/workflows.md#instalación-única)
+
+### ¿Qué workflow uso?
+
+| Situación | Workflow |
+|-----------|----------|
+| Primera vez en prod | [Bootstrap (one-time install)](.github/workflows/bootstrap.yml) — `step: full` |
+| Push a `main` / cambio de código | Deploy site / admin / worker (automático) |
+| Redeploy manual de un componente | [Deploy (manual)](.github/workflows/deploy.yml) |
+| Rotar secretos del Worker | [Setup worker](.github/workflows/setup-worker.yml) — `action: sync-secrets` |
+| PR de contenido JSON | [Content PR check](.github/workflows/content-pr-check.yml) |
 
 ---
 
@@ -95,36 +191,6 @@ Reglas aplicadas en cada guardado:
 - Los documentos ES y EN deben tener longitudes de arreglo coincidentes en todas las rutas mapeadas (paridad de locale)
 - El contenido publicado se valida antes de cada build del sitio; un `published/` inválido bloqueará el build
 
-### Gestión de usuarios Cognito
-
-Los usuarios son solo por invitación (`allow_admin_create_user_only = true`). Crear usuarios vía AWS CLI — reciben una contraseña temporal por email y deben establecer una permanente en el primer inicio de sesión.
-
-```bash
-POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
-REGION=sa-east-1
-
-# Crear usuario (envía email de invitación)
-aws cognito-idp admin-create-user \
-  --user-pool-id $POOL_ID \
-  --username editor@example.com \
-  --desired-delivery-mediums EMAIL \
-  --region $REGION
-
-# Agregar al grupo Administrators
-aws cognito-idp admin-add-user-to-group \
-  --user-pool-id $POOL_ID \
-  --username editor@example.com \
-  --group-name Administrators \
-  --region $REGION
-```
-
-Para deshabilitar o eliminar un usuario:
-
-```bash
-aws cognito-idp admin-disable-user --user-pool-id $POOL_ID --username editor@example.com --region $REGION
-aws cognito-idp admin-delete-user  --user-pool-id $POOL_ID --username editor@example.com --region $REGION
-```
-
 ### Cambios de infraestructura
 
 Los cambios en `infra/terraform/cognito.tf` enviados a `main` disparan el workflow `deploy-cognito`. El job de apply está protegido por el entorno GitHub `infra-production`.
@@ -139,8 +205,8 @@ Ver [docs/workflows.md](docs/workflows.md).
 ### Validar contenido localmente
 
 ```bash
-npm run content:validate          # validar JSON publicado
-npm run validate -w @bonae/content -- apps/static/content drafts  # validar borradores
+npm run content:validate         # published/ (ver [Onboarding](#onboarding))
+npm run content:validate:drafts  # drafts/
 ```
 
 ---
@@ -153,20 +219,28 @@ Ver **[docs/workflows.md](docs/workflows.md)** para todos los workflows de GitHu
 
 ## Referencia de comandos
 
+La tabla lista los scripts `npm run …` del root como referencia rápida; para entender *qué* ejecuta cada tarea y acotar el alcance, usar los comandos `turbo run …` (modelo canónico — ver [Onboarding](#turbo-y-comandos-de-arranque)). Los scripts del root invocan `turbo run …`; Turbo a su vez ejecuta los scripts homónimos (`build`, `dev`, `test`, …) definidos en el `package.json` de cada workspace.
+
+- **npm workspaces** — define el monorepo, enlaza dependencias locales entre paquetes, permite un solo `npm ci` en la raíz y flags `-w <workspace>` para invocar scripts de un paquete concreto sin pasar por Turbo.
+- **Turborepo** — orquesta el grafo de tareas (`dependsOn: ["^build"]`), caché, ejecución en paralelo y filtros `--filter=<nombre-paquete>` sobre los scripts de cada workspace.
+
 | Comando | Descripción |
 |---------|-------------|
 | `npm ci` | Instalar todas las dependencias del workspace (desde la raíz del repo) |
 | `npm run build` | Compilar content, sitio estático, admin SPA y Worker |
 | `npm run build:all` | Alias de `npm run build` |
 | `npm run test` | Ejecutar tests de seguridad del Worker |
-| `npm run deploy:all` | Desplegar Worker y luego admin Pages |
+| `npm run deploy:all` | Desplegar site, admin Pages y Worker |
 | `npm run deploy:site` | Compilar y desplegar sitio de marketing |
 | `npm run deploy:worker` | Compilar y desplegar Worker de API de contenido |
 | `npm run deploy:admin` | Compilar y desplegar admin SPA |
 | `npm run dev:admin:mock` | Admin SPA en modo mock (sin AWS) |
+| `npm run dev:admin` | Admin SPA con Cognito (requiere `.env`) |
 | `npm run dev:worker` | Servidor de desarrollo local del Worker |
 | `npm run dev` | Servidor de desarrollo del sitio de marketing |
+| `npm run content:build` | Compilar solo `@bonae/content` |
 | `npm run content:validate` | Validar JSON publicado |
+| `npm run content:validate:drafts` | Validar JSON en borradores |
 
 ## Agregar un paquete nuevo
 

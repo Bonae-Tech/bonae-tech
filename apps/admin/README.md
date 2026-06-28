@@ -192,3 +192,33 @@ Los borradores nunca son visibles en el sitio de marketing público hasta public
 Los deploys los maneja `deploy-admin.yml` en push a `main` (proyecto Cloudflare Pages `bonae-admin`). Los IDs de Cognito se incluyen en tiempo de build desde variables del repositorio GitHub. Dejar `API_BASE_URL` vacío para enrutamiento same-origin de la API vía service binding de Pages.
 
 Ver [docs/architecture.md](../../docs/architecture.md) y [docs/workflows.md](../../docs/workflows.md).
+
+### Gestión de usuarios Cognito
+
+Los usuarios son solo por invitación (`allow_admin_create_user_only = true`). Crear usuarios vía AWS CLI — reciben una contraseña temporal por email y deben establecer una permanente en el primer inicio de sesión.
+
+```bash
+POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
+REGION=sa-east-1
+
+# Crear usuario (envía email de invitación)
+aws cognito-idp admin-create-user \
+  --user-pool-id $POOL_ID \
+  --username editor@example.com \
+  --desired-delivery-mediums EMAIL \
+  --region $REGION
+
+# Agregar al grupo Administrators
+aws cognito-idp admin-add-user-to-group \
+  --user-pool-id $POOL_ID \
+  --username editor@example.com \
+  --group-name Administrators \
+  --region $REGION
+```
+
+Para deshabilitar o eliminar un usuario:
+
+```bash
+aws cognito-idp admin-disable-user --user-pool-id $POOL_ID --username editor@example.com --region $REGION
+aws cognito-idp admin-delete-user  --user-pool-id $POOL_ID --username editor@example.com --region $REGION
+```

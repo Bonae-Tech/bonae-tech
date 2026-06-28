@@ -9,15 +9,13 @@
     "prebuild": "npm run content:validate",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "wrangler pages deploy dist --project-name bonae-tech",
-    "content:seed": "tsx scripts/seed-content.ts"
+    "deploy": "wrangler pages deploy dist --project-name bonae-tech"
   },
   "license": "Apache-2.0",
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
-    "tsx": "^4.22.3",
     "wrangler": "^3.99.0"
   },
   "dependencies": {

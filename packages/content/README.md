@@ -31,12 +31,9 @@ npm run build    # tsc → dist/
 ## Validar contenido
 
 ```bash
-# Desde la raíz del repo
-npm run content:validate
-
-# Validar cualquier directorio de contenido y tier
-npm run validate -w @bonae/content -- apps/static/content drafts
-npm run validate -w @bonae/content -- apps/static/content published
+# Desde la raíz del repo (Turbo)
+npm run content:validate           # published/
+npm run content:validate:drafts    # drafts/
 ```
 
 ## Reglas

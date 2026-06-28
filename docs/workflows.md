@@ -2,6 +2,21 @@
 
 Todos los archivos de workflow están en [`.github/workflows/`](../.github/workflows/). Arquitectura de la plataforma: [architecture.md](./architecture.md).
 
+**Desarrollo local:** no ejecutes estos workflows para arrancar apps — usa [README → Onboarding](../README.md#onboarding).
+
+**Operaciones / primera instalación en prod:** continúa con la referencia rápida y [Instalación única](#instalación-única) más abajo. **Deploy (manual) no sustituye Bootstrap** en instalación inicial.
+
+---
+
+## Qué no usar
+
+| Evitar | Usar en su lugar |
+|-------|-------------|
+| **Deploy (manual)** para instalación inicial | **Bootstrap (one-time install)** |
+| **Deploy worker** en cuenta Cloudflare nueva | **Setup worker** primero |
+| **Deploy admin** para instalación inicial | **Setup admin** primero |
+| Re-ejecutar bootstrap completo en cada cambio de código | Push a `main` o **Deploy (manual)** |
+
 ---
 
 ## Referencia rápida
@@ -92,7 +107,7 @@ Se disparan automáticamente en push a `main` cuando coinciden los filtros de ru
 
 Publicar desde el admin SPA confirma en `content/published/` y dispara **Deploy site**.
 
-**Deploy (manual)** redespliega uno de site / admin / worker. **No** aplica Terraform de Cognito ni sincroniza secretos del Worker. Usar **Setup admin** para el bootstrap inicial de admin Pages.
+Los PRs que solo modifican `apps/static/content/**` ejecutan **Content PR check** (no el workflow CI completo de código).
 
 ---
 
@@ -166,11 +181,11 @@ Menú: site, admin o worker. Para redeploys tras instalación — no para bootst
 
 ### CI
 
-Compila todos los workspaces en orden de dependencias; valida contenido publicado. Sin deploy.
+Compila todos los workspaces vía `npx turbo run build test validate:published`. Usa la composite action [setup-monorepo](../.github/actions/setup-monorepo) (`npm ci` + caché `.turbo`). Sin deploy.
 
 ### Content PR check
 
-Valida JSON publicado + borrador y paridad de locale ES/EN en PRs.
+Valida `published/` y `drafts/` con `npx turbo run build validate:published validate:drafts --filter=@bonae/content`. Sin deploy.
 
 ### Terraform plan
 
@@ -189,14 +204,3 @@ Publica el plan Terraform de Cognito como comentario en el PR. Sin apply.
 | `WORKER_GITHUB_*` (3 secretos) | secreto prod | Setup worker |
 | `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | variable de repo | Build del admin, deploy del Worker |
 | `API_BASE_URL` | variable de repo (omitir para Cloudflare) | Solo API cross-origin heredada |
-
----
-
-## Qué no usar
-
-| Evitar | Usar en su lugar |
-|-------|-------------|
-| **Deploy (manual)** para instalación inicial | **Bootstrap (one-time install)** |
-| **Deploy worker** en cuenta Cloudflare nueva | **Setup worker** primero |
-| **Deploy admin** para instalación inicial | **Setup admin** primero |
-| Re-ejecutar bootstrap completo en cada cambio de código | Push a `main` o **Deploy (manual)** |

@@ -34,7 +34,7 @@ npm run admin:build      # tsc --noEmit + vite build
 ### Paquete de contenido (`packages/content`)
 ```bash
 npm run content:build    # turbo run build --filter=@bonae/content
-npm run validate -w @bonae/content -- apps/static/content drafts   # validar un directorio de contenido vía CLI
+npm run content:validate:drafts   # turbo run validate:drafts --filter=@bonae/content
 ```
 
 ### Worker de API de contenido (`workers/content-api`)
@@ -54,7 +54,7 @@ terraform apply
 ```bash
 npm ci
 npm run build       # content + static + admin + worker
-npm run deploy:all  # worker y luego admin Pages
+npm run deploy:all  # site, admin Pages y worker (turbo run deploy con tres filtros)
 ```
 
 ## Arquitectura
