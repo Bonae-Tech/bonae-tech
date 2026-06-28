@@ -125,12 +125,9 @@
     "comingSoon": "Testimonials coming soon. Be the first to share your experience with Bonae Tech."
   },
   "plans": {
-    "sectionBadge": "Plans",
-    "title": "Plans and pricing",
-    "subtitle": "Our prices are designed so that digitalizing your business is not a luxury but a smart investment.",
+    "title": "Ready to digitalize and automate your brand?",
     "cta": "Request quote",
-    "ctaSub": "Schedule a free consultation",
-    "note": "Contact us for a personalized quote based on your business needs."
+    "ctaSub": "Schedule a free consultation"
   },
   "contact": {
     "sectionBadge": "Contact",
