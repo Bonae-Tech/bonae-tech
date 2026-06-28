@@ -1,0 +1,28 @@
+name: Setup monorepo
+description: Node.js, npm ci, and Turborepo local cache restore
+
+inputs:
+  node-version:
+    description: Node.js version
+    required: false
+    default: '20'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: package-lock.json
+
+    - uses: actions/cache@v4
+      with:
+        path: .turbo
+        key: turbo-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+        restore-keys: |
+          turbo-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+
+    - name: npm ci
+      shell: bash
+      run: npm ci

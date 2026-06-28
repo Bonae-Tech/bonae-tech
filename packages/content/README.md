@@ -1,44 +1,42 @@
 # @bonae/content
 
-Shared Zod schema, types, and validators consumed by `apps/static`, `apps/admin`, and `workers/content-api`. This package must be **built before** any workspace that imports it.
+Esquema Zod compartido, tipos y validadores consumidos por `apps/static`, `apps/admin` y `workers/content-api`. Turborepo compila este paquete antes que cualquier consumidor vía `dependsOn: ["^build"]`.
 
 ## Build
 
+Desde la raíz del repo:
+
 ```bash
 npm ci
+npm run content:build    # turbo run build --filter=@bonae/content
+```
+
+O desde este directorio (contexto de workspace):
+
+```bash
 npm run build    # tsc → dist/
 ```
 
-## Key exports
+## Exportaciones clave
 
-| Export | Description |
+| Exportación | Descripción |
 |--------|-------------|
-| `ContentDocument` | Zod-validated type for ES or EN site copy |
-| `SiteSettings` | siteUrl, WhatsApp, social/legal links |
-| `parseContentDocument` / `parseSiteSettings` | Parse + validate a raw object |
-| `assertLocaleParity` | Throws if ES and EN documents have mismatched array lengths |
-| `loadPublishedFromDir` | Used by Astro to load published content at build time |
-| `checkLocaleParity` | Returns parity errors without throwing |
+| `ContentDocument` | Tipo validado con Zod para copy del sitio ES o EN |
+| `SiteSettings` | siteUrl, WhatsApp, enlaces sociales/legales |
+| `parseContentDocument` / `parseSiteSettings` | Parsear + validar un objeto raw |
+| `assertLocaleParity` | Lanza error si los documentos ES y EN tienen longitudes de arreglo distintas |
+| `loadPublishedFromDir` | Usado por Astro para cargar contenido publicado en tiempo de build |
+| `checkLocaleParity` | Devuelve errores de paridad sin lanzar excepción |
 
-## Validate content
-
-```bash
-# Validate published JSON
-npm run validate:published
-
-# Validate any content dir and tier
-npm run validate -- ../../apps/static/content drafts
-npm run validate -- ../../apps/static/content published
-```
-
-## Test
+## Validar contenido
 
 ```bash
-npm run build    # tests run against dist/ — build first
-npm test
+# Desde la raíz del repo (Turbo)
+npm run content:validate           # published/
+npm run content:validate:drafts    # drafts/
 ```
 
-## Rules
+## Reglas
 
-- ES and EN documents must have **matching array lengths** at all mapped paths. `assertLocaleParity` is called on every draft save and again on publish.
-- The `cli.js` entrypoint is used by `prebuild` and `predev` hooks in `apps/static` — if `dist/` does not exist those hooks will fail.
+- Los documentos ES y EN deben tener **longitudes de arreglo coincidentes** en todas las rutas mapeadas. `assertLocaleParity` se llama en cada guardado de borrador y de nuevo al publicar.
+- El entrypoint `cli.js` lo usan los hooks `prebuild` y `predev` en `apps/static` — si `dist/` no existe, esos hooks fallarán.

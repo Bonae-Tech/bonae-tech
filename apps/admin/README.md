@@ -1,45 +1,45 @@
 # bonae-admin
 
-Content management UI for editing and publishing site copy (ES/EN) and settings.
+Interfaz de gestión de contenido para editar y publicar textos del sitio (ES/EN) y configuración.
 
 ## Stack
 
 - React 18 + TypeScript, Vite, Tailwind CSS
 - Auth: Amazon Cognito (`amazon-cognito-identity-js`)
-- Data fetching: TanStack Query
-- Forms: React Hook Form + Zod
-- Content validation: `@bonae/content` (local package)
+- Obtención de datos: TanStack Query
+- Formularios: React Hook Form + Zod
+- Validación de contenido: `@bonae/content` (paquete local)
 
-## Setup
+## Configuración
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in `.env`:
+Completar `.env`:
 
-| Variable | Description |
+| Variable | Descripción |
 |---|---|
-| `VITE_API_BASE_URL` | Content API base URL (leave empty for same-origin `/content/*` on Cloudflare Pages) |
-| `VITE_COGNITO_USER_POOL_ID` | Cognito User Pool ID |
-| `VITE_COGNITO_CLIENT_ID` | Cognito App Client ID |
-| `VITE_AWS_REGION` | AWS region (default: `sa-east-1`) |
+| `VITE_API_BASE_URL` | URL base de la API de contenido (dejar vacío para same-origin `/content/*` en Cloudflare Pages) |
+| `VITE_COGNITO_USER_POOL_ID` | ID del User Pool de Cognito |
+| `VITE_COGNITO_CLIENT_ID` | ID del App Client de Cognito |
+| `VITE_AWS_REGION` | Región AWS (predeterminado: `sa-east-1`) |
 
-## Dev
+## Desarrollo
 
-**Mock mode** — no AWS, no backend. Reads/writes `apps/static/content/` on disk:
+**Modo mock** — sin AWS, sin backend. Lee/escribe `apps/static/content/` en disco:
 
 ```bash
 npm run dev:mock
 ```
 
-**Real mode** — requires `.env` with valid Cognito + API config:
+**Modo real** — requiere `.env` con config válida de Cognito + API:
 
 ```bash
 npm run dev
 ```
 
-Mock mode is active when `VITE_USE_MOCK=true`. Auth is bypassed and the Vite dev server intercepts all `/content/*` API calls locally.
+El modo mock está activo cuando `VITE_USE_MOCK=true`. Se omite la auth y el servidor de desarrollo Vite intercepta localmente todas las llamadas API `/content/*`.
 
 ## Build
 
@@ -47,35 +47,35 @@ Mock mode is active when `VITE_USE_MOCK=true`. Auth is bypassed and the Vite dev
 npm run build
 ```
 
-Runs `tsc --noEmit` then `vite build`. Output goes to `dist/`.
+Ejecuta `tsc --noEmit` y luego `vite build`. La salida va a `dist/`.
 
-## Architecture
+## Arquitectura
 
-### Components
+### Componentes
 
 ```mermaid
 graph TD
     subgraph Browser
-        App["App.tsx\n(auth gate)"]
-        Dashboard["Dashboard\n(section forms + locale)"]
-        Auth["infrastructure/auth.ts\n(lazy loader)"]
+        App["App.tsx\n(puerta de auth)"]
+        Dashboard["Dashboard\n(formularios de sección + locale)"]
+        Auth["infrastructure/auth.ts\n(cargador lazy)"]
         API["infrastructure/contentApi.ts"]
     end
 
-    subgraph "Auth layer"
+    subgraph "Capa de auth"
         MockAuth["auth.mock.ts\n(sessionStorage)"]
         CognitoAuth["auth.cognito.ts"]
     end
 
-    subgraph "Real mode"
+    subgraph "Modo real"
         Cognito["AWS Cognito\n(User Pool)"]
         ContentAPI["Content API\n(Cloudflare Worker)"]
-        GitHub["GitHub\n(git-backed content)"]
+        GitHub["GitHub\n(contenido respaldado por git)"]
     end
 
-    subgraph "Mock mode"
-        VitePlugin["Vite mock plugin\n(contentApiMockPlugin)"]
-        LocalDisk["apps/static/content/\n(local JSON files)"]
+    subgraph "Modo mock"
+        VitePlugin["Plugin mock de Vite\n(contentApiMockPlugin)"]
+        LocalDisk["apps/static/content/\n(archivos JSON locales)"]
     end
 
     App --> Auth
@@ -90,7 +90,7 @@ graph TD
     VitePlugin --> LocalDisk
 ```
 
-### User flow
+### Flujo de usuario
 
 ```mermaid
 sequenceDiagram
@@ -101,21 +101,21 @@ sequenceDiagram
     participant API as contentApi.ts
     participant Backend as Content API
 
-    Note over User,Backend: Sign in
-    User->>App: open admin
+    Note over User,Backend: Inicio de sesión
+    User->>App: abrir admin
     App->>Auth: getCurrentSession()
     Auth->>Cognito: getSession()
-    Cognito-->>Auth: null (no session)
+    Cognito-->>Auth: null (sin sesión)
     Auth-->>App: null
-    App->>User: show LoginForm
-    User->>App: submit email + password
+    App->>User: mostrar LoginForm
+    User->>App: enviar email + contraseña
     App->>Auth: signIn(email, password)
     Auth->>Cognito: authenticateUser()
     Cognito-->>Auth: CognitoUserSession
     Auth-->>App: session
-    App->>User: show Dashboard
+    App->>User: mostrar Dashboard
 
-    Note over User,Backend: Load draft
+    Note over User,Backend: Cargar borrador
     App->>API: fetchDraft(locale)
     API->>Auth: getIdToken()
     Auth->>Cognito: getSession()
@@ -124,71 +124,101 @@ sequenceDiagram
     Backend-->>API: { content, tier: "drafts" }
     API-->>App: ContentDocument
 
-    Note over User,Backend: Save draft
-    User->>App: edit section → Save
+    Note over User,Backend: Guardar borrador
+    User->>App: editar sección → Save
     App->>API: saveDraft(locale, doc)
     API->>Backend: PUT /content/drafts/{locale}<br/>Authorization: Bearer token
     Backend-->>API: { content, commitSha }
-    API-->>App: Draft saved
+    API-->>App: Borrador guardado
 
-    Note over User,Backend: Publish
-    User->>App: click "Publish site"
+    Note over User,Backend: Publicar
+    User->>App: clic en "Publish site"
     App->>API: publishContent()
     API->>Backend: POST /content/publish<br/>Authorization: Bearer token
-    Backend->>Backend: validate ES/EN parity + settings
-    Backend->>GitHub: commit drafts to published
+    Backend->>Backend: validar paridad ES/EN + settings
+    Backend->>GitHub: confirmar drafts a published
     GitHub-->>Backend: commitSha
     Backend-->>API: { ok: true, commitSha }
-    API-->>App: Published. Commit sha
+    API-->>App: Publicado. Commit sha
 ```
 
-### File tree
+### Árbol de archivos
 
 ```
 src/
-  config.ts                  # Reads env vars, exposes isConfigured()
-  App.tsx                    # Auth gate: ConfigMissing | LoginForm | Dashboard
+  config.ts                  # Lee vars de entorno, expone isConfigured()
+  App.tsx                    # Puerta de auth: ConfigMissing | LoginForm | Dashboard
   infrastructure/
-    auth.ts                  # Lazy-loads auth.mock.ts or auth.cognito.ts
-    auth.mock.ts             # No-op auth for mock mode
-    auth.cognito.ts          # Cognito sign-in/out/session
-    contentApi.ts            # fetch() wrapper: fetchDraft, saveDraft, publishContent
+    auth.ts                  # Carga lazy auth.mock.ts o auth.cognito.ts
+    auth.mock.ts             # Auth no-op para modo mock
+    auth.cognito.ts          # Inicio/cierre/sesión Cognito
+    contentApi.ts            # Wrapper fetch: fetchDraft, saveDraft, publishContent
   ui/
-    Dashboard.tsx            # Tab layout over all section editors
+    Dashboard.tsx            # Layout con pestañas sobre todos los editores de sección
     LoginForm.tsx
     ConfigMissing.tsx
     components/
-      JsonSectionEditor.tsx  # Raw JSON fallback editor
-    sections/                # Form per content section (Hero, About, etc.)
+      JsonSectionEditor.tsx  # Editor JSON raw de respaldo
+    sections/                # Formulario por sección de contenido (Hero, About, etc.)
 ```
 
-### API surface (`contentApi.ts`)
+### Superficie de API (`contentApi.ts`)
 
-| Method | Path | Description |
+| Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/content/drafts/{es\|en\|settings}` | Load draft |
-| `PUT` | `/content/drafts/{es\|en\|settings}` | Save draft |
-| `POST` | `/content/publish` | Promote drafts to published |
+| `GET` | `/content/drafts/{es\|en\|settings}` | Cargar borrador |
+| `PUT` | `/content/drafts/{es\|en\|settings}` | Guardar borrador |
+| `POST` | `/content/publish` | Promover borradores a publicado |
 
-All requests send a Cognito `Bearer` ID token. In mock mode the Vite plugin handles these routes directly against `apps/static/content/`.
+Todas las solicitudes envían un token ID de Cognito `Bearer`. En modo mock el plugin Vite maneja estas rutas directamente contra `apps/static/content/`.
 
-## Editor workflow
+## Flujo del editor
 
-1. Sign in (Cognito user in `Administrators` group, or any credentials in mock mode)
-2. Select locale (ES / EN) and section
-3. Edit fields and click **Save draft** — commits to `content/drafts/` via the content API
-4. Click **Publish site** — copies `drafts/` → `published/` in one commit; triggers a Cloudflare Pages rebuild automatically
+1. Iniciar sesión (usuario Cognito en el grupo `Administrators`, o cualquier credencial en modo mock)
+2. Seleccionar locale (ES / EN) y sección
+3. Editar campos y hacer clic en **Save draft** — confirma en `content/drafts/` vía la API de contenido
+4. Hacer clic en **Publish site** — copia `drafts/` → `published/` en un commit; dispara rebuild automático de Cloudflare Pages
 
-Drafts are never visible on the public marketing site until published.
+Los borradores nunca son visibles en el sitio de marketing público hasta publicarlos.
 
-## Rules
+## Reglas
 
-- ES and EN documents must have **matching array lengths** at all mapped paths (locale parity). The API rejects saves that break parity.
-- The static site reads only `content/published/` — never `content/drafts/`.
-- Users are invite-only — no self-sign-up. Create users via `aws cognito-idp admin-create-user`.
+- Los documentos ES y EN deben tener **longitudes de arreglo coincidentes** en todas las rutas mapeadas (paridad de locale). La API rechaza guardados que rompan la paridad.
+- El sitio estático lee solo `content/published/` — nunca `content/drafts/`.
+- Los usuarios son solo por invitación — sin auto-registro. Crear usuarios vía `aws cognito-idp admin-create-user`.
 
 ## Deploy
 
-Deployments are handled by `deploy-admin.yml` on push to `main` (Cloudflare Pages project `bonae-admin`). Cognito IDs are baked in at build time from GitHub repository variables. Leave `API_BASE_URL` empty for same-origin API routing via Pages service binding.
+Los deploys los maneja `deploy-admin.yml` en push a `main` (proyecto Cloudflare Pages `bonae-admin`). Los IDs de Cognito se incluyen en tiempo de build desde variables del repositorio GitHub. Dejar `API_BASE_URL` vacío para enrutamiento same-origin de la API vía service binding de Pages.
 
-See [docs/architecture.md](../../docs/architecture.md) and [docs/workflows.md](../../docs/workflows.md).
+Ver [docs/architecture.md](../../docs/architecture.md) y [docs/workflows.md](../../docs/workflows.md).
+
+### Gestión de usuarios Cognito
+
+Los usuarios son solo por invitación (`allow_admin_create_user_only = true`). Crear usuarios vía AWS CLI — reciben una contraseña temporal por email y deben establecer una permanente en el primer inicio de sesión.
+
+```bash
+POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
+REGION=sa-east-1
+
+# Crear usuario (envía email de invitación)
+aws cognito-idp admin-create-user \
+  --user-pool-id $POOL_ID \
+  --username editor@example.com \
+  --desired-delivery-mediums EMAIL \
+  --region $REGION
+
+# Agregar al grupo Administrators
+aws cognito-idp admin-add-user-to-group \
+  --user-pool-id $POOL_ID \
+  --username editor@example.com \
+  --group-name Administrators \
+  --region $REGION
+```
+
+Para deshabilitar o eliminar un usuario:
+
+```bash
+aws cognito-idp admin-disable-user --user-pool-id $POOL_ID --username editor@example.com --region $REGION
+aws cognito-idp admin-delete-user  --user-pool-id $POOL_ID --username editor@example.com --region $REGION
+```

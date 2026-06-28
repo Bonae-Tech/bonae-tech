@@ -1,6 +1,7 @@
 # Bootstrap: deploy Worker, sync GitHub App secrets, optional teardown.
+# setup = guardrails + deploy + secretos (primera vez o rotación).
+# Deploy worker = solo código en cada push — no sincroniza secretos.
 # First-time install: use "Bootstrap (one-time install)" or run with action=setup.
-# Code-only redeploys: use "Deploy worker" (does not sync secrets).
 #
 # See docs/workflows.md
 
@@ -53,13 +54,9 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-monorepo
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Resolve Worker name
-        id: worker
+      - id: worker
         run: |
           if [ "${{ inputs.environment }}" = "staging" ]; then
             echo "name=bonae-content-api-staging" >> "$GITHUB_OUTPUT"
@@ -106,23 +103,8 @@ jobs:
             exit 1
           fi
 
-      - uses: ./.github/actions/build-content
+      - run: npx turbo run build test --filter=@bonae/content-api-worker
         if: inputs.action == 'setup'
-
-      - name: Install worker dependencies
-        if: inputs.action == 'setup'
-        run: npm ci
-        working-directory: workers/content-api
-
-      - name: Typecheck worker
-        if: inputs.action == 'setup'
-        run: npm run build
-        working-directory: workers/content-api
-
-      - name: Run security tests
-        if: inputs.action == 'setup'
-        run: npm test
-        working-directory: workers/content-api
 
       - id: cloudflare
         uses: ./.github/actions/cloudflare-account
@@ -130,10 +112,6 @@ jobs:
           cloudflare_account_id_var: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           cloudflare_account_id_secret: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      - name: Install Wrangler
-        run: npm ci
-        working-directory: workers/content-api
 
       - name: Deploy Worker
         if: inputs.action == 'setup'

@@ -1,12 +1,12 @@
-# BONAE Infrastructure
+# Infraestructura BONAE
 
-Terraform manages **Cognito identity only**. Admin hosting and the content API run on Cloudflare (Pages + Worker).
+Terraform gestiona **solo identidad Cognito**. El hosting del admin y la API de contenido corren en Cloudflare (Pages + Worker).
 
-## Architecture
+## Arquitectura
 
 ```mermaid
 graph TD
-    subgraph AWS["AWS sa-east-1 — identity only"]
+    subgraph AWS["AWS sa-east-1 — solo identidad"]
         Cognito["Cognito User Pool\nbonae-content-admins"]
     end
 
@@ -30,29 +30,29 @@ graph TD
     GHActions -->|"terraform apply"| Cognito
 ```
 
-## Modules
+## Módulos
 
-1. **`terraform/bootstrap/`** — One-time: S3 state backend, DynamoDB lock, GitHub OIDC role (local state).
-2. **`terraform/`** — Cognito user pool, SPA client, `Administrators` group (S3 remote state).
+1. **`terraform/bootstrap/`** — Una vez: backend de estado S3, bloqueo DynamoDB, rol GitHub OIDC (estado local).
+2. **`terraform/`** — User pool Cognito, cliente SPA, grupo `Administrators` (estado remoto S3).
 
-## Prerequisites
+## Requisitos previos
 
 - Terraform ≥ 1.6
-- AWS CLI with credentials for Cognito management
-- Bootstrap completed (see below)
+- AWS CLI con credenciales para gestión de Cognito
+- Bootstrap completado (ver abajo)
 
-## Bootstrap (one-time)
+## Bootstrap (una vez)
 
 ```bash
 cd infra/terraform/bootstrap
 terraform init && terraform apply
 ```
 
-Add GitHub repository secrets from bootstrap outputs: `AWS_ROLE_ARN`, `AWS_REGION`, `GH_REPO_VARIABLES_TOKEN`.
+Agregar secretos del repositorio GitHub desde los outputs del bootstrap: `AWS_ROLE_ARN`, `AWS_REGION`, `GH_REPO_VARIABLES_TOKEN`.
 
-## Deploy Cognito
+## Desplegar Cognito
 
-Via GitHub Actions (**Deploy cognito** workflow) or locally:
+Vía GitHub Actions (workflow **Deploy cognito**) o localmente:
 
 ```bash
 cd infra/terraform
@@ -61,9 +61,9 @@ terraform plan
 terraform apply
 ```
 
-Outputs are stored as `COGNITO_USER_POOL_ID` and `COGNITO_CLIENT_ID` repository variables.
+Los outputs se almacenan como variables del repositorio `COGNITO_USER_POOL_ID` y `COGNITO_CLIENT_ID`.
 
-## Cognito user management
+## Gestión de usuarios Cognito
 
 ```bash
 POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
@@ -82,20 +82,20 @@ aws cognito-idp admin-add-user-to-group \
   --region $REGION
 ```
 
-### Multi-tenant (future)
+### Multi-tenant (futuro)
 
-Assign consumers to Cognito groups (`site-{tenantId}`) or set `custom:site_id`. The Worker `authorize.ts` module enforces tenant-scoped access alongside platform `Administrators`.
+Asignar consumidores a grupos Cognito (`site-{tenantId}`) o establecer `custom:site_id`. El módulo Worker `authorize.ts` aplica acceso con alcance por tenant junto con `Administrators` de plataforma.
 
-## GitHub App credentials (Worker secrets)
+## Credenciales de GitHub App (secretos del Worker)
 
-Store credentials as **prod** GitHub environment secrets (`WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`), then run **Setup worker** to push them to Cloudflare.
+Almacenar credenciales como secretos del entorno GitHub **prod** (`WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`), luego ejecutar **Setup worker** para enviarlas a Cloudflare.
 
-Install and workflow reference: [docs/workflows.md](../docs/workflows.md). Platform overview: [docs/architecture.md](../docs/architecture.md).
+Referencia de instalación y workflows: [docs/workflows.md](../docs/workflows.md). Vista general de la plataforma: [docs/architecture.md](../docs/architecture.md).
 
-## Decommissioning legacy AWS resources
+## Desmantelamiento de recursos AWS heredados
 
-If S3/CloudFront/Lambda/API Gateway resources still exist from the previous architecture, destroy them in AWS after migrating to Cloudflare. See [docs/architecture.md §3.1](../docs/architecture.md#31-aws-sa-east-1).
+Si aún existen recursos S3/CloudFront/Lambda/API Gateway de la arquitectura anterior, destruirlos en AWS después de migrar a Cloudflare. Ver [docs/architecture.md §3.1](../docs/architecture.md#31-aws-sa-east-1).
 
 ## Variables
 
-The Cognito-only module has no required `terraform.tfvars` variables.
+El módulo solo Cognito no tiene variables `terraform.tfvars` obligatorias.

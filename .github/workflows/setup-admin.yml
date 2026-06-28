@@ -1,6 +1,7 @@
 # One-time bootstrap for admin Pages (bonae-admin): verify prerequisites, then deploy.
+# setup = guardrails (Worker existe, Pages project) + primer deploy.
+# Deploy admin = solo código SPA en cada push a main.
 # Does not delete or recreate existing Pages projects — create is skipped if present.
-# Recurring code deploys: use "Deploy admin" (push to main or Deploy manual).
 #
 # See docs/workflows.md
 

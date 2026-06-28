@@ -1,4 +1,5 @@
 # Recurring deploy: admin SPA to Cloudflare Pages (bonae-admin).
+# Solo código SPA — no verifica Worker ni bootstrap (usar Setup admin).
 # First-time bootstrap: use "Setup admin" (creates project if missing, verifies Worker exists).
 # Auto-triggers on push to main.
 #
@@ -13,6 +14,9 @@ on:
     paths:
       - 'apps/admin/**'
       - 'packages/content/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'turbo.json'
       - '.github/workflows/deploy-admin.yml'
   workflow_dispatch:
 
@@ -28,16 +32,10 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - uses: ./.github/actions/build-content
+      - uses: ./.github/actions/setup-monorepo
 
       - name: Build admin SPA
-        run: npm ci && npm run build
-        working-directory: apps/admin
+        run: npx turbo run build --filter=bonae-admin
         env:
           # Same-origin /content/* via Cloudflare Pages → Worker service binding.
           VITE_API_BASE_URL: ''

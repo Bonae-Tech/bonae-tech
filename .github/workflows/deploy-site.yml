@@ -12,6 +12,9 @@ on:
     paths:
       - 'apps/static/**'
       - 'packages/content/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'turbo.json'
       - '.github/workflows/deploy-site.yml'
   workflow_dispatch:
 
@@ -29,23 +32,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - run: npm ci
-        working-directory: packages/content
-      - run: npm run build
-        working-directory: packages/content
-      - run: npm run validate:published
-        working-directory: packages/content
-
-      - run: npm ci
-        working-directory: apps/static
-
-      - run: npm run build
-        working-directory: apps/static
+      - uses: ./.github/actions/setup-monorepo
+      - run: npx turbo run build validate:published --filter=bonae-static
 
       - id: cloudflare
         uses: ./.github/actions/cloudflare-account

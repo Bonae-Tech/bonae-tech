@@ -27,7 +27,6 @@ export const contentDocumentSchema = z.object({
     about: z.string().min(1),
     valueProp: z.string().min(1),
     portfolio: z.string().min(1),
-    blog: z.string().min(1),
     contact: z.string().min(1),
     cta: z.string().min(1),
     clients: z.string().min(1),
@@ -91,12 +90,6 @@ export const contentDocumentSchema = z.object({
     comingSoon: z.string().min(1),
   }),
 
-  blog: z.object({
-    title: z.string().min(1),
-    subtitle: z.string().min(1),
-    comingSoon: z.string().min(1),
-  }),
-
   plans: z.object({
     sectionBadge: z.string().min(1),
     title: z.string().min(1),
@@ -139,7 +132,6 @@ export const contentDocumentSchema = z.object({
       about: z.string().min(1),
       services: z.string().min(1),
       portfolio: z.string().min(1),
-      blog: z.string().min(1),
       contact: z.string().min(1),
     }),
     services: z.object({

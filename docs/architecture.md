@@ -1,32 +1,32 @@
-# BONAE Tech — Architecture
+# BONAE Tech — Arquitectura
 
-Platform design, infrastructure, data flows, and day-to-day operations. CI/CD workflow reference: [workflows.md](./workflows.md).
+Diseño de la plataforma, infraestructura, flujos de datos y operaciones del día a día. Referencia de workflows CI/CD: [workflows.md](./workflows.md).
 
 ---
 
-## Table of contents
+## Tabla de contenidos
 
-1. [System overview](#1-system-overview)
+1. [Vista general del sistema](#1-vista-general-del-sistema)
 2. [Workspaces](#2-workspaces)
-3. [Cloud infrastructure](#3-cloud-infrastructure)
-4. [Data flows](#4-data-flows)
+3. [Infraestructura en la nube](#3-infraestructura-en-la-nube)
+4. [Flujos de datos](#4-flujos-de-datos)
 5. [CI/CD](#5-cicd)
-6. [Operations](#6-operations)
+6. [Operaciones](#6-operaciones)
 
 ---
 
-## 1. System overview
+## 1. Vista general del sistema
 
-BONAE Tech is a **git-backed content platform**. All site copy lives as JSON files committed to this repository. There is no database — the git history is the content store.
+BONAE Tech es una **plataforma de contenido respaldada por git**. Todo el copy del sitio vive como archivos JSON confirmados en este repositorio. No hay base de datos — el historial de git es el almacén de contenido.
 
 ```mermaid
 flowchart TD
     subgraph Browser
         AdminSPA["Admin SPA\nReact + Vite"]
-        MarketingSite["Marketing Site\nAstro · static HTML"]
+        MarketingSite["Sitio de marketing\nAstro · HTML estático"]
     end
 
-    subgraph AWS["AWS · sa-east-1 — identity only"]
+    subgraph AWS["AWS · sa-east-1 — solo identidad"]
         Cognito["Cognito User Pool\nbonae-content-admins"]
     end
 
@@ -37,153 +37,156 @@ flowchart TD
     end
 
     subgraph GitHub["GitHub · mpiantella/bonae"]
-        Drafts["content/drafts/"]
-        Published["content/published/"]
+        Drafts["apps/static/content/drafts/"]
+        Published["apps/static/content/published/"]
         Actions["GitHub Actions"]
     end
 
-    AdminSPA -->|"SRP auth"| Cognito
+    AdminSPA -->|"auth SRP"| Cognito
     Cognito -->|"ID token JWT"| AdminSPA
     AdminPages --> AdminSPA
     AdminSPA -->|"Bearer JWT /content/*"| Worker
-    Worker -->|"JWKS verify"| Cognito
-    Worker -->|"Octokit commits"| Drafts
-    Worker -->|"copy drafts → published"| Published
-    Published -->|"push to main"| Actions
+    Worker -->|"verificación JWKS"| Cognito
+    Worker -->|"commits Octokit"| Drafts
+    Worker -->|"copiar drafts → published"| Published
+    Published -->|"push a main"| Actions
     Actions -->|"wrangler deploy"| CFPages
     CFPages --> MarketingSite
 ```
 
-### Key design decisions
+### Decisiones de diseño clave
 
-- **No database.** Content is JSON in git. The git log is the audit trail.
-- **No runtime server for marketing.** The site is static HTML on Cloudflare Pages.
-- **Hybrid cloud.** Cognito on AWS for identity; Cloudflare Pages + Worker for admin hosting and API.
-- **Invite-only admin.** No self-sign-up. Users are created via CLI and added to the `Administrators` Cognito group.
-- **Locale parity enforced.** ES and EN documents must have matching structure at all times. The API rejects saves that break parity.
+- **Sin base de datos.** El contenido es JSON en git. El log de git es la pista de auditoría.
+- **Sin servidor en runtime para marketing.** El sitio es HTML estático en Cloudflare Pages.
+- **Nube híbrida.** Cognito en AWS para identidad; Cloudflare Pages + Worker para hosting del admin y API.
+- **Admin solo por invitación.** Sin auto-registro. Los usuarios se crean vía CLI y se agregan al grupo Cognito `Administrators`.
+- **Paridad de locale aplicada.** Los documentos ES y EN deben tener estructura coincidente en todo momento. La API rechaza guardados que rompan la paridad.
 
 ---
 
 ## 2. Workspaces
 
-| Workspace | Path | Runtime | Deployed to |
+| Workspace | Ruta | Runtime | Desplegado en |
 |-----------|------|---------|-------------|
-| Marketing site | `apps/static/` | Astro 4 + Tailwind | Cloudflare Pages `bonae-tech` |
-| Content admin SPA | `apps/admin/` | React + Vite | Cloudflare Pages `bonae-admin` |
-| Shared content schema | `packages/content/` | TypeScript → `dist/` | (shared library) |
-| Content API | `workers/content-api/` | Cloudflare Worker | `bonae-content-api` |
-| Infrastructure | `infra/terraform/` | Terraform | Cognito only (AWS sa-east-1) |
+| Sitio de marketing | `apps/static/` | Astro 4 + Tailwind | Cloudflare Pages `bonae-tech` |
+| Admin de contenido SPA | `apps/admin/` | React + Vite | Cloudflare Pages `bonae-admin` |
+| Esquema de contenido compartido | `packages/content/` | TypeScript → `dist/` | (biblioteca compartida) |
+| API de contenido | `workers/content-api/` | Cloudflare Worker | `bonae-content-api` |
+| Infraestructura | `infra/terraform/` | Terraform | Solo Cognito (AWS sa-east-1) |
 
-### Build dependency order
+### Orden de dependencias de build
 
-`packages/content` **must be compiled before** anything that imports it.
+`packages/content` **debe compilarse antes** que cualquier cosa que lo importe.
 
 ```mermaid
 graph LR
-    PC["packages/content\nbuild first"]
+    PC["packages/content\ncompilar primero"]
     AS["apps/static"]
     AA["apps/admin"]
     WCA["workers/content-api"]
 
     PC --> AS
     PC --> AA
-    PC --> SCA
+    PC --> WCA
 ```
 
-Root scripts handle this automatically. When running steps manually, run `npm run content:build` first.
+Los scripts de la raíz manejan esto automáticamente. Al ejecutar pasos manualmente, correr `npm run content:build` primero.
 
 ### Admin SPA
 
-| Mode | Auth | API target |
-|------|------|------------|
-| **Mock** (`VITE_USE_MOCK=true`) | Fake session | Vite plugin writes to disk |
-| **Production** | Cognito SRP | Same-origin `/content/*` via Pages service binding |
+| Modo | Auth | Destino de API |
+|------|------|----------------|
+| **Mock** (`VITE_USE_MOCK=true`) | Sesión falsa | Plugin Vite escribe en disco |
+| **Producción** | Cognito SRP | Same-origin `/content/*` vía service binding de Pages |
 
-Key pieces: `config.ts` (build-time Cognito IDs), `infrastructure/auth.cognito.ts` (SRP, 1-hour sessions, no refresh tokens), `infrastructure/contentApi.ts` (Bearer JWT), `functions/content/_middleware.ts` (proxies to Worker).
+Piezas clave: `config.ts` (IDs de Cognito en tiempo de build), `infrastructure/auth.cognito.ts` (SRP, sesiones de 1 hora, sin refresh tokens), `infrastructure/contentApi.ts` (Bearer JWT), `functions/content/_middleware.ts` (proxy al Worker).
 
-### Content API Worker
+### Worker de API de contenido
 
-| Module | Role |
-|--------|------|
-| `src/auth/cognito.ts` | JWT verification via Cognito JWKS |
-| `src/auth/authorize.ts` | `Administrators` group check |
-| `src/routes.ts` | Content routes + `@bonae/content` validation |
-| `src/github.ts` | Octokit GitHub App client |
+| Módulo | Rol |
+|--------|-----|
+| `src/auth/cognito.ts` | Verificación JWT vía Cognito JWKS |
+| `src/auth/authorize.ts` | Verificación del grupo `Administrators` |
+| `src/routes.ts` | Rutas de contenido + validación `@bonae/content` |
+| `src/github.ts` | Cliente Octokit GitHub App |
 
-Routes: `GET/PUT /content/drafts/{es|en|settings}`, `GET /content/published/{...}`, `POST /content/publish`.
+Rutas: 
+* `GET/PUT /content/drafts/{es|en|settings}`
+* `GET /content/published/{...}` 
+* `POST /content/publish`
 
-### Security model
+### Modelo de seguridad
 
-1. **Cognito** — invite-only, password policy, `Administrators` group
-2. **SPA** — session expiry monitoring; explicit logout; no silent refresh
-3. **Worker** — JWKS verification + authorization on every mutating request
-4. **GitHub App** — scoped credentials in Worker secrets only
+1. **Cognito** — solo por invitación, política de contraseñas, grupo `Administrators`
+2. **SPA** — monitoreo de expiración de sesión; cierre de sesión explícito; sin refresh silencioso
+3. **Worker** — verificación JWKS + autorización en cada solicitud mutante
+4. **GitHub App** — credenciales con alcance limitado solo en secretos del Worker
 
-App-specific READMEs: [apps/admin/README.md](../apps/admin/README.md), [workers/content-api/README.md](../workers/content-api/README.md).
+READMEs por app: 
+* [apps/admin/README.md](../apps/admin/README.md)
+* [workers/content-api/README.md](../workers/content-api/README.md)
 
 ---
 
-## 3. Cloud infrastructure
+## 3. Infraestructura en la nube
 
 ### 3.1 AWS (sa-east-1)
 
-#### Bootstrap (one-time, local Terraform)
+#### Bootstrap (una vez, Terraform local)
 
-| Resource | Purpose |
+| Recurso | Propósito |
 |----------|---------|
-| S3 bucket `bonae-terraform-state-*` | Remote state for main Terraform module |
-| DynamoDB `bonae-terraform-locks` | State locking |
-| IAM OIDC provider | GitHub Actions → AWS |
-| IAM role `github-actions-bonae-deploy` | Role assumed by CI |
+| Bucket S3 `bonae-terraform-state-*` | Estado remoto para el módulo Terraform principal |
+| DynamoDB `bonae-terraform-locks` | Bloqueo de estado |
+| Proveedor IAM OIDC | GitHub Actions → AWS |
+| Rol IAM `github-actions-bonae-deploy` | Rol asumido por CI |
 
-State file: `infra/terraform/bootstrap/terraform.tfstate` (local, gitignored — keep it).
+Archivo de estado: `infra/terraform/bootstrap/terraform.tfstate` (local, gitignored — conservarlo).
 
-#### Main module (Cognito — managed by CI)
+#### Módulo principal (Cognito — gestionado por CI)
 
-| Resource | Purpose |
+| Recurso | Propósito |
 |----------|---------|
-| Cognito User Pool `bonae-content-admins` | Admin accounts |
-| SPA client `bonae-content-admin-spa` | SRP auth, no client secret |
-| Group `Administrators` | API access |
+| Cognito User Pool `bonae-content-admins` | Cuentas de admin |
+| Cliente SPA `bonae-content-admin-spa` | Auth SRP, sin client secret |
+| Grupo `Administrators` | Acceso a la API |
 
-Invite-only (`allow_admin_create_user_only = true`). ID tokens expire after 1 hour; refresh tokens disabled.
-
-Legacy AWS resources (API Gateway, Lambda, S3 admin bucket, CloudFront) were removed from Terraform. Destroy any survivors in AWS after migrating to Cloudflare.
+Solo por invitación (`allow_admin_create_user_only = true`). Los ID tokens expiran a la 1 hora; refresh tokens deshabilitados.
 
 ### 3.2 Cloudflare
 
-| Resource | Purpose |
+| Recurso | Propósito |
 |----------|---------|
-| Pages `bonae-tech` | Marketing site |
-| Pages `bonae-admin` | Admin SPA; `/content/*` → Worker via service binding |
-| Worker `bonae-content-api` | Content API |
+| Pages `bonae-tech` | Sitio de marketing |
+| Pages `bonae-admin` | Admin SPA; `/content/*` → Worker vía service binding |
+| Worker `bonae-content-api` | API de contenido |
 
-Worker secrets synced from GitHub via **Setup worker**. Cognito IDs passed as Worker vars at deploy time.
+Secretos del Worker sincronizados desde GitHub vía **Setup worker**. IDs de Cognito pasados como vars del Worker en tiempo de deploy.
 
-### 3.3 GitHub configuration
+### 3.3 Configuración de GitHub
 
-| Secret / variable | Set by | Used for |
-|-------------------|--------|----------|
-| `AWS_ROLE_ARN`, `AWS_REGION` | bootstrap Terraform | Cognito workflows |
+| Secreto / variable | Establecido por | Usado para |
+|-------------------|-----------------|------------|
+| `AWS_ROLE_ARN`, `AWS_REGION` | bootstrap Terraform | Workflows de Cognito |
 | `GH_REPO_VARIABLES_TOKEN` | manual | Deploy cognito |
-| `CLOUDFLARE_*` | manual (prod env) | Cloudflare deploys |
-| `WORKER_GITHUB_*` | manual (prod env) | Setup worker |
-| `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | Deploy cognito | Admin build, Worker deploy |
+| `CLOUDFLARE_*` | manual (entorno prod) | Deploys de Cloudflare |
+| `WORKER_GITHUB_*` | manual (entorno prod) | Setup worker |
+| `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | Deploy cognito | Build del admin, deploy del Worker |
 
-| Environment | Purpose |
+| Entorno | Propósito |
 |-------------|---------|
-| `infra-production` | Gates `terraform apply` — add required reviewers |
-| `prod` | Exposes Cloudflare + Worker secrets to deploy jobs |
+| `infra-production` | Protege `terraform apply` — agregar revisores requeridos |
+| `prod` | Expone secretos de Cloudflare + Worker a jobs de deploy |
 
-**GitHub App** — `Contents: Read & Write` on this repo. Created manually; credentials stored as Worker secrets via **Setup worker**.
+**GitHub App** — `Contents: Read & Write` en este repo. Creada manualmente; credenciales almacenadas como secretos del Worker vía **Setup worker**.
 
-Full secrets table: [workflows.md § Secrets](./workflows.md#secrets-and-variables).
+Tabla completa de secretos: [workflows.md § Secretos](./workflows.md#secretos-y-variables).
 
 ---
 
-## 4. Data flows
+## 4. Flujos de datos
 
-### Content editing (admin → draft)
+### Edición de contenido (admin → borrador)
 
 ```mermaid
 sequenceDiagram
@@ -194,21 +197,21 @@ sequenceDiagram
     participant Cognito
     participant GH as GitHub
 
-    Editor->>SPA: Enter credentials
-    SPA->>Cognito: SRP authentication
-    Cognito-->>SPA: ID token (JWT, 1h expiry)
+    Editor->>SPA: Ingresar credenciales
+    SPA->>Cognito: Autenticación SRP
+    Cognito-->>SPA: ID token (JWT, expira en 1h)
 
-    Editor->>SPA: Edit section, click Save
+    Editor->>SPA: Editar sección, clic Save
     SPA->>Pages: PUT /content/drafts/{locale} · Bearer JWT
-    Pages->>Worker: Service binding forward
-    Worker->>Cognito: JWKS verify JWT
-    Worker->>Worker: Check Administrators group
-    Worker->>GH: Commit JSON to content/drafts/
+    Pages->>Worker: Reenvío por service binding
+    Worker->>Cognito: Verificar JWT con JWKS
+    Worker->>Worker: Verificar grupo Administrators
+    Worker->>GH: Confirmar JSON en content/drafts/
     GH-->>Worker: 201 Created
     Worker-->>SPA: 200 OK
 ```
 
-### Publishing (draft → published → site rebuild)
+### Publicación (borrador → publicado → rebuild del sitio)
 
 ```mermaid
 sequenceDiagram
@@ -219,95 +222,78 @@ sequenceDiagram
     participant Actions as GitHub Actions
     participant CF as Cloudflare Pages bonae-tech
 
-    Editor->>SPA: Click "Publish site"
+    Editor->>SPA: Clic en "Publish site"
     SPA->>Worker: POST /content/publish · Bearer JWT
-    Worker->>Worker: Validate locale parity + settings
-    Worker->>GH: Single commit · copy drafts/ → published/
-    GH->>Actions: Push to main · triggers Deploy site
+    Worker->>Worker: Validar paridad de locale + settings
+    Worker->>GH: Un solo commit · copiar drafts/ → published/
+    GH->>Actions: Push a main · dispara Deploy site
     Actions->>CF: wrangler pages deploy
-    CF-->>Editor: New static site live
+    CF-->>Editor: Nuevo sitio estático en vivo
 ```
 
-### First login (invite flow)
+### Primer inicio de sesión (flujo de invitación)
 
-New users receive a temporary password by email. Cognito returns `NEW_PASSWORD_REQUIRED`; the admin SPA prompts for a permanent password.
+Los usuarios nuevos reciben una contraseña temporal por email. Cognito devuelve `NEW_PASSWORD_REQUIRED`; el admin SPA solicita una contraseña permanente.
 
 ---
 
 ## 5. CI/CD
 
-Workflow files: `.github/workflows/`. Full reference: **[workflows.md](./workflows.md)**.
+Archivos de workflow: `.github/workflows/`. Referencia completa: **[workflows.md](./workflows.md)**.
+
+Builds y validación usan **Turborepo** (`npx turbo run …`) con la composite action **setup-monorepo** (`npm ci` + caché local `.turbo`). Deploy final a Cloudflare sigue con Wrangler en cada workflow.
 
 ```mermaid
 flowchart TD
     PR["Pull Request"] --> CI["CI · content PR check · TF plan"]
 
-    Main["Push to main"] --> DeploySite["Deploy site"]
+    Main["Push a main"] --> DeploySite["Deploy site"]
     Main --> DeployAdmin["Deploy admin"]
     Main --> DeployWorker["Deploy worker"]
     Main --> DeployCognito["Deploy cognito"]
-    DeployCognito --> Gate["infra-production approval"]
+    DeployCognito --> Gate["aprobación infra-production"]
 
-    Manual["Manual"] --> Bootstrap["Bootstrap\none-time install"]
+    Manual["Manual"] --> Bootstrap["Bootstrap\ninstalación única"]
     Manual --> DeployManual["Deploy manual"]
     Manual --> SetupWorker["Setup worker"]
 ```
 
-**Install:** local Terraform bootstrap → **Bootstrap (one-time install)** in GitHub Actions.  
-**Day-to-day:** push to `main` or **Deploy (manual)**.
+**Instalación:** bootstrap Terraform local → **Bootstrap (one-time install)** en GitHub Actions.  
+**Día a día:** push a `main` o **Deploy (manual)**.
 
 ---
 
-## 6. Operations
+## 6. Operaciones
 
-### Content workflow
+### Flujo de contenido
 
-Sign in → edit ES/EN → **Save draft** (commits to `drafts/`) → **Publish** (copies `drafts/` → `published/`, triggers **Deploy site**).
+Iniciar sesión → editar ES/EN → **Save draft** (confirma en `drafts/`) → **Publish** (copia `drafts/` → `published/`, dispara **Deploy site**).
 
-### Adding a Cognito user
+### Rotación de credenciales
 
-```bash
-POOL_ID=$(cd infra/terraform && terraform output -raw user_pool_id)
-REGION=sa-east-1
-
-aws cognito-idp admin-create-user \
-  --user-pool-id $POOL_ID \
-  --username editor@example.com \
-  --desired-delivery-mediums EMAIL \
-  --region $REGION
-
-aws cognito-idp admin-add-user-to-group \
-  --user-pool-id $POOL_ID \
-  --username editor@example.com \
-  --group-name Administrators \
-  --region $REGION
-```
-
-### Rotating credentials
-
-| Credential | Action |
+| Credencial | Acción |
 |------------|--------|
-| GitHub App | Update `WORKER_GITHUB_*` prod secrets → **Setup worker** `sync-secrets` |
-| Cloudflare API token | Regenerate token → update `CLOUDFLARE_API_TOKEN` on prod env |
-| Cognito Terraform | Push TF changes or run **Deploy cognito** |
+| GitHub App | Actualizar secretos `WORKER_GITHUB_*` de prod → **Setup worker** `sync-secrets` |
+| Token API de Cloudflare | Regenerar token → actualizar `CLOUDFLARE_API_TOKEN` en entorno prod |
+| Terraform Cognito | Enviar cambios TF o ejecutar **Deploy cognito** |
 
-### Validating content locally
+### Validar contenido localmente
 
 ```bash
 npm run content:validate
-npm --prefix packages/content run validate -- ../../apps/static/content drafts
+npm run content:validate:drafts
 ```
 
-### Custom domains
+### Dominios personalizados
 
-Add `admin.<domain>` and marketing domain on the respective Cloudflare Pages projects. Leave `API_BASE_URL` empty so the admin SPA uses same-origin `/content/*`.
+Agregar `admin.<dominio>` y el dominio de marketing en los respectivos proyectos Cloudflare Pages. Dejar `API_BASE_URL` vacío para que el admin SPA use same-origin `/content/*`.
 
-### Local development
+### Desarrollo local
 
 ```bash
-make dev-admin-mock    # admin SPA, no AWS
-make dev-worker        # Worker (requires workers/content-api/.dev.vars)
-npm run dev            # marketing site
+npm run dev:admin:mock    # admin SPA, sin AWS
+npm run dev:worker        # Worker (requiere workers/content-api/.dev.vars)
+npm run dev               # sitio de marketing
 ```
 
-See [workflows.md](./workflows.md) for install and deploy procedures.
+Ver [workflows.md](./workflows.md) para procedimientos de instalación y deploy.
