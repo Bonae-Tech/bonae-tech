@@ -2,16 +2,29 @@ import { SessionExpiredError } from './session.js';
 
 const STORAGE_KEY = 'bonae-admin-mock-auth';
 const EXPIRY_KEY = 'bonae-admin-mock-exp';
+const RESET_EMAIL_KEY = 'bonae-admin-mock-reset-email';
+const MOCK_RESET_CODE = '123456';
 
-let sessionExpiredHandler: (() => void) | null = null;
+export type LogoutReason = 'expired' | 'manual';
 
-export function onSessionExpired(handler: () => void): void {
+let sessionExpiredHandler: ((reason: LogoutReason) => void) | null = null;
+let sessionRefreshedHandler: (() => void) | null = null;
+
+export function onSessionExpired(handler: (reason: LogoutReason) => void): void {
   sessionExpiredHandler = handler;
 }
 
-function notifySessionExpired(): void {
+export function onSessionRefreshed(handler: () => void): void {
+  sessionRefreshedHandler = handler;
+}
+
+function notifySessionExpired(reason: LogoutReason = 'expired'): void {
   signOut();
-  sessionExpiredHandler?.();
+  sessionExpiredHandler?.(reason);
+}
+
+function notifySessionRefreshed(): void {
+  sessionRefreshedHandler?.();
 }
 
 export interface MockSession {
@@ -41,10 +54,28 @@ export function getCurrentSession(): Promise<MockSession | null> {
   }
   const exp = Number(sessionStorage.getItem(EXPIRY_KEY) ?? '0');
   if (exp <= Date.now()) {
-    signOut();
-    return Promise.resolve(null);
+    return Promise.resolve({ isValid: () => false });
   }
   return Promise.resolve({ isValid: () => true });
+}
+
+export async function refreshSession(): Promise<MockSession | null> {
+  return ensureValidMockSession(true);
+}
+
+async function ensureValidMockSession(notifyOnRefresh: boolean): Promise<MockSession | null> {
+  if (!sessionStorage.getItem(STORAGE_KEY)) {
+    return null;
+  }
+  const exp = Number(sessionStorage.getItem(EXPIRY_KEY) ?? '0');
+  const wasExpired = exp <= Date.now();
+  if (wasExpired) {
+    sessionStorage.setItem(EXPIRY_KEY, String(Date.now() + 60 * 60 * 1000));
+    if (notifyOnRefresh) {
+      notifySessionRefreshed();
+    }
+  }
+  return { isValid: () => true };
 }
 
 export async function getSessionExpiresAt(): Promise<number | null> {
@@ -54,13 +85,33 @@ export async function getSessionExpiresAt(): Promise<number | null> {
 }
 
 export async function getIdToken(): Promise<string> {
-  if (!sessionStorage.getItem(STORAGE_KEY)) {
-    throw new SessionExpiredError('Not authenticated');
-  }
-  const exp = Number(sessionStorage.getItem(EXPIRY_KEY) ?? '0');
-  if (exp <= Date.now()) {
-    notifySessionExpired();
+  const session = await ensureValidMockSession(false);
+  if (!session?.isValid()) {
+    notifySessionExpired('expired');
     throw new SessionExpiredError('Not authenticated');
   }
   return 'mock-local-token';
+}
+
+export function requestPasswordReset(email: string): Promise<void> {
+  if (!email.trim()) {
+    return Promise.reject(new Error('Email is required'));
+  }
+  sessionStorage.setItem(RESET_EMAIL_KEY, email.trim());
+  return Promise.resolve();
+}
+
+export function confirmPasswordReset(email: string, code: string, newPassword: string): Promise<void> {
+  const storedEmail = sessionStorage.getItem(RESET_EMAIL_KEY);
+  if (!storedEmail || storedEmail !== email.trim()) {
+    return Promise.reject(new Error('Invalid verification code'));
+  }
+  if (code.trim() !== MOCK_RESET_CODE) {
+    return Promise.reject(new Error('Invalid verification code'));
+  }
+  if (!newPassword) {
+    return Promise.reject(new Error('Password is required'));
+  }
+  sessionStorage.removeItem(RESET_EMAIL_KEY);
+  return Promise.resolve();
 }

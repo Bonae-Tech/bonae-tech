@@ -22,6 +22,13 @@ resource "aws_cognito_user_pool" "admins" {
     require_symbols   = false
     require_uppercase = true
   }
+
+  account_recovery_setting {
+    recovery_mechanism {
+      name     = "verified_email"
+      priority = 1
+    }
+  }
 }
 
 resource "aws_cognito_user_pool_client" "spa" {
@@ -32,13 +39,16 @@ resource "aws_cognito_user_pool_client" "spa" {
 
   explicit_auth_flows = [
     "ALLOW_USER_SRP_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH",
   ]
 
   token_validity_units {
-    id_token = "hours"
+    id_token      = "hours"
+    refresh_token = "days"
   }
 
-  id_token_validity = 1
+  id_token_validity      = 1
+  refresh_token_validity = 30
 
   prevent_user_existence_errors = "ENABLED"
 }

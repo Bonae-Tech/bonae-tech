@@ -2,10 +2,12 @@ import { useState } from 'react';
 
 interface Props {
   mockMode?: boolean;
+  infoMessage?: string | null;
   onLogin: (email: string, password: string) => Promise<void>;
+  onForgotPassword?: () => void;
 }
 
-export function LoginForm({ mockMode = false, onLogin }: Props) {
+export function LoginForm({ mockMode = false, infoMessage, onLogin, onForgotPassword }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +35,9 @@ export function LoginForm({ mockMode = false, onLogin }: Props) {
             ? 'Local mock mode: any email and password work.'
             : 'Sign in with your administrator account.'}
         </p>
+        {infoMessage && (
+          <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">{infoMessage}</p>
+        )}
         {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
         <div>
           <label className="field-label" htmlFor="email">Email</label>
@@ -45,6 +50,13 @@ export function LoginForm({ mockMode = false, onLogin }: Props) {
         <button type="submit" className="btn-primary w-full" disabled={loading}>
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
+        {!mockMode && onForgotPassword && (
+          <p className="text-center text-sm">
+            <button type="button" className="text-dark-blue underline" onClick={onForgotPassword}>
+              Forgot password?
+            </button>
+          </p>
+        )}
       </form>
     </div>
   );

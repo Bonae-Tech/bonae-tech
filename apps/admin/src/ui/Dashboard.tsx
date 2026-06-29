@@ -13,9 +13,11 @@ type SectionId = 'hero' | 'valueProp' | 'about' | 'contact' | 'settings' | 'adva
 
 interface Props {
   onLogout: () => void;
+  sessionMessage?: string | null;
+  onDismissSessionMessage?: () => void;
 }
 
-export function Dashboard({ onLogout }: Props) {
+export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }: Props) {
   const [locale, setLocale] = useState<Locale>('es');
   const [section, setSection] = useState<SectionId>('hero');
   const [status, setStatus] = useState<string | null>(null);
@@ -123,6 +125,16 @@ export function Dashboard({ onLogout }: Props) {
         </aside>
 
         <main className="space-y-4">
+          {sessionMessage && (
+            <div className="flex items-start justify-between gap-3 rounded-lg bg-emerald-50 px-4 py-2 text-sm text-emerald-900">
+              <p>{sessionMessage}</p>
+              {onDismissSessionMessage && (
+                <button type="button" className="shrink-0 text-emerald-700 underline" onClick={onDismissSessionMessage}>
+                  Dismiss
+                </button>
+              )}
+            </div>
+          )}
           {status && <p className="rounded-lg bg-slate-100 px-4 py-2 text-sm text-slate-700">{status}</p>}
           {contentQuery.isLoading && section !== 'settings' && <div className="card">Loading content…</div>}
           {contentQuery.error && section !== 'settings' && <div className="card text-red-700">{String(contentQuery.error)}</div>}
