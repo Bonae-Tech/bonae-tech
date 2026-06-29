@@ -5,6 +5,7 @@ import {
   CognitoUserSession,
 } from 'amazon-cognito-identity-js';
 import { config } from '../config.js';
+import { mapConfirmPasswordError, mapForgotPasswordError } from './cognitoErrors.js';
 import { SessionExpiredError } from './session.js';
 
 export type LogoutReason = 'expired' | 'manual';
@@ -149,7 +150,7 @@ export function requestPasswordReset(email: string): Promise<void> {
   return new Promise((resolve, reject) => {
     user.forgotPassword({
       onSuccess: () => resolve(),
-      onFailure: (err) => reject(err),
+      onFailure: (err) => reject(new Error(mapForgotPasswordError(err))),
     });
   });
 }
@@ -160,7 +161,7 @@ export function confirmPasswordReset(email: string, code: string, newPassword: s
   return new Promise((resolve, reject) => {
     user.confirmPassword(code.trim(), newPassword, {
       onSuccess: () => resolve(),
-      onFailure: (err) => reject(err),
+      onFailure: (err) => reject(new Error(mapConfirmPasswordError(err))),
     });
   });
 }

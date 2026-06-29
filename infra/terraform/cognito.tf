@@ -29,6 +29,15 @@ resource "aws_cognito_user_pool" "admins" {
       priority = 1
     }
   }
+
+  dynamic "email_configuration" {
+    for_each = var.cognito_use_ses_email ? [1] : []
+    content {
+      email_sending_account = "DEVELOPER"
+      from_email_address    = var.cognito_from_email
+      source_arn            = aws_ses_domain_identity.cognito.arn
+    }
+  }
 }
 
 resource "aws_cognito_user_pool_client" "spa" {

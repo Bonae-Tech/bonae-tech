@@ -33,7 +33,7 @@ graph TD
 ## Módulos
 
 1. **`terraform/bootstrap/`** — Una vez: backend de estado S3, bloqueo DynamoDB, rol GitHub OIDC (estado local).
-2. **`terraform/`** — User pool Cognito, cliente SPA, grupo `Administrators` (estado remoto S3).
+2. **`terraform/`** — User pool Cognito, cliente SPA, grupo `Administrators`, SES para email de Cognito (estado remoto S3).
 
 ## Requisitos previos
 
@@ -63,6 +63,20 @@ terraform apply
 
 Los outputs se almacenan como variables del repositorio `COGNITO_USER_POOL_ID` y `COGNITO_CLIENT_ID`.
 
+## Email Cognito vía SES (Fase 3)
+
+Ver [docs/admin-auth/phase-3-ses-email.md](../docs/admin-auth/phase-3-ses-email.md).
+
+```bash
+cd infra/terraform
+terraform apply   # cognito_use_ses_email = false por defecto
+terraform output ses_domain_verification_txt
+terraform output ses_dkim_cname_records
+# Añadir registros en Cloudflare → esperar verificación SES
+# Editar terraform.tfvars: cognito_use_ses_email = true
+terraform apply
+```
+
 ## Gestión de usuarios Cognito
 
 ```bash
@@ -72,6 +86,7 @@ REGION=sa-east-1
 aws cognito-idp admin-create-user \
   --user-pool-id $POOL_ID \
   --username editor@example.com \
+  --user-attributes Name=email,Value=editor@example.com Name=email_verified,Value=true \
   --desired-delivery-mediums EMAIL \
   --region $REGION
 
@@ -98,4 +113,4 @@ Si aún existen recursos S3/CloudFront/Lambda/API Gateway de la arquitectura ant
 
 ## Variables
 
-El módulo solo Cognito no tiene variables `terraform.tfvars` obligatorias.
+Opcionales en `terraform.tfvars` — ver `variables.tf` y [phase-3-ses-email.md](../docs/admin-auth/phase-3-ses-email.md) para SES.

@@ -99,7 +99,7 @@ Los scripts de la raíz manejan esto automáticamente. Al ejecutar pasos manualm
 | **Mock** (`VITE_USE_MOCK=true`) | Sesión falsa | Plugin Vite escribe en disco |
 | **Producción** | Cognito SRP | Same-origin `/content/*` vía service binding de Pages |
 
-Piezas clave: `config.ts` (IDs de Cognito en tiempo de build), `infrastructure/auth.cognito.ts` (SRP, sesiones de 1 hora, sin refresh tokens), `infrastructure/contentApi.ts` (Bearer JWT), `functions/content/_middleware.ts` (proxy al Worker).
+Piezas clave: `config.ts` (IDs de Cognito en tiempo de build), `infrastructure/auth.cognito.ts` (SRP, refresh, reset de contraseña), `infrastructure/contentApi.ts` (Bearer JWT + retry en 401), `functions/content/_middleware.ts` (proxy al Worker). **Flujos de auth:** [admin-authentication.md](./admin-authentication.md).
 
 ### Worker de API de contenido
 
@@ -117,10 +117,12 @@ Rutas:
 
 ### Modelo de seguridad
 
-1. **Cognito** — solo por invitación, política de contraseñas, grupo `Administrators`
-2. **SPA** — monitoreo de expiración de sesión; cierre de sesión explícito; sin refresh silencioso
+1. **Cognito** — solo por invitación, política de contraseñas, grupo `Administrators`, refresh tokens (30 días), reset por email
+2. **SPA** — refresh proactivo antes de logout; mensajes claros en expiración y extensión de sesión
 3. **Worker** — verificación JWKS + autorización en cada solicitud mutante
 4. **GitHub App** — credenciales con alcance limitado solo en secretos del Worker
+
+Documentación detallada de autenticación (secuencias, diagramas de componentes, AWS): [admin-authentication.md](./admin-authentication.md).
 
 READMEs por app: 
 * [apps/admin/README.md](../apps/admin/README.md)
@@ -151,7 +153,7 @@ Archivo de estado: `infra/terraform/bootstrap/terraform.tfstate` (local, gitigno
 | Cliente SPA `bonae-content-admin-spa` | Auth SRP, sin client secret |
 | Grupo `Administrators` | Acceso a la API |
 
-Solo por invitación (`allow_admin_create_user_only = true`). Los ID tokens expiran a la 1 hora; refresh tokens deshabilitados.
+Solo por invitación (`allow_admin_create_user_only = true`). ID tokens expiran a la 1 hora; refresh tokens **30 días** (`ALLOW_REFRESH_TOKEN_AUTH`). Email opcional vía SES — ver [admin-authentication.md](./admin-authentication.md).
 
 ### 3.2 Cloudflare
 
@@ -265,7 +267,7 @@ flowchart TD
 
 ## 6. Operaciones
 
-Mejoras de autenticación del admin (sesión, refresh, reset de contraseña): [admin-auth/README.md](./admin-auth/README.md).
+Mejoras de autenticación del admin (sesión, refresh, reset de contraseña, SES): [admin-authentication.md](./admin-authentication.md) · entregas por fases: [admin-auth/README.md](./admin-auth/README.md).
 
 ### Flujo de contenido
 
