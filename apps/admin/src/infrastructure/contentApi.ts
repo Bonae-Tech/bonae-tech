@@ -1,6 +1,13 @@
 import type { ContentDocument, Locale, SiteSettings } from '@bonae/content';
 import { config } from '../config.js';
-import { getIdToken, onSessionExpired, SessionExpiredError } from './auth.js';
+import {
+  getIdToken,
+  onSessionExpired,
+  onSessionRefreshed,
+  refreshSession,
+  SessionExpiredError,
+  type LogoutReason,
+} from './auth.js';
 
 export type ContentResource = Locale | 'settings';
 
@@ -11,23 +18,32 @@ export interface ContentResponse<T> {
   commitSha?: string;
 }
 
-let sessionExpiredCallback: (() => void) | null = null;
+let sessionExpiredCallback: ((reason: LogoutReason) => void) | null = null;
+let sessionRefreshedCallback: (() => void) | null = null;
 
-void onSessionExpired(() => {
-  sessionExpiredCallback?.();
+void onSessionExpired((reason) => {
+  sessionExpiredCallback?.(reason);
 });
 
-export function registerSessionExpiredHandler(handler: () => void): void {
+void onSessionRefreshed(() => {
+  sessionRefreshedCallback?.();
+});
+
+export function registerSessionExpiredHandler(handler: (reason: LogoutReason) => void): void {
   sessionExpiredCallback = handler;
 }
 
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export function registerSessionRefreshedHandler(handler: () => void): void {
+  sessionRefreshedCallback = handler;
+}
+
+async function apiFetch<T>(path: string, init?: RequestInit, retried = false): Promise<T> {
   let token: string;
   try {
     token = await getIdToken();
   } catch (err) {
     if (err instanceof SessionExpiredError) {
-      sessionExpiredCallback?.();
+      sessionExpiredCallback?.('expired');
     }
     throw err;
   }
@@ -43,8 +59,16 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
   const body = (await res.json()) as T & { error?: string };
   if (!res.ok) {
+    if (res.status === 401 && !retried) {
+      const refreshed = await refreshSession();
+      if (refreshed) {
+        return apiFetch(path, init, true);
+      }
+      sessionExpiredCallback?.('expired');
+      throw new SessionExpiredError(body.error ?? 'Session expired');
+    }
     if (res.status === 401) {
-      sessionExpiredCallback?.();
+      sessionExpiredCallback?.('expired');
       throw new SessionExpiredError(body.error ?? 'Session expired');
     }
     throw new Error(body.error ?? `Request failed (${res.status})`);

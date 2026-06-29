@@ -265,6 +265,8 @@ flowchart TD
 
 ## 6. Operaciones
 
+Mejoras de autenticación del admin (sesión, refresh, reset de contraseña): [admin-auth/README.md](./admin-auth/README.md).
+
 ### Flujo de contenido
 
 Iniciar sesión → editar ES/EN → **Save draft** (confirma en `drafts/`) → **Publish** (copia `drafts/` → `published/`, dispara **Deploy site**).

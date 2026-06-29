@@ -4,6 +4,8 @@ export type SignInResult =
   | { type: 'success' }
   | { type: 'newPasswordRequired'; completeChallenge: (newPassword: string) => Promise<void> };
 
+export type LogoutReason = 'expired' | 'manual';
+
 type AuthModule = typeof import('./auth.mock.js');
 
 let authModule: AuthModule | null = null;
@@ -33,6 +35,14 @@ export async function getIdToken(): Promise<string> {
   return (await getAuth()).getIdToken();
 }
 
+export async function refreshSession() {
+  const auth = await getAuth();
+  if ('refreshSession' in auth && typeof auth.refreshSession === 'function') {
+    return auth.refreshSession();
+  }
+  return null;
+}
+
 export async function getSessionExpiresAt(): Promise<number | null> {
   const auth = await getAuth();
   if ('getSessionExpiresAt' in auth && typeof auth.getSessionExpiresAt === 'function') {
@@ -41,11 +51,34 @@ export async function getSessionExpiresAt(): Promise<number | null> {
   return null;
 }
 
-export async function onSessionExpired(handler: () => void): Promise<void> {
+export async function onSessionExpired(handler: (reason: LogoutReason) => void): Promise<void> {
   const auth = await getAuth();
   if ('onSessionExpired' in auth && typeof auth.onSessionExpired === 'function') {
     auth.onSessionExpired(handler);
   }
+}
+
+export async function onSessionRefreshed(handler: () => void): Promise<void> {
+  const auth = await getAuth();
+  if ('onSessionRefreshed' in auth && typeof auth.onSessionRefreshed === 'function') {
+    auth.onSessionRefreshed(handler);
+  }
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  const auth = await getAuth();
+  if ('requestPasswordReset' in auth && typeof auth.requestPasswordReset === 'function') {
+    return auth.requestPasswordReset(email);
+  }
+  throw new Error('Password reset is not available');
+}
+
+export async function confirmPasswordReset(email: string, code: string, newPassword: string): Promise<void> {
+  const auth = await getAuth();
+  if ('confirmPasswordReset' in auth && typeof auth.confirmPasswordReset === 'function') {
+    return auth.confirmPasswordReset(email, code, newPassword);
+  }
+  throw new Error('Password reset is not available');
 }
 
 export { SessionExpiredError } from './session.js';
