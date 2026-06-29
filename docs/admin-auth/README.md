@@ -28,11 +28,11 @@ flowchart LR
 
 | Phase | Status | Deployed | Notes |
 |-------|--------|----------|-------|
-| 1 — Session expiry & refresh | code complete | infra yes, admin pending | Terraform applied 2026-06-29; run **Deploy admin** with `CLOUDFLARE_API_TOKEN` |
+| 1 — Session expiry & refresh | code complete | infra yes, admin pending | Terraform applied 2026-06-29 |
 | 2 — Password reset | code complete | infra yes, admin pending | shipped with Phase 1 in same admin build |
-| 3 — SES email (optional) | deferred | — | spec only; see [phase-3-ses-email.md](./phase-3-ses-email.md) |
+| 3 — SES email | code complete | pending | Two-step apply — see [phase-3-ses-email.md](./phase-3-ses-email.md) |
 
-**Next step:** deploy admin SPA (`npm run deploy:admin` locally with Cloudflare token, or **Deploy admin** GitHub workflow on merge).
+**Next step (Phase 3):** merge → **Deploy cognito** → add DNS from `terraform output` → verify domain → set `cognito_use_ses_email = true` → apply again → SES production access request.
 
 ## Deploy commands
 
@@ -41,6 +41,6 @@ From repo root unless noted.
 | Phase | Steps |
 |-------|--------|
 | 1 & 2 | `terraform apply` in `infra/terraform/` → merge PR → **Deploy admin** (or push under `apps/admin/`) |
-| 3 | `terraform apply` → add DNS in Cloudflare → SES production access request |
+| 3 | Apply (SES only) → DNS in Cloudflare → `cognito_use_ses_email = true` → apply again → SES production access |
 
 **Local test:** `npm run admin:dev:mock` for UI; `npm run admin:dev` with `.env` for Cognito after Phase 1.

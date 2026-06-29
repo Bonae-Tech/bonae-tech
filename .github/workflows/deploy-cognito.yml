@@ -11,6 +11,7 @@ on:
     branches: [main]
     paths:
       - 'infra/terraform/cognito.tf'
+      - 'infra/terraform/ses.tf'
       - 'infra/terraform/outputs.tf'
       - 'infra/terraform/providers.tf'
       - 'infra/terraform/backend.tf'
