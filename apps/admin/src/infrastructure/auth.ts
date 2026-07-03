@@ -11,10 +11,11 @@ type AuthModule = typeof import('./auth.mock.js');
 let authModule: AuthModule | null = null;
 
 async function getAuth(): Promise<AuthModule> {
+  if (config.useMock) {
+    return import('./auth.mock.js');
+  }
   if (!authModule) {
-    authModule = config.useMock
-      ? await import('./auth.mock.js')
-      : await import('./auth.cognito.js');
+    authModule = await import('./auth.cognito.js');
   }
   return authModule;
 }

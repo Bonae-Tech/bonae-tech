@@ -31,22 +31,37 @@
       {
         "icon": "accessible",
         "title": "Presencia Web de alto impacto",
-        "description": "Precios acordes al mercado, desde planes básicos hasta soluciones completas, con opciones de financiación."
+        "description": " Diseño y desarrollo web optimizado para transformar visitas en clientes las 24 horas del día.",
+        "backDescription": "Precios acordes al mercado, desde planes básicos hasta soluciones completas, con opciones de financiación.",
+        "backLabel": "Accesible"
       },
       {
         "icon": "simple",
         "title": "Redes Sociales",
-        "description": "Estructuramos ecosistemas digitales de alto rendimiento con SEO avanzado y crecimiento orgánico sostenible."
+        "description": "Creamos y configuramos tu ecosistema en redes sociales. Automatizamos tus canales de atención para que nunca vuelvas a perder un mensaje de ventas.",
+        "backDescription": "Entendemos los retos y oportunidades de nuestra región, hablamos tu idioma y ofrecemos soporte técnico cercano, real y eficiente.",
+        "backLabel": "Cercano"
       },
       {
         "icon": "secure",
         "title": "Sistemas de Gestión Comercial (CRM)",
-        "description": "Optimizamos cada proceso técnico y estratégico para profesionalizar tu imagen y proteger la confianza de tus clientes."
+        "description": "Gestión de clientes y seguimiento de ventas con sistemas de fácil acceso y manejo.",
+        "backDescription": "Estructuramos ecosistemas digitales de alto rendimiento con SEO avanzado y crecimiento orgánico sostenible.",
+        "backLabel": "Estratégico"
       },
       {
         "icon": "close",
         "title": "Consultoría digital",
-        "description": "Entendemos los retos y oportunidades de nuestra región, hablamos tu idioma y ofrecemos soporte técnico cercano, real y eficiente."
+        "description": "Deja atrás los procesos manuales y obsoletos. Diagnosticamos tu negocio para eliminar tareas repetitivas, automatizar tu operación diaria y adaptar tu empresa al reto de reducir errores.",
+        "backDescription": "Optimizamos cada proceso técnico y estratégico para profesionalizar tu imagen y proteger la confianza de tus clientes.",
+        "backLabel": "Seguro"
+      },
+      {
+        "icon": "education",
+        "title": "Plataformas de E-learning y Aulas Virtuales",
+        "description": "Creamos y configuramos tu propia academia online para que puedas digitalizar tus cursos, automatizar las inscripciones y vender tu conocimiento sin límites geográficos.",
+        "backDescription": "Desplegamos tus cursos y clases para que tu conocimiento llegue a cualquier parte del mundo.",
+        "backLabel": "Educación sin Fronteras"
       }
     ]
   },

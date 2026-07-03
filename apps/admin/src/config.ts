@@ -5,7 +5,9 @@ function normalizeApiBaseUrl(value: string | undefined): string {
 
 export const config = {
   useMock: import.meta.env.VITE_USE_MOCK === 'true',
-  apiBaseUrl: normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL),
+  apiBaseUrl: import.meta.env.VITE_USE_MOCK === 'true'
+    ? ''
+    : normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL),
   userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID ?? '',
   clientId: import.meta.env.VITE_COGNITO_CLIENT_ID ?? '',
   region: import.meta.env.VITE_AWS_REGION ?? 'sa-east-1',

@@ -30,23 +30,38 @@
     "items": [
       {
         "icon": "accessible",
-        "title": "Accessible",
-        "description": "Market-aligned pricing, from basic plans to complete solutions, with financing options."
+        "title": "High-impact web presence",
+        "description": "We design and launch your professional website, ready to attract customers.",
+        "backLabel": "Accessible",
+        "backDescription": "Market-aligned pricing, from basic plans to complete solutions, with financing options."
       },
       {
         "icon": "simple",
-        "title": "Strategic",
-        "description": "We structure high-performance digital ecosystems with advanced SEO and sustainable organic growth."
+        "title": "Social media",
+        "description": "We manage your social media presence with strategic, brand-aligned content.",
+        "backLabel": "Close to you",
+        "backDescription": "We structure high-performance digital ecosystems with advanced SEO and sustainable organic growth."
       },
       {
         "icon": "secure",
-        "title": "Secure",
-        "description": "We optimize every technical and strategic process to professionalize your image and protect customer trust."
+        "title": "Commercial management systems (CRM)",
+        "description": "We implement systems to organize customers, sales, and commercial follow-up.",
+        "backLabel": "Strategic",
+        "backDescription": "We optimize every technical and strategic process to professionalize your image and protect customer trust."
       },
       {
         "icon": "close",
-        "title": "Close to you",
-        "description": "We understand the challenges and opportunities of our region, speak your language, and provide close, real, efficient technical support."
+        "title": "Digital consulting",
+        "description": "We guide you to define and execute your digital strategy step by step.",
+        "backLabel": "Secure",
+        "backDescription": "We understand the challenges and opportunities of our region, speak your language, and provide close, real, efficient technical support."
+      },
+      {
+        "icon": "education",
+        "title": "Virtual classrooms",
+        "description": "Virtual classrooms",
+        "backLabel": "Borderless learning",
+        "backDescription": "We make virtual classrooms for you"
       }
     ]
   },
