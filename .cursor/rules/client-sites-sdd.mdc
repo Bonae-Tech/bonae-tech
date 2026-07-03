@@ -1,0 +1,27 @@
+---
+description: SDD para nuevas apps estáticas de clientes
+globs: apps/clientes/**,docs/client-sites/**
+alwaysApply: false
+---
+
+# Client sites SDD
+
+Antes de generar en `apps/clientes/`:
+
+1. Leer `docs/client-sites/reference-app-spec.md` y `app-architecture-spec.md`.
+2. Si existe `docs/client-sites/clients/<slug>.md`, usarlo como fuente de verdad.
+3. Referencia de estructura: `apps/static/`. Output: `apps/clientes/<slug>/`.
+
+## Restricciones
+
+- Solo `.astro` + Tailwind + `<script is:inline>`.
+- Solo español, ruta `/`.
+- Copy en `content/es.json` + `content/settings.json`.
+- Package name: `cliente-<slug>`.
+- Sin `@bonae/content`, React, Vue ni Svelte.
+
+## Validar
+
+```bash
+npm run build --filter=cliente-<slug>
+```

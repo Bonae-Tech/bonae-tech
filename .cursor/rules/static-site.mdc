@@ -1,0 +1,13 @@
+---
+alwaysApply: true
+---
+
+# BONAE static site rules
+
+- This repo contains the **static marketing site** in `apps/static/` and a **git-backed content admin** in `apps/admin/`.
+- Site copy lives in JSON under `apps/static/content/published/` (not in TypeScript i18n files).
+- Draft edits go to `apps/static/content/drafts/` via the admin API; publish promotes drafts to published.
+- Shared validation schema: `packages/content` (`@bonae/content`).
+- Do not reintroduce Decap CMS, DynamoDB content storage, or duplicate override pipelines.
+- When changing copy, update both `es.json` and `en.json` with matching structure.
+- AWS is used only for Cognito identity. The content API runs on Cloudflare Workers (`workers/content-api/`); admin hosting is Cloudflare Pages (`apps/admin/`).

@@ -20,7 +20,16 @@ packages/content/dist/
 .env
 .env.*
 !.env.example
-.cursor/
+
+# Cursor — track shared rules/plans/skills; ignore other local IDE state
+.cursor/*
+!.cursor/README.md
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/plans/
+!.cursor/plans/**
+!.cursor/skills/
+!.cursor/skills/**
 
 # Terraform
 infra/terraform/.terraform/
