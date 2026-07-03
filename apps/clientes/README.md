@@ -1,35 +1,20 @@
 # Apps estáticas de clientes
 
-Cada subcarpeta es una **aplicación Astro independiente** (sitio estático de un cliente).
+Cada subcarpeta es una app Astro independiente.
 
-```
-apps/clientes/
-  <slug>/          ← app generada vía SDD
-    package.json   name: "cliente-<slug>"
-    src/
-    content/
-    ...
-```
+## Crear una app
 
-## Crear una app nueva
-
-Sigue la guía SDD en [`docs/client-sites/`](../../docs/client-sites/README.md):
+Guía completa: [`docs/client-sites/`](../../docs/client-sites/README.md)
 
 1. Completa `docs/client-sites/clients/<slug>.md`
-2. Genera la app con IA usando los specs + `apps/static` como referencia
+2. Genera `apps/clientes/<slug>/` con IA (referencia: `apps/static/`)
 3. Valida: `npm run build --filter=cliente-<slug>`
 
-## Referencia
-
-El sitio BONAE en [`apps/static/`](../static/) es la implementación de referencia. **No agregar clientes ahí** — solo en `apps/clientes/<slug>/`.
-
-## Contenido (v1)
-
-Cada app tiene JSON local en español:
+## Contenido
 
 ```
-content/published/es.json
-content/published/settings.json
+content/es.json       ← textos (español)
+content/settings.json ← WhatsApp, redes, links legales
 ```
 
-El flujo admin centralizado llegará en una fase posterior.
+Referencia de arquitectura: [`apps/static/`](../static/) — no agregar clientes ahí.
