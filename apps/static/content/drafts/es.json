@@ -7,7 +7,6 @@
     "home": "Inicio",
     "about": "Nosotras",
     "valueProp": "Servicios",
-    "portfolio": "Portafolio",
     "contact": "Contacto",
     "cta": "Contáctanos",
     "clients": "Clientes",
@@ -115,29 +114,6 @@
     ],
     "foundersTitle": "Cofundadoras"
   },
-  "portfolio": {
-    "sectionBadge": "Nuestro trabajo",
-    "title": "Portafolio",
-    "subtitle": "Proyectos que reflejan nuestro compromiso con la excelencia.",
-    "industries": {
-      "title": "Industrias atendidas",
-      "items": [
-        "Hotelería y turismo",
-        "Comercio y retail",
-        "Gastronomía y restaurantes",
-        "Servicios profesionales",
-        "Emprendimientos y startups",
-        "Otros"
-      ]
-    },
-    "comingSoon": "Proyectos destacados próximamente. Contáctanos para conocer casos de éxito."
-  },
-  "testimonials": {
-    "sectionBadge": "Lo que dicen",
-    "title": "Testimonios",
-    "subtitle": "Historias de clientes que han confiado en nosotros.",
-    "comingSoon": "Testimonios próximamente. Sé el primero en compartir tu experiencia con Bonae Tech."
-  },
   "plans": {
     "sectionBadge": "Planes",
     "title": "¿Listo para digitalizar y automatizar tu marca?",
@@ -183,7 +159,6 @@
       "home": "Inicio",
       "about": "Nosotras",
       "services": "Servicios",
-      "portfolio": "Portafolio",
       "contact": "Contacto"
     },
     "services": {

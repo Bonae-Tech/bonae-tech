@@ -7,7 +7,6 @@
     "home": "Home",
     "about": "About Us",
     "valueProp": "Services",
-    "portfolio": "Portfolio",
     "contact": "Contact",
     "cta": "Contact Us",
     "clients": "Clients",
@@ -115,29 +114,6 @@
     ],
     "foundersTitle": "Founders"
   },
-  "portfolio": {
-    "sectionBadge": "Our work",
-    "title": "Portfolio",
-    "subtitle": "Projects that reflect our commitment to excellence.",
-    "industries": {
-      "title": "Industries served",
-      "items": [
-        "Hospitality and tourism",
-        "Commerce and retail",
-        "Restaurants and food service",
-        "Professional services",
-        "Entrepreneurships and startups",
-        "Others"
-      ]
-    },
-    "comingSoon": "Featured projects coming soon. Contact us to learn about success cases."
-  },
-  "testimonials": {
-    "sectionBadge": "What they say",
-    "title": "Testimonials",
-    "subtitle": "Stories from clients who have trusted us.",
-    "comingSoon": "Testimonials coming soon. Be the first to share your experience with Bonae Tech."
-  },
   "plans": {
     "sectionBadge": "Plans",
     "title": "Plans and pricing",
@@ -183,7 +159,6 @@
       "home": "Home",
       "about": "About Us",
       "services": "Services",
-      "portfolio": "Portfolio",
       "contact": "Contact"
     },
     "services": {
