@@ -6,7 +6,7 @@ Cada subcarpeta es una app Astro independiente.
 
 Guía completa: [`docs/client-sites/`](../../docs/client-sites/README.md)
 
-1. Completa `docs/client-sites/clients/<slug>.md`
+1. Completa `docs/client-sites/<slug>.md`
 2. Genera `apps/clientes/<slug>/` con IA (referencia: `apps/static/`)
 3. Valida: `npm run build --filter=cliente-<slug>`
 

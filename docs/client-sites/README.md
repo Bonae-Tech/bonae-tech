@@ -19,7 +19,7 @@ Crear **nuevas apps Astro** en `apps/clientes/<slug>/`, usando [`apps/static/`](
    Crea la app en apps/clientes/<slug>/ siguiendo SDD.
    @docs/client-sites/reference-app-spec.md
    @docs/client-sites/app-architecture-spec.md
-   @docs/client-sites/clients/<slug>.md
+   @docs/client-sites/<slug>.md
    ```
 3. Valida: `npm run build --filter=cliente-<slug>`
 
@@ -29,7 +29,7 @@ Crear **nuevas apps Astro** en `apps/clientes/<slug>/`, usando [`apps/static/`](
 |-----|-------|
 | Sitio BONAE | `apps/static/` |
 | Apps de clientes | `apps/clientes/<slug>/` |
-| Spec del cliente | `docs/client-sites/clients/<slug>.md` |
+| Spec del cliente | `docs/client-sites/<slug>.md` |
 | Copy del sitio (español) | `apps/clientes/<slug>/content/es.json` |
 | Config (WhatsApp, redes) | `apps/clientes/<slug>/content/settings.json` |
 
