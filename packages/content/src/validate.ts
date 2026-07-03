@@ -14,7 +14,6 @@ function arrayLengthAt(obj: unknown, path: string[]): number | null {
 const arrayPaths: string[][] = [
   ['valueProp', 'items'],
   ['about', 'members'],
-  ['portfolio', 'industries', 'items'],
   ['contact', 'form', 'serviceOptions'],
 ];
 
