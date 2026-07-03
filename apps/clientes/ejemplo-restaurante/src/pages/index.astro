@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Menu from '../components/Menu.astro';
+import Hours from '../components/Hours.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import { content, settings, whatsappHref } from '../lib/content';
+
+const waHref = whatsappHref(content.contact.whatsappMessage);
+---
+
+<Layout content={content} settings={settings} whatsappHref={waHref}>
+  <Header content={content} />
+  <main>
+    <Hero content={content} whatsappHref={waHref} />
+    <Menu content={content} />
+    <Hours content={content} />
+    <Contact content={content} whatsappHref={waHref} />
+  </main>
+  <Footer content={content} settings={settings} whatsappHref={waHref} />
+</Layout>

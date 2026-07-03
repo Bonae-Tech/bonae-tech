@@ -1,0 +1,47 @@
+---
+import type { SiteContent, SiteSettings } from '../lib/content';
+
+interface Props {
+  content: SiteContent;
+  settings: SiteSettings;
+}
+
+const { content, settings } = Astro.props;
+---
+
+<div
+  id="cookie-banner"
+  class="fixed bottom-0 left-0 right-0 z-50 bg-brand-dark-dark text-white px-4 py-4 shadow-lg border-t border-white/10"
+  role="dialog"
+  aria-live="polite"
+  aria-label={content.cookieBanner.ariaLabel}
+>
+  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p class="text-sm text-brand-light flex-1">
+      {content.cookieBanner.message}{' '}
+      <a href={settings.legalLinks.privacy} class="text-brand-accent hover:underline">{content.cookieBanner.privacy}</a>
+    </p>
+    <button type="button" id="cookie-accept" class="btn-primary flex-shrink-0 py-2 px-4 text-sm">
+      {content.cookieBanner.accept}
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const storageKey = 'la_casona_cookies_accepted';
+    const banner = document.getElementById('cookie-banner');
+    const accept = document.getElementById('cookie-accept');
+    if (!banner || !accept) return;
+
+    if (typeof localStorage !== 'undefined' && localStorage.getItem(storageKey)) {
+      banner.classList.add('hidden');
+      return;
+    }
+
+    accept.addEventListener('click', () => {
+      if (typeof localStorage !== 'undefined') localStorage.setItem(storageKey, 'true');
+      banner.classList.add('hidden');
+    });
+  })();
+</script>

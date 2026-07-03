@@ -6,7 +6,8 @@ Plataforma de contenido respaldada por Git para el sitio de marketing de [BONAE 
 
 Monorepo npm workspaces + Turborepo. Componentes principales:
 
-- **apps/static** — Sitio de marketing estático (Astro). Lee JSON publicado en tiempo de build; despliegue en Cloudflare Pages.
+- **apps/static** — Sitio de marketing BONAE (Astro). Referencia SDD para apps de clientes; despliegue en Cloudflare Pages.
+- **apps/clientes** — Apps estáticas de clientes (Astro), una carpeta por sitio. Guía: [`docs/client-sites/`](docs/client-sites/README.md).
 - **apps/admin** — SPA de administración de contenido (React/Vite). Edita borradores y ejecuta el flujo de publicación; autenticación Cognito en producción o mock local.
 - **workers/content-api** — Worker de Cloudflare: API de contenido con validación JWT y commits al repositorio vía GitHub App.
 - **packages/content** — Esquema Zod compartido, validación y paridad de locales; consumido por static, admin y worker.

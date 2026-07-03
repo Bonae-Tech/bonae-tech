@@ -1,0 +1,31 @@
+---
+import type { SiteContent } from '../lib/content';
+
+interface Props {
+  content: SiteContent;
+}
+
+const { content } = Astro.props;
+const { menu } = content;
+---
+
+<section id="menu" class="py-16 md:py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-12">
+      <h2 class="section-title">{menu.title}</h2>
+      <p class="section-subtitle">{menu.subtitle}</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {menu.items.map((item) => (
+        <article class="card">
+          <div class="flex items-start justify-between gap-4 mb-2">
+            <h3 class="font-bold text-brand-dark text-lg">{item.name}</h3>
+            <span class="text-brand-accent font-bold whitespace-nowrap">{item.price}</span>
+          </div>
+          <p class="text-sm text-brand-muted">{item.description}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

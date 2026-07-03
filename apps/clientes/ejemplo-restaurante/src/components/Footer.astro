@@ -1,0 +1,59 @@
+---
+import type { SiteContent, SiteSettings } from '../lib/content';
+
+interface Props {
+  content: SiteContent;
+  settings: SiteSettings;
+  whatsappHref: string;
+}
+
+const { content, settings, whatsappHref } = Astro.props;
+
+function socialHref(url: string): string {
+  return url.trim() || '#';
+}
+---
+
+<footer class="bg-brand-dark-dark text-white mt-auto">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-brand-dark flex items-center justify-center">
+            <span class="text-brand-accent font-bold text-lg leading-none">C</span>
+          </div>
+          <span class="font-bold text-white text-xl">{content.siteName}</span>
+        </div>
+        <p class="text-brand-light text-sm">{content.footer.description}</p>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white text-sm uppercase tracking-wider mb-4">Navegación</h4>
+        <nav class="flex flex-col gap-2">
+          <a href="/" class="text-sm text-brand-light hover:text-white transition-colors">{content.nav.home}</a>
+          <a href="#menu" class="text-sm text-brand-light hover:text-white transition-colors">{content.nav.menu}</a>
+          <a href="#horarios" class="text-sm text-brand-light hover:text-white transition-colors">{content.nav.hours}</a>
+          <a href="#contacto" class="text-sm text-brand-light hover:text-white transition-colors">{content.nav.contact}</a>
+        </nav>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white text-sm uppercase tracking-wider mb-4">{content.nav.contact}</h4>
+        <a href={`mailto:${content.contact.email}`} class="block text-sm text-brand-light hover:text-white mb-2">{content.contact.email}</a>
+        <a href={whatsappHref} target="_blank" rel="noopener noreferrer" class="text-sm text-brand-light hover:text-white">WhatsApp</a>
+        {settings.socialLinks.instagram && (
+          <a href={socialHref(settings.socialLinks.instagram)} class="inline-block mt-4 text-sm text-brand-light hover:text-white">Instagram</a>
+        )}
+      </div>
+    </div>
+
+    <div class="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="flex flex-wrap justify-center gap-4 text-xs text-brand-light/80">
+        <a href={settings.legalLinks.privacy} class="hover:text-white transition-colors">{content.footer.legal.privacy}</a>
+        <a href={settings.legalLinks.terms} class="hover:text-white transition-colors">{content.footer.legal.terms}</a>
+        <a href={settings.legalLinks.cookies} class="hover:text-white transition-colors">{content.footer.legal.cookies}</a>
+      </div>
+      <p class="text-xs text-brand-light/80">{content.footer.copyright}</p>
+    </div>
+  </div>
+</footer>

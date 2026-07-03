@@ -1,0 +1,81 @@
+{
+  "lang": "es",
+  "siteName": "La Casona",
+  "siteTagline": "Cocina criolla en Caracas",
+  "metaDescription": "Restaurante de cocina venezolana en Las Mercedes. Reserva tu mesa por WhatsApp.",
+  "nav": {
+    "home": "Inicio",
+    "menu": "Menú",
+    "hours": "Horarios",
+    "contact": "Contacto",
+    "cta": "Reservar"
+  },
+  "hero": {
+    "badge": "Cocina criolla · Caracas",
+    "headline": "La Casona",
+    "subheadline": "Sabores de la tradición venezolana en un ambiente acogedor. Reserva tu mesa hoy.",
+    "cta": "Reservar por WhatsApp"
+  },
+  "menu": {
+    "title": "Nuestros platos",
+    "subtitle": "Selección de la casa — consulta la carta completa en el local",
+    "items": [
+      {
+        "name": "Pabellón criollo",
+        "description": "Carne mechada, caraotas, arroz, tajadas y huevo",
+        "price": "$12"
+      },
+      {
+        "name": "Asado negro",
+        "description": "Lomo en salsa dulce con puré de papas",
+        "price": "$14"
+      },
+      {
+        "name": "Hallaca de la casa",
+        "description": "Receta familiar envuelta en hoja de plátano",
+        "price": "$8"
+      },
+      {
+        "name": "Cachapa con queso",
+        "description": "Cachapa de maíz tierno con queso de mano",
+        "price": "$9"
+      },
+      {
+        "name": "Sopa de mondongo",
+        "description": "Sopa tradicional de fin de semana",
+        "price": "$10"
+      },
+      {
+        "name": "Tres leches",
+        "description": "Postre clásico venezolano",
+        "price": "$6"
+      }
+    ]
+  },
+  "hours": {
+    "title": "Horarios y ubicación",
+    "schedule": "Lun–Jue 12:00–22:00 · Vie–Sáb 12:00–23:00 · Dom 12:00–21:00",
+    "address": "Av. Principal de Las Mercedes, Caracas, Venezuela"
+  },
+  "contact": {
+    "title": "Contáctanos",
+    "text": "¿Reserva, evento privado o consulta? Escríbenos por WhatsApp.",
+    "email": "hola@lacasona.example.com",
+    "whatsappMessage": "Hola, quisiera reservar una mesa en La Casona"
+  },
+  "cookieBanner": {
+    "ariaLabel": "Aviso de cookies",
+    "message": "Usamos cookies para mejorar tu experiencia.",
+    "privacy": "Política de privacidad",
+    "accept": "Aceptar"
+  },
+  "footer": {
+    "description": "Cocina criolla venezolana en el corazón de Las Mercedes.",
+    "copyright": "© 2026 La Casona. Todos los derechos reservados.",
+    "legal": {
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "cookies": "Cookies"
+    }
+  }
+}

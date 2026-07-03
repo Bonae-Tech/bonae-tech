@@ -5,6 +5,7 @@
   "description": "BONAE TECH static marketing site with git-backed content admin",
   "workspaces": [
     "apps/*",
+    "apps/clientes/*",
     "packages/*",
     "workers/*"
   ],

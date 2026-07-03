@@ -8,7 +8,8 @@ Este es un monorepo con npm workspaces y Turborepo. Instalar y ejecutar comandos
 
 ```
 apps/admin/           — Admin de contenido SPA (React + Vite + Tailwind, Cloudflare Pages)
-apps/static/          — Sitio de marketing público (Astro + Tailwind, Cloudflare Pages)
+apps/static/          — Sitio de marketing BONAE (Astro + Tailwind, Cloudflare Pages) — referencia SDD
+apps/clientes/        — Apps estáticas de clientes (Astro); una carpeta por cliente — ver docs/client-sites/
 workers/content-api/  — API de contenido Cloudflare Worker (Cognito JWT + GitHub App)
 packages/content/     — Esquema de contenido compartido, tipos y validación (consumido por todo lo anterior)
 infra/                — Infraestructura Terraform (bootstrap + módulo solo Cognito, sa-east-1)
@@ -18,11 +19,19 @@ infra/                — Infraestructura Terraform (bootstrap + módulo solo Co
 
 Todos los comandos se ejecutan desde la raíz del repo salvo que se indique lo contrario.
 
-### Sitio estático (`apps/static`)
+### Sitio estático BONAE (`apps/static`)
 ```bash
 npm run dev          # turbo: compila @bonae/content, valida JSON publicado, inicia astro dev
 npm run build        # turbo run build --filter=bonae-static
 ```
+
+### Apps estáticas de clientes (`apps/clientes/<slug>/`)
+```bash
+npm run build --filter=cliente-<slug>
+npm run dev --filter=cliente-<slug>
+```
+
+Guía SDD para crear apps nuevas: [`docs/client-sites/README.md`](docs/client-sites/README.md). Usar `apps/static` como referencia de estructura; generar en `apps/clientes/<slug>/`.
 
 ### Admin SPA (`apps/admin`)
 ```bash

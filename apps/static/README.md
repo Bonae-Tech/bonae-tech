@@ -46,3 +46,7 @@ npm run content:validate    # desde la raíz del repo
 Es la misma verificación que ejecutan los hooks `predev` y `prebuild`. Si `published/` es inválido, el sitio no compilará.
 
 Para borradores: `npm run content:validate:drafts` desde la raíz del repo.
+
+## Apps de clientes (SDD)
+
+Este sitio es la **referencia de arquitectura** para nuevas apps estáticas bajo `apps/clientes/<slug>/`. Ver [`docs/client-sites/`](../../docs/client-sites/README.md).
