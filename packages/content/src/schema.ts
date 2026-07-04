@@ -74,12 +74,9 @@ export const contentDocumentSchema = z.object({
   }),
 
   plans: z.object({
-    sectionBadge: z.string().min(1),
     title: z.string().min(1),
     subtitle: z.string().min(1),
     cta: z.string().min(1),
-    ctaSub: z.string().min(1),
-    note: z.string().min(1),
   }),
 
   contact: z.object({

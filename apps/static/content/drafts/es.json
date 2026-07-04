@@ -115,12 +115,9 @@
     "foundersTitle": "Cofundadoras"
   },
   "plans": {
-    "sectionBadge": "Planes",
     "title": "¿Listo para digitalizar y automatizar tu marca?",
     "subtitle": "El impulso tecnológico que tu empresa necesita está a solo un clic de distancia. Obtén un presupuesto personalizado hoy mismo.",
-    "cta": "Solicitar cotización",
-    "ctaSub": "Agenda una consulta gratuita",
-    "note": "Contáctanos para una cotización personalizada según las necesidades de tu negocio."
+    "cta": "Cotiza Ahora"
   },
   "contact": {
     "sectionBadge": "Contacto",

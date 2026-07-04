@@ -115,12 +115,9 @@
     "foundersTitle": "Founders"
   },
   "plans": {
-    "sectionBadge": "Plans",
-    "title": "Plans and pricing",
-    "subtitle": "Our prices are designed so that digitalizing your business is not a luxury but a smart investment.",
-    "cta": "Request quote",
-    "ctaSub": "Schedule a free consultation",
-    "note": "Contact us for a personalized quote based on your business needs."
+    "title": "Ready to digitalize and automate your brand?",
+    "subtitle": "The tech boost your business needs is just one click away. Get a personalized quote today.",
+    "cta": "Get a Quote Now"
   },
   "contact": {
     "sectionBadge": "Contact",

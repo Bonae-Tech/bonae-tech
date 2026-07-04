@@ -136,4 +136,139 @@
       @apply mt-4;
     }
   }
+
+  .plans-cta {
+    @apply relative overflow-hidden text-white;
+    background: linear-gradient(
+      90deg,
+      #ff6f61 0%,
+      #ff6f61 58%,
+      #ff8276 78%,
+      #ff8a7e 90%,
+      #ff9185 100%
+    );
+  }
+
+  .plans-cta-inner {
+    @apply mx-auto grid min-h-[280px] max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.35fr_0.65fr] lg:gap-12 lg:py-14;
+  }
+
+  .plans-cta-left {
+    @apply flex items-center justify-start;
+  }
+
+  .plans-cta-right {
+    @apply flex items-center justify-center lg:justify-end;
+  }
+
+  .plans-cta-copy {
+    @apply w-full;
+  }
+
+  .plans-cta-title {
+    @apply font-bold text-white mb-6 leading-tight tracking-tight;
+    font-size: clamp(1.35rem, 2.2vw, 2.25rem);
+  }
+
+  @media (min-width: 1024px) {
+    .plans-cta-title {
+      white-space: nowrap;
+    }
+  }
+
+  .plans-cta-subtitle {
+    @apply w-full text-white/95;
+    font-size: clamp(1rem, 1.35vw, 1.125rem);
+    line-height: 1.75;
+    max-width: none;
+  }
+
+  .plans-cta-glass {
+    @apply relative inline-block rounded-3xl;
+    padding: 3.19rem 2.7rem;
+    overflow: visible;
+    background: rgba(255, 255, 255, 0.48);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2.5px solid rgba(255, 255, 255, 0.58);
+    box-shadow:
+      inset 4px 4px 7px rgba(255, 255, 255, 0.78),
+      inset -4px -4px 7px rgba(140, 48, 38, 0.1),
+      inset 2px 2px 0 rgba(255, 255, 255, 0.72),
+      inset -2px -2px 0 rgba(100, 35, 28, 0.08),
+      0 16px 40px rgba(0, 0, 0, 0.07);
+  }
+
+  .plans-cta-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2.5px;
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(255, 255, 255, 0.35) 42%,
+      rgba(110, 38, 30, 0.12) 58%,
+      rgba(255, 255, 255, 0.55) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  @media (min-width: 640px) {
+    .plans-cta-glass {
+      padding: 3.64rem 3.3rem;
+    }
+  }
+
+  .plans-cta-button {
+    @apply relative inline-flex items-center gap-3 font-semibold text-white no-underline;
+    min-width: min(100%, 16rem);
+    padding: 1rem 2rem;
+    border-radius: 9999px;
+    font-size: 1.125rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    background: linear-gradient(
+      90deg,
+      #ff6f61 0%,
+      #ff6f61 32%,
+      rgba(255, 111, 97, 0.72) 58%,
+      rgba(255, 255, 255, 0.22) 100%
+    );
+    box-shadow: 0 8px 24px rgba(180, 50, 40, 0.28);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .plans-cta-whatsapp-icon {
+    @apply w-5 h-5 shrink-0;
+  }
+
+  .plans-cta-button-label {
+    @apply relative z-[1];
+  }
+
+  .plans-cta-button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 28px rgba(180, 50, 40, 0.34);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plans-cta-button {
+      transition: none;
+    }
+
+    .plans-cta-button:hover {
+      transform: none;
+      box-shadow: 0 8px 24px rgba(180, 50, 40, 0.28);
+    }
+  }
 }
