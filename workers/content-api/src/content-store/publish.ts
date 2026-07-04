@@ -41,6 +41,7 @@ export async function handlePublishRequest(
     finishedAt: null,
     error: null,
   });
+  scheduleAlarm(Date.now() + PUBLISH_ALARM_MS);
 
   try {
     const secrets = loadGitHubSecrets(env);
