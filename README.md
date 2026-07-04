@@ -64,8 +64,8 @@ turbo run test --filter=@bonae/content-api-worker  # tests del worker (+ build p
 Paso 1. Clonar e instalar dependencias:
 
 ```bash
-git clone https://github.com/bonae-tech/bonae-tech
-cd bonae
+git clone https://github.com/Bonae-Tech/bonae-tech
+cd bonae-tech
 npm ci
 ```
 

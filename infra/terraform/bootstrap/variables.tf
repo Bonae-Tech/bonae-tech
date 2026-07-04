@@ -5,9 +5,9 @@ variable "aws_region" {
 }
 
 variable "github_repo" {
-  description = "GitHub repository in owner/repo format (e.g. bonae-tech/bonae-tech)"
+  description = "GitHub repository in owner/repo format (e.g. Bonae-Tech/bonae-tech)"
   type        = string
-  default     = "bonae-tech/bonae-tech"
+  default     = "Bonae-Tech/bonae-tech"
 }
 
 variable "state_bucket" {
