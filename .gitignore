@@ -21,9 +21,10 @@ packages/content/dist/
 .env.*
 !.env.example
 !.env.mock
-.cursor/
+
 
 # Terraform
 infra/terraform/.terraform/
 infra/terraform/bootstrap/.terraform/
 infra/terraform/plan_output.txt
+workers/content-api/.wrangler/tmp/*
