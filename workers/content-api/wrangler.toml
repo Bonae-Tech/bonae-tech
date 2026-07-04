@@ -4,7 +4,7 @@ compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-GITHUB_REPO = "mpiantella/bonae"
+GITHUB_REPO = "Bonae-Tech/bonae-tech"
 GITHUB_BRANCH = "main"
 CONTENT_PATH_PREFIX = "apps/static/content"
 COGNITO_REGION = "sa-east-1"
@@ -15,7 +15,7 @@ COGNITO_REGION = "sa-east-1"
 name = "bonae-content-api-staging"
 
 [env.staging.vars]
-GITHUB_REPO = "mpiantella/bonae"
+GITHUB_REPO = "Bonae-Tech/bonae-tech"
 GITHUB_BRANCH = "main"
 CONTENT_PATH_PREFIX = "apps/static/content"
 COGNITO_REGION = "sa-east-1"
