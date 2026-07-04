@@ -10,7 +10,7 @@ import { AboutSectionForm } from './sections/AboutSectionForm.js';
 import { ContactSectionForm } from './sections/ContactSectionForm.js';
 import { SettingsSectionForm } from './sections/SettingsSectionForm.js';
 import { JsonSectionEditor } from './components/JsonSectionEditor.js';
-import { PublishingOverlay } from './components/PublishingOverlay.js';
+import { PublishStatusIndicator } from './components/PublishStatusIndicator.js';
 import { ReviewPublishModal } from './components/ReviewPublishModal.js';
 
 type SectionId = 'hero' | 'valueProp' | 'about' | 'contact' | 'settings' | 'advanced';
@@ -48,11 +48,13 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
     void queryClient.invalidateQueries();
   });
 
+  const { resumeIfInFlight, startPublish, statusLabel, isPublishing, isFailed, runUrl } = publishFlow;
+
   useEffect(() => {
     if (isPublishInFlight(workspace.publishState.state)) {
-      publishFlow.resumeIfInFlight(workspace.publishState.state);
+      resumeIfInFlight(workspace.publishState.state);
     }
-  }, [workspace.publishState.state, publishFlow]);
+  }, [workspace.publishState.state, resumeIfInFlight]);
 
   const manualSaveMutation = useMutation({
     mutationFn: async () => {
@@ -101,7 +103,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
               type="button"
               className="btn-secondary"
               onClick={() => setReviewOpen(true)}
-              disabled={!canReview || publishFlow.overlayOpen}
+              disabled={!canReview || isPublishing}
             >
               Review &amp; publish
             </button>
@@ -117,7 +119,8 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
                 ? `Last published ${new Date(workspace.lastPublishedAt).toLocaleString()}`
                 : 'Not published yet'}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <PublishStatusIndicator label={statusLabel} runUrl={runUrl} failed={isFailed} />
               {statusMessage && <span>{statusMessage}</span>}
               <button
                 type="button"
@@ -253,22 +256,14 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
             en: workspace.publishedEn!,
             settings: workspace.publishedSettings!,
           }}
-          publishing={false}
+          publishing={isPublishing}
           onClose={() => setReviewOpen(false)}
           onConfirm={() => {
             setReviewOpen(false);
-            void publishFlow.startPublish(workspace.flushPendingSaves);
+            void startPublish(workspace.flushPendingSaves);
           }}
         />
       )}
-
-      <PublishingOverlay
-        open={publishFlow.overlayOpen}
-        stage={publishFlow.stage}
-        runUrl={publishFlow.status?.runUrl}
-        error={publishFlow.error ?? publishFlow.status?.error}
-        onDismiss={publishFlow.dismissOverlay}
-      />
     </div>
   );
 }

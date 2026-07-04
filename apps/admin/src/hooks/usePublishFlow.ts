@@ -4,27 +4,49 @@ import type { PublishStateValue, PublishStatusResponse } from '@bonae/content/co
 import { ContentApiError, fetchPublishStatus, publishContent } from '../infrastructure/contentApi.js';
 
 const POLL_MS = 1500;
+const PUBLISHED_BANNER_MS = 5000;
 
-export type PublishOverlayStage = PublishStateValue | 'dismissed';
+export type PublishDisplayPhase = PublishStateValue | 'idle';
 
 export interface PublishFlow {
-  overlayOpen: boolean;
-  stage: PublishOverlayStage;
-  status: PublishStatusResponse | null;
-  error: string | null;
+  /** Short label for the header status line, e.g. "Publishing…" or "Published." */
+  statusLabel: string | null;
+  isPublishing: boolean;
+  isFailed: boolean;
+  runUrl: string | null;
   startPublish: (flushSaves: () => Promise<void>) => Promise<void>;
-  dismissOverlay: () => void;
   resumeIfInFlight: (initialState: PublishStateValue) => void;
 }
 
+function statusLabelFor(
+  phase: PublishDisplayPhase,
+  error: string | null,
+  apiError: string | null | undefined,
+): string | null {
+  switch (phase) {
+    case 'committing':
+    case 'building':
+      return 'Publishing…';
+    case 'success':
+      return 'Published.';
+    case 'failure':
+      return error ?? apiError ?? 'Publish failed.';
+    default:
+      return null;
+  }
+}
+
 export function usePublishFlow(onComplete: () => void): PublishFlow {
-  const [overlayOpen, setOverlayOpen] = useState(false);
-  const [stage, setStage] = useState<PublishOverlayStage>('dismissed');
+  const [phase, setPhase] = useState<PublishDisplayPhase>('idle');
   const [status, setStatus] = useState<PublishStatusResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollingActiveRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   const stopPolling = useCallback(() => {
+    pollingActiveRef.current = false;
     if (pollRef.current) {
       clearInterval(pollRef.current);
       pollRef.current = null;
@@ -32,35 +54,39 @@ export function usePublishFlow(onComplete: () => void): PublishFlow {
   }, []);
 
   const pollOnce = useCallback(async () => {
-    const next = await fetchPublishStatus();
-    setStatus(next);
-    setStage(next.state);
-    if (!isPublishInFlight(next.state)) {
-      stopPolling();
-      if (next.state === 'success') {
-        onComplete();
+    try {
+      const next = await fetchPublishStatus();
+      setStatus(next);
+      setPhase(next.state);
+      if (!isPublishInFlight(next.state)) {
+        stopPolling();
+        if (next.state === 'success') {
+          onCompleteRef.current();
+        }
       }
+    } catch {
+      // Keep polling — a transient network error should not stop tracking an in-flight publish.
     }
-  }, [onComplete, stopPolling]);
+  }, [stopPolling]);
 
   const startPolling = useCallback(() => {
-    stopPolling();
+    if (pollingActiveRef.current) {
+      return;
+    }
+    pollingActiveRef.current = true;
     void pollOnce();
     pollRef.current = setInterval(() => {
       void pollOnce();
     }, POLL_MS);
-  }, [pollOnce, stopPolling]);
+  }, [pollOnce]);
 
   const resumeIfInFlight = useCallback(
     (initialState: PublishStateValue) => {
-      if (!isPublishInFlight(initialState) && initialState !== 'success' && initialState !== 'failure') {
+      if (!isPublishInFlight(initialState)) {
         return;
       }
-      setOverlayOpen(true);
-      setStage(initialState);
-      if (isPublishInFlight(initialState)) {
-        startPolling();
-      }
+      setPhase(initialState);
+      startPolling();
     },
     [startPolling],
   );
@@ -68,49 +94,51 @@ export function usePublishFlow(onComplete: () => void): PublishFlow {
   const startPublish = useCallback(
     async (flushSaves: () => Promise<void>) => {
       setError(null);
-      setOverlayOpen(true);
-      setStage('committing');
+      setStatus(null);
+      setPhase('committing');
       try {
         await flushSaves();
         await publishContent();
-        setStage('building');
+        setPhase('building');
         startPolling();
       } catch (err) {
         stopPolling();
         if (err instanceof ContentApiError && err.status === 409) {
           setError('A publish is already in progress.');
-          setStage('failure');
+          setPhase('failure');
           return;
         }
         if (err instanceof ContentApiError && err.status === 422) {
           setError(err.errors?.join(' ') ?? err.message);
-          setStage('failure');
+          setPhase('failure');
           return;
         }
         setError(err instanceof Error ? err.message : 'Publish failed');
-        setStage('failure');
+        setPhase('failure');
       }
     },
     [startPolling, stopPolling],
   );
 
-  const dismissOverlay = useCallback(() => {
-    stopPolling();
-    setOverlayOpen(false);
-    setStage('dismissed');
-    setStatus(null);
-    setError(null);
-  }, [stopPolling]);
-
   useEffect(() => () => stopPolling(), [stopPolling]);
 
+  useEffect(() => {
+    if (phase !== 'success') {
+      return;
+    }
+    const timer = setTimeout(() => setPhase('idle'), PUBLISHED_BANNER_MS);
+    return () => clearTimeout(timer);
+  }, [phase]);
+
+  const isPublishing = isPublishInFlight(phase);
+  const statusLabel = statusLabelFor(phase, error, status?.error);
+
   return {
-    overlayOpen,
-    stage,
-    status,
-    error,
+    statusLabel,
+    isPublishing,
+    isFailed: phase === 'failure',
+    runUrl: status?.runUrl ?? null,
     startPublish,
-    dismissOverlay,
     resumeIfInFlight,
   };
 }
