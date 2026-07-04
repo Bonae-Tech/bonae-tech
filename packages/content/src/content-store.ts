@@ -94,3 +94,8 @@ export const publishCallbackBodySchema = z.object({
   runUrl: z.string().min(1),
 });
 export type PublishCallbackBody = z.infer<typeof publishCallbackBodySchema>;
+
+export const publishAcceptedResponseSchema = z.object({
+  accepted: z.literal(true),
+});
+export type PublishAcceptedResponse = z.infer<typeof publishAcceptedResponseSchema>;

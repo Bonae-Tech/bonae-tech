@@ -1,21 +1,36 @@
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
 
 interface Props {
   doc: ContentDocument;
-  onSave: (doc: ContentDocument) => void;
+  onSave: () => void;
+  onEdit?: (doc: ContentDocument) => void;
   saving?: boolean;
 }
 
 type HeroFields = ContentDocument['hero'];
 
-export function HeroSectionForm({ doc, onSave, saving }: Props) {
-  const { register, handleSubmit } = useForm<HeroFields>({ defaultValues: doc.hero });
+export function HeroSectionForm({ doc, onSave, onEdit, saving }: Props) {
+  const { register, watch } = useForm<HeroFields>({ defaultValues: doc.hero });
+  const values = watch();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    onEdit?.({ ...doc, hero: values });
+  }, [values]);
 
   return (
     <form
       className="card space-y-4"
-      onSubmit={handleSubmit((hero) => onSave({ ...doc, hero }))}
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave();
+      }}
     >
       <h2 className="text-lg font-bold">Hero</h2>
       {(['badge', 'headline', 'subheadline', 'cta', 'ctaSecondary', 'ctaSub'] as const).map((field) => (

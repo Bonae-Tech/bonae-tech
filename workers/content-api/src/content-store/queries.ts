@@ -129,3 +129,58 @@ export function readDraftLocale(sql: SqlStorage, locale: ContentLocale): unknown
   }
   return parseJson(row.content as string);
 }
+
+export function readDraftBundle(sql: SqlStorage): { es: unknown; en: unknown; settings: unknown } {
+  return {
+    es: readDraftLocale(sql, 'es'),
+    en: readDraftLocale(sql, 'en'),
+    settings: readDraftLocale(sql, 'settings'),
+  };
+}
+
+export function writePublishState(
+  sql: SqlStorage,
+  state: PublishStateValue,
+  fields: {
+    commitSha?: string | null;
+    runUrl?: string | null;
+    startedAt?: number | null;
+    finishedAt?: number | null;
+    error?: string | null;
+  } = {},
+): void {
+  const current = readPublishState(sql);
+  sql.exec(
+    `UPDATE publish_state
+     SET state = ?, commit_sha = ?, run_url = ?, started_at = ?, finished_at = ?, error = ?
+     WHERE id = 1`,
+    state,
+    fields.commitSha !== undefined ? fields.commitSha : current.commitSha,
+    fields.runUrl !== undefined ? fields.runUrl : current.runUrl,
+    fields.startedAt !== undefined ? fields.startedAt : current.startedAt,
+    fields.finishedAt !== undefined ? fields.finishedAt : current.finishedAt,
+    fields.error !== undefined ? fields.error : current.error,
+  );
+}
+
+export function syncPublishedCacheFromDrafts(sql: SqlStorage, commitSha: string): void {
+  const now = Date.now();
+  for (const locale of CONTENT_LOCALES) {
+    const row = sql.exec('SELECT content FROM drafts WHERE locale = ?', locale).one();
+    if (!row) {
+      throw new Error(`Draft missing for locale: ${locale}`);
+    }
+    sql.exec(
+      `INSERT INTO published_cache (locale, content, commit_sha, updated_at)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(locale) DO UPDATE SET
+         content = excluded.content,
+         commit_sha = excluded.commit_sha,
+         updated_at = excluded.updated_at`,
+      locale,
+      row.content as string,
+      commitSha,
+      now,
+    );
+  }
+}

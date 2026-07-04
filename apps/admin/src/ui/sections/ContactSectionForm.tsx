@@ -1,14 +1,16 @@
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
 
 interface Props {
   doc: ContentDocument;
-  onSave: (doc: ContentDocument) => void;
+  onSave: () => void;
+  onEdit?: (doc: ContentDocument) => void;
   saving?: boolean;
 }
 
-export function ContactSectionForm({ doc, onSave, saving }: Props) {
-  const { register, handleSubmit } = useForm({
+export function ContactSectionForm({ doc, onSave, onEdit, saving }: Props) {
+  const { register, watch } = useForm({
     defaultValues: {
       title: doc.contact.title,
       subtitle: doc.contact.subtitle,
@@ -18,19 +20,30 @@ export function ContactSectionForm({ doc, onSave, saving }: Props) {
       locationNote: doc.contact.locationNote,
     },
   });
+  const values = watch();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    onEdit?.({
+      ...doc,
+      contact: {
+        ...doc.contact,
+        ...values,
+      },
+    });
+  }, [values]);
 
   return (
     <form
       className="card space-y-4"
-      onSubmit={handleSubmit((fields) =>
-        onSave({
-          ...doc,
-          contact: {
-            ...doc.contact,
-            ...fields,
-          },
-        }),
-      )}
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave();
+      }}
     >
       <h2 className="text-lg font-bold">Contact</h2>
       <input className="field-input" placeholder="Title" {...register('title')} />

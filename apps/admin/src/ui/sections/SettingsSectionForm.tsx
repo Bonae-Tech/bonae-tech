@@ -1,17 +1,35 @@
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import type { SiteSettings } from '@bonae/content';
 
 interface Props {
   settings: SiteSettings;
-  onSave: (settings: SiteSettings) => void;
+  onSave: () => void;
+  onEdit?: (settings: SiteSettings) => void;
   saving?: boolean;
 }
 
-export function SettingsSectionForm({ settings, onSave, saving }: Props) {
-  const { register, handleSubmit } = useForm({ defaultValues: settings });
+export function SettingsSectionForm({ settings, onSave, onEdit, saving }: Props) {
+  const { register, watch } = useForm({ defaultValues: settings });
+  const values = watch();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    onEdit?.(values);
+  }, [values]);
 
   return (
-    <form className="card space-y-4" onSubmit={handleSubmit(onSave)}>
+    <form
+      className="card space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave();
+      }}
+    >
       <h2 className="text-lg font-bold">Site settings</h2>
       <input className="field-input" placeholder="Site URL" {...register('siteUrl')} />
       <input className="field-input" placeholder="WhatsApp number (digits only)" {...register('whatsappNumber')} />

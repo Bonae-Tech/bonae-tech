@@ -1,5 +1,7 @@
 # Recurring deploy: marketing site to Cloudflare Pages (bonae-tech).
-# Creates the Pages project on first run. Auto-triggers on push to main.
+# Creates the Pages project on first run. Auto-triggers on push to main when
+# published content or shared schema changes (not draft edits or Astro source-only changes).
+# Reports deploy outcome to the content API Worker for the admin publish overlay.
 #
 # See docs/workflows.md
 
@@ -10,12 +12,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/static/**'
+      - 'apps/static/content/published/**'
       - 'packages/content/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'turbo.json'
-      - '.github/workflows/deploy-site.yml'
   workflow_dispatch:
 
 concurrency:
@@ -55,3 +53,35 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}
+
+      - name: Report deploy status to content API
+        if: always()
+        continue-on-error: true
+        env:
+          CONTENT_API_URL: ${{ secrets.CONTENT_API_URL }}
+          PUBLISH_CALLBACK_SECRET: ${{ secrets.PUBLISH_CALLBACK_SECRET }}
+          COMMIT_SHA: ${{ github.sha }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CONTENT_API_URL}" ] || [ -z "${PUBLISH_CALLBACK_SECRET}" ]; then
+            echo "Skipping publish callback (set CONTENT_API_URL and PUBLISH_CALLBACK_SECRET in prod environment secrets)"
+            exit 0
+          fi
+          payload=$(jq -n \
+            --arg commitSha "$COMMIT_SHA" \
+            --arg status "$JOB_STATUS" \
+            --arg runUrl "$RUN_URL" \
+            '{commitSha: $commitSha, status: $status, runUrl: $runUrl}')
+          http_code=$(curl -sS -o /tmp/publish-callback-response.txt -w "%{http_code}" \
+            -X POST "${CONTENT_API_URL%/}/content/publish/callback" \
+            -H "Authorization: Bearer ${PUBLISH_CALLBACK_SECRET}" \
+            -H "Content-Type: application/json" \
+            -d "$payload")
+          if [ "$http_code" != "204" ]; then
+            echo "::warning::Publish callback returned HTTP ${http_code}"
+            cat /tmp/publish-callback-response.txt || true
+            exit 1
+          fi
+          echo "Publish callback accepted (HTTP 204)"

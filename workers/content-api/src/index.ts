@@ -1,7 +1,7 @@
 import { buildAuthContext } from './auth/authorize.js';
 import { extractBearerToken, verifyCognitoJwt } from './auth/cognito.js';
 import { ContentStore } from './content-store/index.js';
-import { handleContentRequest } from './routes.js';
+import { handleContentRequest, handlePublishCallbackRequest } from './routes.js';
 import type { Env } from './types.js';
 
 export { ContentStore };
@@ -23,6 +23,12 @@ function jsonResponse(status: number, body: unknown, env: Env): Response {
   });
 }
 
+function emptyResponse(status: number, env: Env): Response {
+  const headers = { ...corsHeaders(env) };
+  delete headers['Content-Type'];
+  return new Response(null, { status, headers });
+}
+
 function errorStatus(message: string): number {
   if (message.startsWith('Forbidden')) return 403;
   if (message.startsWith('Unauthorized') || message === 'Not authenticated') return 401;
@@ -30,6 +36,12 @@ function errorStatus(message: string): number {
   if (message.startsWith('Conflict')) return 409;
   if (message.startsWith('Validation')) return 422;
   return 400;
+}
+
+function verifyCallbackSecret(request: Request, env: Env): boolean {
+  const auth = request.headers.get('Authorization');
+  const token = auth?.startsWith('Bearer ') ? auth.slice('Bearer '.length) : null;
+  return Boolean(token && env.PUBLISH_CALLBACK_SECRET && token === env.PUBLISH_CALLBACK_SECRET);
 }
 
 export default {
@@ -44,6 +56,17 @@ export default {
     }
 
     try {
+      if (path === '/content/publish/callback' && request.method === 'POST') {
+        if (!verifyCallbackSecret(request, env)) {
+          throw new Error('Unauthorized');
+        }
+        const result = await handlePublishCallbackRequest(request, env);
+        if (result.status === 204) {
+          return emptyResponse(204, env);
+        }
+        return jsonResponse(result.status, result.body, env);
+      }
+
       const token = extractBearerToken(request);
       if (!token) {
         throw new Error('Unauthorized');
@@ -52,6 +75,9 @@ export default {
       const claims = await verifyCognitoJwt(token, env);
       const authContext = buildAuthContext(claims);
       const result = await handleContentRequest(request, env, authContext);
+      if (result.status === 204) {
+        return emptyResponse(204, env);
+      }
       return jsonResponse(result.status, result.body, env);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Internal error';

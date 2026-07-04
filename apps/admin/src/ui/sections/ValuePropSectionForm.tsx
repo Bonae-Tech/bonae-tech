@@ -1,9 +1,11 @@
+import { useEffect, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import type { ContentDocument, ValuePropIcon } from '@bonae/content';
 
 interface Props {
   doc: ContentDocument;
-  onSave: (doc: ContentDocument) => void;
+  onSave: () => void;
+  onEdit?: (doc: ContentDocument) => void;
   saving?: boolean;
 }
 
@@ -30,8 +32,8 @@ const defaultItem = (): ValuePropFormValues['items'][number] => ({
   backDescription: '',
 });
 
-export function ValuePropSectionForm({ doc, onSave, saving }: Props) {
-  const { register, handleSubmit, control } = useForm<ValuePropFormValues>({
+export function ValuePropSectionForm({ doc, onSave, onEdit, saving }: Props) {
+  const { register, control, watch } = useForm<ValuePropFormValues>({
     defaultValues: {
       sectionBadge: doc.valueProp.sectionBadge,
       title: doc.valueProp.title,
@@ -41,11 +43,24 @@ export function ValuePropSectionForm({ doc, onSave, saving }: Props) {
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: 'items' });
+  const values = watch();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    onEdit?.({ ...doc, valueProp: { ...doc.valueProp, ...values } });
+  }, [values]);
 
   return (
     <form
       className="card space-y-4"
-      onSubmit={handleSubmit((valueProp) => onSave({ ...doc, valueProp: { ...doc.valueProp, ...valueProp } }))}
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave();
+      }}
     >
       <h2 className="text-lg font-bold">Value proposition</h2>
       <input className="field-input" placeholder="Section badge" {...register('sectionBadge')} />

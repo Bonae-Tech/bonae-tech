@@ -59,6 +59,8 @@ Antes de ejecutar workflows:
 |------|--------|
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Secretos del entorno GitHub **prod** |
 | `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY` | Secretos del entorno GitHub **prod** |
+| `PUBLISH_CALLBACK_SECRET` | Secreto del entorno **prod** — mismo valor en Worker (vía **Setup worker** → `sync-secrets`) y en **Deploy site** (callback POST) |
+| `CONTENT_API_URL` | Secreto del entorno **prod** — URL base del Worker (`https://bonae-content-api.<account>.workers.dev`, sin barra final) |
 | GitHub App (`Contents: Read & Write` en este repo) | GitHub Settings → Developer settings |
 
 **Token API de Cloudflare** — token personalizado con alcance a tu cuenta:
@@ -100,12 +102,14 @@ Se disparan automáticamente en push a `main` cuando coinciden los filtros de ru
 
 | Workflow | Filtros de ruta |
 |----------|--------------|
-| Deploy site | `apps/static/**`, `packages/content/**` |
+| Deploy site | `apps/static/content/published/**`, `packages/content/**` |
 | Deploy admin | `apps/admin/**`, `packages/content/**` |
 | Deploy worker | `workers/content-api/**`, `packages/content/**` |
 | Deploy cognito | `infra/terraform/cognito.tf` y archivos TF relacionados |
 
-Publicar desde el admin SPA confirma en `content/published/` y dispara **Deploy site**.
+Publicar desde el admin SPA confirma en `content/published/` y dispara **Deploy site**. Los borradores ya no tocan git, así que no disparan este workflow.
+
+Cambios solo en código Astro (`apps/static/src/**`, etc.) no disparan **Deploy site** en push — usar **Deploy (manual)** → `site` o ampliar el workflow si necesitas auto-deploy de UI.
 
 Los PRs que solo modifican `apps/static/content/**` ejecutan **Content PR check** (no el workflow CI completo de código).
 
@@ -146,7 +150,7 @@ Nombres de Worker:
 | _(vacío)_ | `bonae-content-api` | `bonae-content-api` |
 | `staging` | `bonae-content-api-staging` | `bonae-content-api-staging` |
 
-**Deploy worker** envía solo código — no sincroniza secretos. Usar **Setup worker** tras una cuenta Cloudflare nueva o rotación de credenciales.
+**Deploy worker** envía solo código — no sincroniza secretos. Usar **Setup worker** → `sync-secrets` tras una cuenta Cloudflare nueva, rotación de credenciales de GitHub App, o tras añadir/rotar `PUBLISH_CALLBACK_SECRET`.
 
 ### Deploy cognito
 
@@ -156,10 +160,12 @@ Job de plan → aprobación en `infra-production` → job de apply → almacenar
 
 ### Deploy site
 
-Compila `@bonae/content`, valida JSON publicado, compila Astro, asegura que el proyecto Pages `bonae-tech` existe, despliega vía Wrangler.
+Compila `@bonae/content`, valida JSON publicado, compila Astro, asegura que el proyecto Pages `bonae-tech` existe, despliega vía Wrangler. Al finalizar (éxito o fallo), envía el resultado a `POST /content/publish/callback` en el Worker de contenido para cerrar el overlay de publicación en el admin.
 
-**Rutas:** `apps/static/**`, `packages/content/**`  
-**Secretos:** `CLOUDFLARE_*` (entorno prod)
+**Rutas (push a `main`):** `apps/static/content/published/**`, `packages/content/**`  
+**Secretos:** `CLOUDFLARE_*`, `CONTENT_API_URL`, `PUBLISH_CALLBACK_SECRET` (entorno prod)
+
+El callback se omite con un mensaje informativo si faltan `CONTENT_API_URL` o `PUBLISH_CALLBACK_SECRET` (útil antes de configurar el par de secretos). Si están configurados pero el callback falla, el paso emite un warning (`continue-on-error`) sin enmascarar el resultado del deploy.
 
 ### Deploy admin
 

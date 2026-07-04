@@ -8,14 +8,14 @@ import {
 } from '@bonae/content';
 import type { Env } from '../types.js';
 import { bootstrapFromGitIfNeeded } from './bootstrap.js';
-import { PUBLISH_ALARM_MS } from './constants.js';
 import { runMigrations } from './migrations.js';
+import { handlePublishAlarm, handlePublishCallback, handlePublishRequest } from './publish.js';
 import {
   discardAllDrafts,
   discardSection,
   parseDiscardSectionBody,
-  readDraftLocale,
   readContentState,
+  readDraftLocale,
   readPublishState,
   saveDraftLocale,
 } from './queries.js';
@@ -54,6 +54,33 @@ export class ContentStore implements DurableObject {
           error: publishState.error,
         };
         return this.json(200, body);
+      }
+
+      if (request.method === 'POST' && path === '/publish') {
+        const bodyText = await request.text();
+        const payload = bodyText ? (JSON.parse(bodyText) as { actor?: string }) : {};
+        const actor = payload.actor ?? 'unknown';
+        const result = await handlePublishRequest(
+          this.sql,
+          this.env,
+          actor,
+          (at) => this.ctx.storage.setAlarm(at),
+          () => this.ctx.storage.deleteAlarm(),
+        );
+        return this.json(result.status, result.body);
+      }
+
+      if (request.method === 'POST' && path === '/publish/callback') {
+        const bodyText = await request.text();
+        const result = await handlePublishCallback(
+          this.sql,
+          bodyText,
+          () => this.ctx.storage.deleteAlarm(),
+        );
+        if (result.status === 204) {
+          return new Response(null, { status: 204 });
+        }
+        return this.json(result.status, result.body);
       }
 
       if (request.method === 'GET' && draftMatch) {
@@ -98,26 +125,13 @@ export class ContentStore implements DurableObject {
   }
 
   async alarm(): Promise<void> {
-    const publishState = readPublishState(this.sql);
-    if (publishState.state !== 'building' && publishState.state !== 'committing') {
-      return;
-    }
-    const now = Date.now();
-    this.sql.exec(
-      `UPDATE publish_state
-       SET state = 'failure', finished_at = ?, error = ?
-       WHERE id = 1`,
-      now,
-      'Publish timed out waiting for deploy callback',
-    );
-  }
-
-  /** Phase C will call this when publish starts. */
-  schedulePublishAlarm(): void {
-    this.ctx.storage.setAlarm(Date.now() + PUBLISH_ALARM_MS);
+    await handlePublishAlarm(this.sql);
   }
 
   private json(status: number, body: unknown): Response {
+    if (body == null) {
+      return new Response(null, { status });
+    }
     return new Response(JSON.stringify(body), {
       status,
       headers: { 'Content-Type': 'application/json' },

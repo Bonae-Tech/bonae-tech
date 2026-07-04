@@ -1,18 +1,7 @@
 import type { AuthContext } from './auth/authorize.js';
 import { requireAuthorized } from './auth/authorize.js';
 import { contentStoreRequest } from './content-store/client.js';
-import {
-  createOctokit,
-  parseGitHubConfig,
-  publishDraftsToGit,
-} from './github.js';
-import { loadGitHubSecrets } from './secrets.js';
 import type { Env } from './types.js';
-import {
-  assertLocaleParity,
-  parseContentDocument,
-  parseSiteSettings,
-} from '@bonae/content';
 
 type RouteResult = { status: number; body: unknown };
 
@@ -32,8 +21,27 @@ async function forwardToStore(
   );
   if (status >= 400) {
     const error = typeof body.error === 'string' ? body.error : 'Request failed';
+    if (status === 409) {
+      throw new Error(`Conflict: ${error}`);
+    }
+    if (status === 422 && Array.isArray(body.errors)) {
+      throw new Error(`Validation failed: ${(body.errors as string[]).join('; ')}`);
+    }
     throw new Error(error);
   }
+  return { status, body };
+}
+
+export async function handlePublishCallbackRequest(
+  request: Request,
+  env: Env,
+): Promise<RouteResult> {
+  const bodyText = await request.text();
+  const { status, body } = await contentStoreRequest<null>(env, '/publish/callback', {
+    method: 'POST',
+    body: bodyText,
+    headers: { 'Content-Type': 'application/json' },
+  });
   return { status, body };
 }
 
@@ -125,22 +133,22 @@ export async function handleContentRequest(
 
   if (method === 'POST' && path === '/content/publish') {
     requireAuthorized(authContext, 'publish');
-    const state = await contentStoreRequest<{
-      draft: { es: unknown; en: unknown; settings: unknown };
-    }>(env, '/state');
-    const { draft } = state.body;
-    assertLocaleParity(
-      parseContentDocument(draft.es),
-      parseContentDocument(draft.en),
-    );
-    parseSiteSettings(draft.settings);
-
-    const secrets = loadGitHubSecrets(env);
-    const config = parseGitHubConfig(secrets, env);
-    const octokit = await createOctokit(config);
-    const result = await publishDraftsToGit(octokit, config, draft, authContext.sub);
-    console.log(JSON.stringify({ action: 'publish', actor: authContext.sub, commitSha: result.commitSha }));
-    return { status: 200, body: { ok: true, commitSha: result.commitSha } };
+    const { status, body } = await contentStoreRequest<Record<string, unknown>>(env, '/publish', {
+      method: 'POST',
+      body: JSON.stringify({ actor: authContext.sub }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (status === 409) {
+      throw new Error('Conflict: Publish already in flight');
+    }
+    if (status === 422) {
+      return { status: 422, body };
+    }
+    if (status >= 400) {
+      const error = typeof body.error === 'string' ? body.error : 'Publish failed';
+      throw new Error(error);
+    }
+    return { status, body };
   }
 
   throw new Error('Not found');

@@ -17,7 +17,7 @@ Diseño de la plataforma, infraestructura, flujos de datos y operaciones del dí
 
 ## 1. Vista general del sistema
 
-BONAE Tech es una **plataforma de contenido respaldada por git**. Todo el copy del sitio vive como archivos JSON confirmados en este repositorio. No hay base de datos — el historial de git es el almacén de contenido.
+BONAE Tech es una **plataforma de contenido respaldada por git**. El copy publicado del sitio vive como JSON en el repositorio; los borradores del admin viven en un **Durable Object SQLite** (`ContentStore`) hasta publicarse.
 
 ```mermaid
 flowchart TD
@@ -33,34 +33,36 @@ flowchart TD
     subgraph Cloudflare
         AdminPages["Pages bonae-admin"]
         Worker["Worker bonae-content-api"]
+        DO["ContentStore DO\nborradores + publish_state"]
         CFPages["Pages bonae-tech"]
     end
 
     subgraph GitHub["GitHub · Bonae-Tech/bonae-tech"]
-        Drafts["apps/static/content/drafts/"]
         Published["apps/static/content/published/"]
-        Actions["GitHub Actions"]
+        Actions["GitHub Actions · Deploy site"]
     end
 
     AdminSPA -->|"auth SRP"| Cognito
     Cognito -->|"ID token JWT"| AdminSPA
     AdminPages --> AdminSPA
     AdminSPA -->|"Bearer JWT /content/*"| Worker
+    Worker --> DO
     Worker -->|"verificación JWKS"| Cognito
-    Worker -->|"commits Octokit"| Drafts
-    Worker -->|"copiar drafts → published"| Published
+    Worker -->|"Git Trees API · publish"| Published
     Published -->|"push a main"| Actions
     Actions -->|"wrangler deploy"| CFPages
+    Actions -->|"POST /content/publish/callback"| Worker
     CFPages --> MarketingSite
 ```
 
 ### Decisiones de diseño clave
 
-- **Sin base de datos.** El contenido es JSON en git. El log de git es la pista de auditoría.
+- **Publicado en git; borradores en el DO.** Solo `published/**` se confirma en GitHub. Los borradores no disparan rebuilds del sitio.
 - **Sin servidor en runtime para marketing.** El sitio es HTML estático en Cloudflare Pages.
-- **Nube híbrida.** Cognito en AWS para identidad; Cloudflare Pages + Worker para hosting del admin y API.
+- **Nube híbrida.** Cognito en AWS para identidad; Cloudflare Pages + Worker + Durable Objects para admin y API.
 - **Admin solo por invitación.** Sin auto-registro. Los usuarios se crean vía CLI y se agregan al grupo Cognito `Administrators`.
-- **Paridad de locale aplicada.** Los documentos ES y EN deben tener estructura coincidente en todo momento. La API rechaza guardados que rompan la paridad.
+- **Publicación atómica.** Un solo commit (Git Trees API) para ES, EN y settings. El overlay del admin espera el resultado real del deploy vía callback de CI.
+- **Paridad de locale.** Validación en publicación (servidor y cliente). Los guardados de borrador son last-write-wins sin comprobar paridad.
 
 ---
 
@@ -96,7 +98,7 @@ Los scripts de la raíz manejan esto automáticamente. Al ejecutar pasos manualm
 
 | Modo | Auth | Destino de API |
 |------|------|----------------|
-| **Mock** (`VITE_USE_MOCK=true`) | Sesión falsa | Plugin Vite escribe en disco |
+| **Mock** (`VITE_USE_MOCK=true`) | Sesión falsa | Plugin Vite + store en memoria (misma API que el Worker) |
 | **Producción** | Cognito SRP | Same-origin `/content/*` vía service binding de Pages |
 
 Piezas clave: `config.ts` (IDs de Cognito en tiempo de build), `infrastructure/auth.cognito.ts` (SRP, refresh, reset de contraseña), `infrastructure/contentApi.ts` (Bearer JWT + retry en 401), `functions/content/_middleware.ts` (proxy al Worker). **Flujos de auth:** [admin-authentication.md](./admin-authentication.md).
@@ -107,13 +109,18 @@ Piezas clave: `config.ts` (IDs de Cognito en tiempo de build), `infrastructure/a
 |--------|-----|
 | `src/auth/cognito.ts` | Verificación JWT vía Cognito JWKS |
 | `src/auth/authorize.ts` | Verificación del grupo `Administrators` |
-| `src/routes.ts` | Rutas de contenido + validación `@bonae/content` |
-| `src/github.ts` | Cliente Octokit GitHub App |
+| `src/routes.ts` | Rutas HTTP → ContentStore DO |
+| `src/content-store/` | Durable Object SQLite: borradores, caché publicado, máquina de estados de publish |
+| `src/github.ts` | Cliente Octokit · commit atómico Git Trees API |
 
-Rutas: 
+Rutas principales:
+* `GET /content/state` — bootstrap (borradores + publicado + publishState)
 * `GET/PUT /content/drafts/{es|en|settings}`
-* `GET /content/published/{...}` 
-* `POST /content/publish`
+* `POST /content/drafts/discard` · `POST /content/drafts/discard-section`
+* `POST /content/publish` → `{ accepted: true }` · `GET /content/publish/status`
+* `POST /content/publish/callback` — CI (Bearer `PUBLISH_CALLBACK_SECRET`)
+
+Especificación completa: [admin-content-storage-spec.md](./admin-content-storage-spec.md)
 
 ### Modelo de seguridad
 
@@ -196,41 +203,45 @@ sequenceDiagram
     participant SPA as Admin SPA
     participant Pages as Cloudflare Pages
     participant Worker as content-api Worker
+    participant DO as ContentStore DO
     participant Cognito
-    participant GH as GitHub
 
     Editor->>SPA: Ingresar credenciales
     SPA->>Cognito: Autenticación SRP
-    Cognito-->>SPA: ID token (JWT, expira en 1h)
+    Cognito-->>SPA: ID token (JWT)
 
-    Editor->>SPA: Editar sección, clic Save
+    Editor->>SPA: Editar (autosave ~2.5s o Save draft)
     SPA->>Pages: PUT /content/drafts/{locale} · Bearer JWT
     Pages->>Worker: Reenvío por service binding
-    Worker->>Cognito: Verificar JWT con JWKS
-    Worker->>Worker: Verificar grupo Administrators
-    Worker->>GH: Confirmar JSON en content/drafts/
-    GH-->>Worker: 201 Created
-    Worker-->>SPA: 200 OK
+    Worker->>Cognito: Verificar JWT
+    Worker->>DO: Guardar borrador (last-write-wins)
+    DO-->>SPA: 200 { savedAt }
 ```
 
-### Publicación (borrador → publicado → rebuild del sitio)
+### Publicación (borrador → git → deploy → callback)
 
 ```mermaid
 sequenceDiagram
     actor Editor
     participant SPA as Admin SPA
     participant Worker as content-api Worker
+    participant DO as ContentStore DO
     participant GH as GitHub
-    participant Actions as GitHub Actions
-    participant CF as Cloudflare Pages bonae-tech
+    participant Actions as Deploy site
+    participant CF as Cloudflare Pages
 
-    Editor->>SPA: Clic en "Publish site"
-    SPA->>Worker: POST /content/publish · Bearer JWT
-    Worker->>Worker: Validar paridad de locale + settings
-    Worker->>GH: Un solo commit · copiar drafts/ → published/
-    GH->>Actions: Push a main · dispara Deploy site
+    Editor->>SPA: Review & publish
+    SPA->>Worker: POST /content/publish
+    Worker->>DO: Validar + lock + Git Trees commit
+    DO->>GH: Un commit · published/es,en,settings
+    GH->>Actions: Push published/**
+    Worker-->>SPA: { accepted: true }
+    SPA->>Worker: Poll GET /content/publish/status
+
     Actions->>CF: wrangler pages deploy
-    CF-->>Editor: Nuevo sitio estático en vivo
+    Actions->>Worker: POST /content/publish/callback
+    Worker->>DO: success → actualizar published_cache
+    SPA-->>Editor: Overlay "Published!"
 ```
 
 ### Primer inicio de sesión (flujo de invitación)
@@ -271,7 +282,9 @@ Mejoras de autenticación del admin (sesión, refresh, reset de contraseña, SES
 
 ### Flujo de contenido
 
-Iniciar sesión → editar ES/EN → **Save draft** (confirma en `drafts/`) → **Publish** (copia `drafts/` → `published/`, dispara **Deploy site**).
+Iniciar sesión → editar ES/EN/settings (autosave o Save draft en el DO) → **Review & publish** → overlay (committing → building → success) → **Deploy site** en CI.
+
+Los archivos en `apps/static/content/drafts/` en el repo son legado/local mock; en producción los borradores viven solo en el ContentStore DO.
 
 ### Rotación de credenciales
 

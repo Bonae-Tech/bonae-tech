@@ -118,6 +118,89 @@ export async function writeRepoJson(
   }
 }
 
+export async function publishDraftsAtomic(
+  octokit: Octokit,
+  config: GitHubConfig,
+  drafts: { es: unknown; en: unknown; settings: unknown },
+  actor: string,
+): Promise<{ commitSha: string }> {
+  const files = [
+    ['es.json', drafts.es],
+    ['en.json', drafts.en],
+    ['settings.json', drafts.settings],
+  ] as const;
+
+  const ref = await octokit.git.getRef({
+    owner: config.owner,
+    repo: config.repo,
+    ref: `heads/${config.branch}`,
+  });
+  const baseCommitSha = ref.data.object.sha;
+
+  const baseCommit = await octokit.git.getCommit({
+    owner: config.owner,
+    repo: config.repo,
+    commit_sha: baseCommitSha,
+  });
+  const baseTreeSha = baseCommit.data.tree.sha;
+
+  const treeEntries: { path: string; mode: '100644'; type: 'blob'; sha: string }[] = [];
+  for (const [fileName, data] of files) {
+    const blob = await octokit.git.createBlob({
+      owner: config.owner,
+      repo: config.repo,
+      content: JSON.stringify(data, null, 2) + '\n',
+      encoding: 'utf-8',
+    });
+    treeEntries.push({
+      path: contentFilePath(config, 'published', fileName),
+      mode: '100644',
+      type: 'blob',
+      sha: blob.data.sha,
+    });
+  }
+
+  const tree = await octokit.git.createTree({
+    owner: config.owner,
+    repo: config.repo,
+    base_tree: baseTreeSha,
+    tree: treeEntries,
+  });
+
+  const commit = await octokit.git.createCommit({
+    owner: config.owner,
+    repo: config.repo,
+    message: `chore(content): publish via admin (${actor})`,
+    tree: tree.data.sha,
+    parents: [baseCommitSha],
+  });
+
+  try {
+    await octokit.git.updateRef({
+      owner: config.owner,
+      repo: config.repo,
+      ref: `heads/${config.branch}`,
+      sha: commit.data.sha,
+    });
+  } catch (err: unknown) {
+    const status = typeof err === 'object' && err !== null && 'status' in err ? err.status : undefined;
+    const message = err instanceof Error ? err.message : String(err);
+    if (status === 403 && message.includes('Resource not accessible by integration')) {
+      throw new Error(
+        'GitHub App lacks Contents write permission. In GitHub App settings set Repository permissions → Contents → Read and write, then approve the update on the app installation.',
+      );
+    }
+    if (status === 409 && message.includes('Changes must be made through a pull request')) {
+      throw new Error(
+        'Branch protection blocks direct commits on the configured branch. Allow the bonae-content-api GitHub App to bypass the pull request requirement for main (or point GITHUB_BRANCH at an unprotected branch).',
+      );
+    }
+    throw err;
+  }
+
+  return { commitSha: commit.data.sha };
+}
+
 export async function publishContent(
   octokit: Octokit,
   config: GitHubConfig,

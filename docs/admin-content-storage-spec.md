@@ -2,7 +2,7 @@
 
 Canonical design reference for replacing GitHub-as-a-database with a SQLite-backed ContentStore Durable Object. See also [architecture.md](./architecture.md) for the current platform overview.
 
-**Status:** Phases A–B implemented in the worker; Phases C–F pending.
+**Status:** Implemented (Phases A–F). See [admin-content-storage-spec.md](./admin-content-storage-spec.md).
 
 ---
 
@@ -189,11 +189,3 @@ No Terraform changes — confirmed out of scope.
 | E | Admin autosave, settings in review, three-stage publish overlay |
 | F | Mock API parity + `docs/architecture.md` update |
 
-## Tips for building with Cursor
-
-- **Build bottom-up, not top-down**: the Durable Object's state machine logic is pure and unit-testable without any network calls — write and test it first, in isolation, before wiring Worker routes or UI. Feed Cursor one phase at a time rather than this whole spec in one prompt.
-- **Define shared types before writing either side.** Put the draft document shape and the publish-state shape in `@bonae/content` so the Worker and the admin app import the same types instead of hand-copying interfaces that will drift.
-- **Write the SQL schema and a tiny migration tracker first.** Since `PRAGMA user_version` isn't available on DO SQLite, scaffold a `_sql_schema_migrations` table before writing any table-creation logic.
-- **Update the mock (`vite.mockApi.ts`) in the same phase as the real endpoint**, not afterward — have it simulate the `committing → building → success/failure` timing so the overlay is demoable before the real GitHub Actions callback exists.
-- **Test the alarm-based timeout path deliberately** — it's the one failure mode with no natural trigger in day-to-day use.
-- **Double-check your Workers plan supports SQLite-backed Durable Objects** before Phase A.
