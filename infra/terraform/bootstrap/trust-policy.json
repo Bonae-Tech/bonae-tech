@@ -12,7 +12,7 @@
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
         },
         "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:mpiantella/bonae:*"
+          "token.actions.githubusercontent.com:sub": "repo:bonae-tech/bonae-tech:*"
         }
       }
     }
