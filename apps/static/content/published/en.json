@@ -68,11 +68,11 @@
     "years": "30+",
     "yearsLabel": "Years of combined experience",
     "clients": "Clients",
+    "clientsValue": "—",
     "projects": "Projects completed",
+    "projectsValue": "—",
     "presence": "Countries",
     "presenceLabel": "Regional presence",
-    "clientsValue": "—",
-    "projectsValue": "—",
     "presenceValue": "—",
     "foundersCount": "3",
     "foundersLabel": "Founders"
@@ -80,6 +80,7 @@
   "about": {
     "sectionBadge": "Who we are",
     "title": "About Us",
+    "foundersTitle": "Founders",
     "members": [
       {
         "initials": "IS",
@@ -111,8 +112,7 @@
           "Local entrepreneurship"
         ]
       }
-    ],
-    "foundersTitle": "Founders"
+    ]
   },
   "plans": {
     "title": "Ready to digitalize and automate your brand?",

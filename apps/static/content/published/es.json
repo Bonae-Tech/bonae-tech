@@ -17,7 +17,7 @@
   "hero": {
     "badge": "Venezuela · Latinoamérica · El Mundo Y Todo",
     "headline": "Transformamos tu empresa en una potencia digital",
-    "subheadline": "Digitalizamos tu marca con soluciones tecnológicas a la medida. Todo lo que tu negocio necesita para crecer, en un solo lugar.  ",
+    "subheadline": "Digitalizamos tu marca con soluciones tecnológicas a la medida. Todo lo que tu negocio necesita para crecer, en un solo lugar. ",
     "cta": "Contáctanos",
     "ctaSecondary": "Conoce nuestros servicios",
     "ctaSub": "Te respondemos el mismo día"
@@ -31,36 +31,36 @@
         "icon": "accessible",
         "title": "Presencia Web de alto impacto",
         "description": " Diseño y desarrollo web optimizado para transformar visitas en clientes las 24 horas del día.",
-        "backDescription": "Precios acordes al mercado, desde planes básicos hasta soluciones completas, con opciones de financiación.",
-        "backLabel": "Accesible"
+        "backLabel": "Accesible",
+        "backDescription": "Precios acordes al mercado, desde planes básicos hasta soluciones completas, con opciones de financiación."
       },
       {
         "icon": "simple",
         "title": "Redes Sociales",
         "description": "Creamos y configuramos tu ecosistema en redes sociales. Automatizamos tus canales de atención para que nunca vuelvas a perder un mensaje de ventas.",
-        "backDescription": "Entendemos los retos y oportunidades de nuestra región, hablamos tu idioma y ofrecemos soporte técnico cercano, real y eficiente.",
-        "backLabel": "Cercano"
+        "backLabel": "Cercano",
+        "backDescription": "Entendemos los retos y oportunidades de nuestra región, hablamos tu idioma y ofrecemos soporte técnico cercano, real y eficiente."
       },
       {
         "icon": "secure",
         "title": "Sistemas de Gestión Comercial (CRM)",
         "description": "Gestión de clientes y seguimiento de ventas con sistemas de fácil acceso y manejo.",
-        "backDescription": "Estructuramos ecosistemas digitales de alto rendimiento con SEO avanzado y crecimiento orgánico sostenible.",
-        "backLabel": "Estratégico"
+        "backLabel": "Estratégico",
+        "backDescription": "Estructuramos ecosistemas digitales de alto rendimiento con SEO avanzado y crecimiento orgánico sostenible."
       },
       {
         "icon": "close",
         "title": "Consultoría digital",
         "description": "Deja atrás los procesos manuales y obsoletos. Diagnosticamos tu negocio para eliminar tareas repetitivas, automatizar tu operación diaria y adaptar tu empresa al reto de reducir errores.",
-        "backDescription": "Optimizamos cada proceso técnico y estratégico para profesionalizar tu imagen y proteger la confianza de tus clientes.",
-        "backLabel": "Seguro"
+        "backLabel": "Seguro",
+        "backDescription": "Optimizamos cada proceso técnico y estratégico para profesionalizar tu imagen y proteger la confianza de tus clientes."
       },
       {
         "icon": "education",
         "title": "Plataformas de E-learning y Aulas Virtuales",
         "description": "Creamos y configuramos tu propia academia online para que puedas digitalizar tus cursos, automatizar las inscripciones y vender tu conocimiento sin límites geográficos.",
-        "backDescription": "Desplegamos tus cursos y clases para que tu conocimiento llegue a cualquier parte del mundo.",
-        "backLabel": "Educación sin Fronteras"
+        "backLabel": "Educación sin Fronteras",
+        "backDescription": "Desplegamos tus cursos y clases para que tu conocimiento llegue a cualquier parte del mundo."
       }
     ]
   },
@@ -68,11 +68,11 @@
     "years": "30+",
     "yearsLabel": "Años de experiencia combinada",
     "clients": "Clientes",
+    "clientsValue": "—",
     "projects": "Proyectos completados",
+    "projectsValue": "—",
     "presence": "Países",
     "presenceLabel": "Presencia regional",
-    "clientsValue": "—",
-    "projectsValue": "—",
     "presenceValue": "—",
     "foundersCount": "3",
     "foundersLabel": "Fundadoras"
@@ -80,6 +80,7 @@
   "about": {
     "sectionBadge": "Quiénes somos",
     "title": "Nosotras",
+    "foundersTitle": "Cofundadoras",
     "members": [
       {
         "initials": "IS",
@@ -111,8 +112,7 @@
           "Emprendimiento local"
         ]
       }
-    ],
-    "foundersTitle": "Cofundadoras"
+    ]
   },
   "plans": {
     "title": "¿Listo para digitalizar y automatizar tu marca?",
