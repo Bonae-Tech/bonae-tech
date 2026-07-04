@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { isPublishInFlight } from '@bonae/content/content-store';
+import { useState } from 'react';
 import type { Locale } from '@bonae/content/schema';
 import { useContentWorkspace } from '../hooks/useContentWorkspace.js';
 import { usePublishFlow } from '../hooks/usePublishFlow.js';
@@ -43,18 +42,15 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
   const queryClient = useQueryClient();
 
   const workspace = useContentWorkspace();
-  const publishFlow = usePublishFlow(() => {
-    void workspace.reload();
-    void queryClient.invalidateQueries();
-  });
+  const publishFlow = usePublishFlow(
+    () => {
+      void workspace.reload();
+      void queryClient.invalidateQueries();
+    },
+    workspace.publishState.state,
+  );
 
-  const { resumeIfInFlight, startPublish, statusLabel, isPublishing, isFailed, runUrl } = publishFlow;
-
-  useEffect(() => {
-    if (isPublishInFlight(workspace.publishState.state)) {
-      resumeIfInFlight(workspace.publishState.state);
-    }
-  }, [workspace.publishState.state, resumeIfInFlight]);
+  const { startPublish, statusLabel, isPublishing, isFailed, runUrl } = publishFlow;
 
   const manualSaveMutation = useMutation({
     mutationFn: async () => {

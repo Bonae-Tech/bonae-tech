@@ -3,7 +3,8 @@ import { isPublishInFlight } from '@bonae/content/content-store';
 import type { PublishStateValue, PublishStatusResponse } from '@bonae/content/content-store';
 import { ContentApiError, fetchPublishStatus, publishContent } from '../infrastructure/contentApi.js';
 
-const POLL_MS = 1500;
+/** Interval between status polls while a publish is in flight. */
+const POLL_MS = 3000;
 const PUBLISHED_BANNER_MS = 5000;
 
 export type PublishDisplayPhase = PublishStateValue | 'idle';
@@ -15,7 +16,6 @@ export interface PublishFlow {
   isFailed: boolean;
   runUrl: string | null;
   startPublish: (flushSaves: () => Promise<void>) => Promise<void>;
-  resumeIfInFlight: (initialState: PublishStateValue) => void;
 }
 
 function statusLabelFor(
@@ -36,28 +36,49 @@ function statusLabelFor(
   }
 }
 
-export function usePublishFlow(onComplete: () => void): PublishFlow {
+function publishStatusUnchanged(a: PublishStatusResponse | null, b: PublishStatusResponse): boolean {
+  if (!a) {
+    return false;
+  }
+  return (
+    a.state === b.state &&
+    a.commitSha === b.commitSha &&
+    a.runUrl === b.runUrl &&
+    a.error === b.error
+  );
+}
+
+export function usePublishFlow(
+  onComplete: () => void,
+  serverPublishState?: PublishStateValue,
+): PublishFlow {
   const [phase, setPhase] = useState<PublishDisplayPhase>('idle');
   const [status, setStatus] = useState<PublishStatusResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollingActiveRef = useRef(false);
+  const requestInFlightRef = useRef(false);
+  const resumedServerStateRef = useRef<PublishStateValue | null>(null);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
   const stopPolling = useCallback(() => {
     pollingActiveRef.current = false;
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
+    if (pollTimerRef.current) {
+      clearTimeout(pollTimerRef.current);
+      pollTimerRef.current = null;
     }
   }, []);
 
   const pollOnce = useCallback(async () => {
+    if (requestInFlightRef.current) {
+      return;
+    }
+    requestInFlightRef.current = true;
     try {
       const next = await fetchPublishStatus();
-      setStatus(next);
-      setPhase(next.state);
+      setStatus((prev) => (publishStatusUnchanged(prev, next) ? prev : next));
+      setPhase((prev) => (prev === next.state ? prev : next.state));
       if (!isPublishInFlight(next.state)) {
         stopPolling();
         if (next.state === 'success') {
@@ -66,30 +87,49 @@ export function usePublishFlow(onComplete: () => void): PublishFlow {
       }
     } catch {
       // Keep polling — a transient network error should not stop tracking an in-flight publish.
+    } finally {
+      requestInFlightRef.current = false;
     }
   }, [stopPolling]);
+
+  const scheduleNextPoll = useCallback(() => {
+    if (!pollingActiveRef.current) {
+      return;
+    }
+    pollTimerRef.current = setTimeout(() => {
+      void pollOnce().finally(() => {
+        scheduleNextPoll();
+      });
+    }, POLL_MS);
+  }, [pollOnce]);
 
   const startPolling = useCallback(() => {
     if (pollingActiveRef.current) {
       return;
     }
     pollingActiveRef.current = true;
-    void pollOnce();
-    pollRef.current = setInterval(() => {
-      void pollOnce();
-    }, POLL_MS);
-  }, [pollOnce]);
-
-  const resumeIfInFlight = useCallback(
-    (initialState: PublishStateValue) => {
-      if (!isPublishInFlight(initialState)) {
-        return;
+    void pollOnce().finally(() => {
+      if (pollingActiveRef.current) {
+        scheduleNextPoll();
       }
-      setPhase(initialState);
-      startPolling();
-    },
-    [startPolling],
-  );
+    });
+  }, [pollOnce, scheduleNextPoll]);
+
+  const startPollingRef = useRef(startPolling);
+  startPollingRef.current = startPolling;
+
+  // Resume at most once per server-side in-flight state (page reload mid-publish).
+  useEffect(() => {
+    if (!serverPublishState || !isPublishInFlight(serverPublishState)) {
+      return;
+    }
+    if (resumedServerStateRef.current === serverPublishState) {
+      return;
+    }
+    resumedServerStateRef.current = serverPublishState;
+    setPhase(serverPublishState);
+    startPollingRef.current();
+  }, [serverPublishState]);
 
   const startPublish = useCallback(
     async (flushSaves: () => Promise<void>) => {
@@ -139,6 +179,5 @@ export function usePublishFlow(onComplete: () => void): PublishFlow {
     isFailed: phase === 'failure',
     runUrl: status?.runUrl ?? null,
     startPublish,
-    resumeIfInFlight,
   };
 }
