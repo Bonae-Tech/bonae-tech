@@ -4,12 +4,13 @@ import { contentApiMockPlugin } from './vite.mockApi.js';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const useMock = env.VITE_USE_MOCK === 'true';
+  const useMock = mode === 'mock' || env.VITE_USE_MOCK === 'true';
 
   return {
     plugins: [react(), ...(useMock ? [contentApiMockPlugin()] : [])],
     define: {
       global: 'globalThis',
+      'import.meta.env.VITE_USE_MOCK': JSON.stringify(useMock ? 'true' : 'false'),
     },
     server: { port: 5173 },
   };

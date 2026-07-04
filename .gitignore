@@ -20,6 +20,8 @@ packages/content/dist/
 .env
 .env.*
 !.env.example
+!.env.mock
+.cursor/
 
 # Terraform
 infra/terraform/.terraform/

@@ -52,4 +52,88 @@
     @apply bg-white rounded-2xl p-6 shadow-sm border border-light-blue/20
            hover:shadow-md hover:border-terracotta transition-all duration-300;
   }
+
+  .flip-card-face {
+    @apply bg-white rounded-2xl p-6 shadow-sm border border-light-blue/20;
+  }
+
+  .flip-card {
+    @apply relative w-full min-h-[380px];
+    perspective: 1000px;
+  }
+
+  .flip-card-inner {
+    @apply relative w-full h-full min-h-[380px];
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+  }
+
+  .flip-card:hover .flip-card-inner,
+  .flip-card:focus-within .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    @apply flip-card-face absolute inset-0 flex flex-col text-center justify-center;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .flip-card-back {
+    @apply bg-cream justify-center;
+    transform: rotateY(180deg);
+  }
+
+  .flip-card-badge {
+    @apply inline-block self-center px-3 py-1 rounded-full bg-cream text-dark-blue text-xs font-semibold uppercase tracking-wider mb-4 border border-light-blue/20;
+  }
+
+  .flip-card-back .flip-card-badge {
+    @apply bg-white;
+  }
+
+  .value-prop-grid {
+    @apply grid gap-6 md:grid-cols-2;
+  }
+
+  @media (min-width: 1024px) {
+    .value-prop-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .value-prop-grid > * {
+      grid-column: span 2;
+    }
+
+    /* Exactly 5 cards: center the bottom row pair until a 6th is added */
+    .value-prop-grid > *:nth-child(4):nth-last-child(2) {
+      grid-column: 2 / span 2;
+    }
+
+    .value-prop-grid > *:nth-child(5):nth-last-child(1) {
+      grid-column: 4 / span 2;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flip-card-inner {
+      transition: none;
+      transform: none !important;
+    }
+
+    .flip-card-front {
+      position: relative;
+      inset: auto;
+      backface-visibility: visible;
+    }
+
+    .flip-card-back {
+      position: relative;
+      inset: auto;
+      transform: none;
+      backface-visibility: visible;
+      @apply mt-4;
+    }
+  }
 }

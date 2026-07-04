@@ -48,14 +48,24 @@ async function apiFetch<T>(path: string, init?: RequestInit, retried = false): P
     throw err;
   }
 
-  const res = await fetch(`${config.apiBaseUrl}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...(init?.headers ?? {}),
-    },
-  });
+  const url = `${config.apiBaseUrl}${path}`;
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        ...(init?.headers ?? {}),
+      },
+    });
+  } catch {
+    const hint = config.useMock
+      ? 'Could not reach the local mock API. Stop other dev servers, run `npm run admin:dev:mock` from the repo root, open the URL shown in the terminal (often http://localhost:5173), and look for the yellow “Local mock mode” banner.'
+      : 'Network error contacting the content API. Check VITE_API_BASE_URL in apps/admin/.env.';
+    throw new Error(hint);
+  }
 
   const body = (await res.json()) as T & { error?: string };
   if (!res.ok) {

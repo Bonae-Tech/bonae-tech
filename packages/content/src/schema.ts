@@ -7,6 +7,8 @@ const iconItemSchema = z.object({
   icon: z.enum(valuePropIcons),
   title: z.string().min(1),
   description: z.string().min(1),
+  backLabel: z.string().min(1),
+  backDescription: z.string().min(1),
 });
 
 const memberSchema = z.object({
@@ -47,7 +49,7 @@ export const contentDocumentSchema = z.object({
     sectionBadge: z.string().min(1),
     title: z.string().min(1),
     subheadline: z.string().min(1),
-    items: z.array(iconItemSchema).length(4),
+    items: z.array(iconItemSchema).min(1).max(8),
   }),
 
   keyFigures: z.object({

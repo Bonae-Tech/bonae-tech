@@ -70,6 +70,12 @@ export function contentApiMockPlugin(): Plugin {
   return {
     name: 'bonae-content-api-mock',
     configureServer(server) {
+      server.httpServer?.once('listening', () => {
+        const addr = server.httpServer?.address();
+        const port = typeof addr === 'object' && addr ? addr.port : 5173;
+        console.log(`[bonae-content-api-mock] /content/* → ${contentRoot} (http://localhost:${port})`);
+      });
+
       server.middlewares.use(async (req, res, next) => {
         const url = req.url?.split('?')[0] ?? '';
         if (!url.startsWith('/content/')) {

@@ -1,6 +1,6 @@
 ---
 import type { Translations } from '@bonae/content';
-import { valuePropIconMarkup } from '../lib/icons';
+import IconCard from './IconCard.astro';
 
 interface Props {
   t: Translations;
@@ -18,15 +18,15 @@ const { t } = Astro.props;
       <h2 class="section-title">{t.valueProp.title}</h2>
       <p class="section-subtitle">{t.valueProp.subheadline}</p>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="value-prop-grid">
       {t.valueProp.items.map((item) => (
-        <div class="card text-center group">
-          <div class="w-12 h-12 rounded-xl bg-cream text-dark-blue flex items-center justify-center mx-auto mb-4 group-hover:bg-dark-blue group-hover:text-white transition-all duration-300">
-            <Fragment set:html={valuePropIconMarkup[item.icon]} />
-          </div>
-          <h3 class="font-bold text-dark-blue mb-2">{item.title}</h3>
-          <p class="text-pacificblue text-sm leading-relaxed">{item.description}</p>
-        </div>
+        <IconCard
+          icon={item.icon}
+          title={item.title}
+          description={item.description}
+          backLabel={item.backLabel}
+          backDescription={item.backDescription}
+        />
       ))}
     </div>
   </div>
