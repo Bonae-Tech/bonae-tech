@@ -20,7 +20,9 @@ Cada solicitud requiere un token ID de Cognito válido (`Authorization: Bearer`)
 Usar el workflow de GitHub Actions **Setup worker** — no ejecutar `wrangler secret put` manualmente en producción.
 
 1. Almacenar credenciales de GitHub App como secretos del entorno **prod**: `WORKER_GITHUB_APP_ID`, `WORKER_GITHUB_INSTALLATION_ID`, `WORKER_GITHUB_PRIVATE_KEY`
-2. Ejecutar **Setup worker** con `action: setup`
+2. Generar `PUBLISH_CALLBACK_SECRET` (valor aleatorio) y añadirlo al entorno **prod**; ejecutar **Setup worker** con `action: sync-secrets` para copiarlo al Worker
+3. Añadir `CONTENT_API_URL` al entorno **prod** (URL base del Worker, p. ej. `https://bonae-content-api.<account>.workers.dev`)
+4. Ejecutar **Setup worker** con `action: setup` en instalación inicial
 
 Guía completa de instalación: [docs/workflows.md](../../docs/workflows.md)
 

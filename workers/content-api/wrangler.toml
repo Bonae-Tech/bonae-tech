@@ -3,6 +3,14 @@ main = "src/index.ts"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
+[[durable_objects.bindings]]
+name = "CONTENT_STORE"
+class_name = "ContentStore"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ContentStore"]
+
 [vars]
 GITHUB_REPO = "Bonae-Tech/bonae-tech"
 GITHUB_BRANCH = "main"
@@ -13,6 +21,10 @@ COGNITO_REGION = "sa-east-1"
 
 [env.staging]
 name = "bonae-content-api-staging"
+
+[[env.staging.durable_objects.bindings]]
+name = "CONTENT_STORE"
+class_name = "ContentStore"
 
 [env.staging.vars]
 GITHUB_REPO = "Bonae-Tech/bonae-tech"

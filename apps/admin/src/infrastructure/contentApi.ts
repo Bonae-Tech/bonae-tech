@@ -1,4 +1,11 @@
-import type { ContentDocument, Locale, SiteSettings } from '@bonae/content';
+import type {
+  ContentDocument,
+  ContentSection,
+  ContentStateResponse,
+  Locale,
+  PublishStatusResponse,
+  SiteSettings,
+} from '@bonae/content';
 import { config } from '../config.js';
 import {
   getIdToken,
@@ -11,11 +18,15 @@ import {
 
 export type ContentResource = Locale | 'settings';
 
-export interface ContentResponse<T> {
-  locale: ContentResource;
-  content: T;
-  tier: 'drafts' | 'published';
-  commitSha?: string;
+export class ContentApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly errors?: string[],
+  ) {
+    super(message);
+    this.name = 'ContentApiError';
+  }
 }
 
 let sessionExpiredCallback: ((reason: LogoutReason) => void) | null = null;
@@ -67,7 +78,10 @@ async function apiFetch<T>(path: string, init?: RequestInit, retried = false): P
     throw new Error(hint);
   }
 
-  const body = (await res.json()) as T & { error?: string };
+  const text = await res.text();
+  type ErrorBody = { error?: string; errors?: string[] };
+  const body = (text ? JSON.parse(text) : null) as (T & ErrorBody) | null;
+
   if (!res.ok) {
     if (res.status === 401 && !retried) {
       const refreshed = await refreshSession();
@@ -75,31 +89,70 @@ async function apiFetch<T>(path: string, init?: RequestInit, retried = false): P
         return apiFetch(path, init, true);
       }
       sessionExpiredCallback?.('expired');
-      throw new SessionExpiredError(body.error ?? 'Session expired');
+      throw new SessionExpiredError(body?.error ?? 'Session expired');
     }
     if (res.status === 401) {
       sessionExpiredCallback?.('expired');
-      throw new SessionExpiredError(body.error ?? 'Session expired');
+      throw new SessionExpiredError(body?.error ?? 'Session expired');
     }
-    throw new Error(body.error ?? `Request failed (${res.status})`);
+    const errorMessage = body?.error ?? `Request failed (${res.status})`;
+    throw new ContentApiError(errorMessage, res.status, body?.errors);
   }
-  return body;
+
+  return body as T;
 }
 
-export function fetchDraft(resource: ContentResource): Promise<ContentResponse<ContentDocument | SiteSettings>> {
+export function fetchContentState(): Promise<ContentStateResponse> {
+  return apiFetch('/content/state');
+}
+
+export function fetchDraft(resource: ContentResource): Promise<{
+  locale: ContentResource;
+  content: ContentDocument | SiteSettings;
+  tier: 'drafts';
+}> {
   return apiFetch(`/content/drafts/${resource}`);
 }
 
 export function saveDraft(
   resource: ContentResource,
   content: ContentDocument | SiteSettings,
-): Promise<ContentResponse<ContentDocument | SiteSettings>> {
+): Promise<{ savedAt: number }> {
   return apiFetch(`/content/drafts/${resource}`, {
     method: 'PUT',
     body: JSON.stringify({ content }),
+  }).then((body) => {
+    const savedAt =
+      body && typeof body === 'object' && 'savedAt' in body && typeof body.savedAt === 'number'
+        ? body.savedAt
+        : Date.now();
+    return { savedAt };
   });
 }
 
-export function publishContent(): Promise<{ ok: boolean; commitSha: string }> {
+export function discardAllDrafts(): Promise<{ discarded: true }> {
+  return apiFetch('/content/drafts/discard', { method: 'POST', body: '{}' });
+}
+
+export function discardSection(section: ContentSection): Promise<{ discarded: true }> {
+  return apiFetch('/content/drafts/discard-section', {
+    method: 'POST',
+    body: JSON.stringify({ section }),
+  });
+}
+
+export function publishContent(): Promise<{ accepted: true }> {
   return apiFetch('/content/publish', { method: 'POST', body: '{}' });
 }
+
+export function fetchPublishStatus(): Promise<PublishStatusResponse> {
+  return apiFetch('/content/publish/status');
+}
+
+/** @deprecated Use fetchContentState — kept for gradual migration */
+export type ContentResponse<T> = {
+  locale: ContentResource;
+  content: T;
+  tier: 'drafts' | 'published';
+  commitSha?: string;
+};

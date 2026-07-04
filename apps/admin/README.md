@@ -104,9 +104,16 @@ src/
     auth.cognito.ts          # SRP, refresh, forgot/confirm password
     cognitoErrors.ts         # Mensajes de error amigables (Cognito)
     passwordPolicy.ts        # Validación de contraseña (cliente)
-    contentApi.ts            # Wrapper fetch: fetchDraft, saveDraft, publishContent
+    contentApi.ts            # fetchContentState, saveDraft, publish, publish/status
+    contentReview.ts         # Review modal: diff, validation, parity
+  hooks/
+    useContentWorkspace.ts   # Autosave, discard, bootstrap state
+    usePublishFlow.ts        # Publish overlay + polling
   ui/
-    Dashboard.tsx            # Layout con pestañas; banner de sesión extendida
+    Dashboard.tsx            # Review & publish, status bar, discard
+    components/
+      PublishingOverlay.tsx
+      ReviewPublishModal.tsx
     LoginForm.tsx
     ForgotPasswordForm.tsx
     ResetPasswordForm.tsx
@@ -117,24 +124,28 @@ src/
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/content/drafts/{es\|en\|settings}` | Cargar borrador |
-| `PUT` | `/content/drafts/{es\|en\|settings}` | Guardar borrador |
-| `POST` | `/content/publish` | Promover borradores a publicado |
+| `GET` | `/content/state` | Bootstrap: borradores, publicado, publishState |
+| `GET` | `/content/drafts/{es\|en\|settings}` | Cargar borrador (legacy; preferir `/content/state`) |
+| `PUT` | `/content/drafts/{es\|en\|settings}` | Guardar borrador (autosave y Save draft) |
+| `POST` | `/content/drafts/discard` | Descartar todos los borradores |
+| `POST` | `/content/publish` | Iniciar publicación → `{ accepted: true }` |
+| `GET` | `/content/publish/status` | Estado del overlay (poll cada ~1.5s) |
 
-Todas las solicitudes envían un token ID de Cognito `Bearer`. En modo mock el plugin Vite maneja estas rutas directamente contra `apps/static/content/`.
+En modo mock el plugin Vite (`mockContentStore.ts`) simula la misma API y máquina de estados de publish.
 
 ## Flujo del editor
 
-1. Iniciar sesión (usuario Cognito en el grupo `Administrators`, o cualquier credencial en modo mock)
-2. Seleccionar locale (ES / EN) y sección
-3. Editar campos y hacer clic en **Save draft** — confirma en `content/drafts/` vía la API de contenido
-4. Hacer clic en **Publish site** — copia `drafts/` → `published/` en un commit; dispara rebuild automático de Cloudflare Pages
+1. Iniciar sesión (Cognito `Administrators`, o cualquier credencial en modo mock)
+2. `GET /content/state` carga borradores y baseline publicado
+3. Editar — autosave (~2.5s) o **Save draft** → `PUT /content/drafts/{locale}`
+4. **Review & publish** — diff/validación ES, EN y settings
+5. Overlay: committing → building → success (poll `GET /content/publish/status`)
 
-Los borradores nunca son visibles en el sitio de marketing público hasta publicarlos.
+En producción el callback de **Deploy site** cierra el paso *building*. En mock el éxito se simula tras ~2s.
 
 ## Reglas
 
-- Los documentos ES y EN deben tener **longitudes de arreglo coincidentes** en todas las rutas mapeadas (paridad de locale). La API rechaza guardados que rompan la paridad.
+- La paridad de locale se valida al **publicar** (cliente y servidor), no en cada autosave de borrador.
 - El sitio estático lee solo `content/published/` — nunca `content/drafts/`.
 - Los usuarios son solo por invitación — sin auto-registro. Crear usuarios vía `aws cognito-idp admin-create-user`.
 
