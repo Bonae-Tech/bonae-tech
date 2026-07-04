@@ -11,6 +11,29 @@ export {
 export { valuePropIcons, type ValuePropIcon } from './icons.js';
 export { checkLocaleParity, assertLocaleParity } from './validate.js';
 export {
+  contentLocaleSchema,
+  contentSectionSchema,
+  contentStateResponseSchema,
+  CONTENT_LOCALES,
+  defaultPublishState,
+  discardResponseSchema,
+  isPublishInFlight,
+  publishCallbackBodySchema,
+  publishStateSchema,
+  publishStateValueSchema,
+  publishStatusResponseSchema,
+  saveDraftResponseSchema,
+  type ContentLocale,
+  type ContentSection,
+  type ContentStateResponse,
+  type DiscardResponse,
+  type PublishCallbackBody,
+  type PublishState,
+  type PublishStateValue,
+  type PublishStatusResponse,
+  type SaveDraftResponse,
+} from './content-store.js';
+export {
   loadPublishedFromDir,
   loadLocaleFromDir,
   loadSettingsFromDir,

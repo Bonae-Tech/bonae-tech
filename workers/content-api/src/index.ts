@@ -1,7 +1,10 @@
 import { buildAuthContext } from './auth/authorize.js';
 import { extractBearerToken, verifyCognitoJwt } from './auth/cognito.js';
+import { ContentStore } from './content-store/index.js';
 import { handleContentRequest } from './routes.js';
 import type { Env } from './types.js';
+
+export { ContentStore };
 
 function corsHeaders(env: Env): Record<string, string> {
   const origin = env.CORS_ORIGIN ?? '*';
@@ -24,6 +27,8 @@ function errorStatus(message: string): number {
   if (message.startsWith('Forbidden')) return 403;
   if (message.startsWith('Unauthorized') || message === 'Not authenticated') return 401;
   if (message === 'Not found') return 404;
+  if (message.startsWith('Conflict')) return 409;
+  if (message.startsWith('Validation')) return 422;
   return 400;
 }
 
@@ -47,7 +52,7 @@ export default {
       const claims = await verifyCognitoJwt(token, env);
       const authContext = buildAuthContext(claims);
       const result = await handleContentRequest(request, env, authContext);
-      return jsonResponse(200, result, env);
+      return jsonResponse(result.status, result.body, env);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Internal error';
       const status = errorStatus(message);

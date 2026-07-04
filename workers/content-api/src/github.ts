@@ -128,23 +128,53 @@ export async function publishContent(
 
   for (const file of files) {
     const draft = await readRepoJson(octokit, config, 'drafts', file);
-    let publishedSha: string | undefined;
-    try {
-      const published = await readRepoJson(octokit, config, 'published', file);
-      publishedSha = published.sha;
-    } catch {
-      publishedSha = undefined;
-    }
-    lastSha = await writeRepoJson(
-      octokit,
-      config,
-      'published',
-      file,
-      draft.data,
-      publishedSha,
-      `chore(content): publish ${file} via admin (${actor})`,
-    );
+    lastSha = await publishFile(octokit, config, file, draft.data, actor);
   }
 
   return { commitSha: lastSha };
+}
+
+export async function publishDraftsToGit(
+  octokit: Octokit,
+  config: GitHubConfig,
+  drafts: { es: unknown; en: unknown; settings: unknown },
+  actor: string,
+): Promise<{ commitSha: string }> {
+  const entries = [
+    ['es.json', drafts.es],
+    ['en.json', drafts.en],
+    ['settings.json', drafts.settings],
+  ] as const;
+  let lastSha = 'unknown';
+
+  for (const [file, data] of entries) {
+    lastSha = await publishFile(octokit, config, file, data, actor);
+  }
+
+  return { commitSha: lastSha };
+}
+
+async function publishFile(
+  octokit: Octokit,
+  config: GitHubConfig,
+  file: string,
+  data: unknown,
+  actor: string,
+): Promise<string> {
+  let publishedSha: string | undefined;
+  try {
+    const published = await readRepoJson(octokit, config, 'published', file);
+    publishedSha = published.sha;
+  } catch {
+    publishedSha = undefined;
+  }
+  return writeRepoJson(
+    octokit,
+    config,
+    'published',
+    file,
+    data,
+    publishedSha,
+    `chore(content): publish ${file} via admin (${actor})`,
+  );
 }

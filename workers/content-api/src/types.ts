@@ -9,6 +9,8 @@ export interface Env {
   COGNITO_CLIENT_ID: string;
   COGNITO_REGION: string;
   CORS_ORIGIN?: string;
+  CONTENT_STORE: DurableObjectNamespace;
+  PUBLISH_CALLBACK_SECRET?: string;
 }
 
 export interface GitHubSecretPayload {
