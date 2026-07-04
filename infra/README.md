@@ -17,7 +17,7 @@ graph TD
     end
 
     subgraph GitHub
-        GHRepo["bonae-tech/bonae-tech"]
+        GHRepo["Bonae-Tech/bonae-tech"]
         GHActions["GitHub Actions"]
         GHApp["GitHub App"]
     end

@@ -36,7 +36,7 @@ flowchart TD
         CFPages["Pages bonae-tech"]
     end
 
-    subgraph GitHub["GitHub · bonae-tech/bonae-tech"]
+    subgraph GitHub["GitHub · Bonae-Tech/bonae-tech"]
         Drafts["apps/static/content/drafts/"]
         Published["apps/static/content/published/"]
         Actions["GitHub Actions"]
