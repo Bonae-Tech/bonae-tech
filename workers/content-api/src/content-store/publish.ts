@@ -143,3 +143,20 @@ export async function handlePublishAlarm(
   });
   console.error(JSON.stringify({ action: 'publish_timeout', commitSha: publishState.commitSha }));
 }
+
+export async function handlePublishAbort(
+  sql: SqlStorage,
+  clearAlarm: () => Promise<void>,
+): Promise<{ status: number; body: unknown }> {
+  await clearAlarm();
+  const publishState = readPublishState(sql);
+  if (!isPublishInFlight(publishState.state)) {
+    return { status: 200, body: { aborted: false, state: publishState.state } };
+  }
+  writePublishState(sql, 'failure', {
+    finishedAt: Date.now(),
+    error: 'Publish aborted by administrator',
+  });
+  console.warn(JSON.stringify({ action: 'publish_aborted', priorState: publishState.state }));
+  return { status: 200, body: { aborted: true, state: 'failure' } };
+}

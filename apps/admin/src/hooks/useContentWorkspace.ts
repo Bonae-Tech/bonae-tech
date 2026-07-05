@@ -31,6 +31,8 @@ export interface ContentWorkspace {
   flushPendingSaves: () => Promise<void>;
   discardAll: () => Promise<void>;
   reload: () => Promise<void>;
+  /** Bumped on each load/discard so section forms remount with fresh values. */
+  contentEpoch: number;
 }
 
 export function useContentWorkspace(): ContentWorkspace {
@@ -42,6 +44,7 @@ export function useContentWorkspace(): ContentWorkspace {
   const [draftSettings, setDraftSettings] = useState<SiteSettings | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [contentEpoch, setContentEpoch] = useState(0);
 
   const pendingRef = useRef<Set<Locale | 'settings'>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -62,6 +65,10 @@ export function useContentWorkspace(): ContentWorkspace {
       setDraftEs(next.draft.es as ContentDocument);
       setDraftEn(next.draft.en as ContentDocument);
       setDraftSettings(next.draft.settings as SiteSettings);
+      setContentEpoch((n) => n + 1);
+      // #region agent log
+      fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b1d439'},body:JSON.stringify({sessionId:'b1d439',location:'useContentWorkspace.ts:load',message:'content loaded',data:{draftHeroHeadline:(next.draft.es as ContentDocument)?.hero?.headline,publishedHeroHeadline:(next.published.es as ContentDocument)?.hero?.headline,draftMatchesPublished:JSON.stringify(next.draft.es)===JSON.stringify(next.published.es)},timestamp:Date.now(),hypothesisId:'A,D'})}).catch(()=>{});
+      // #endregion
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load content');
     } finally {
@@ -158,9 +165,16 @@ export function useContentWorkspace(): ContentWorkspace {
   );
 
   const discardAll = useCallback(async () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b1d439'},body:JSON.stringify({sessionId:'b1d439',location:'useContentWorkspace.ts:discardAll:entry',message:'discard starting',data:{pendingAutosave:pendingRef.current.size,timerScheduled:timerRef.current!=null,draftHeroHeadline:draftEsRef.current?.hero?.headline},timestamp:Date.now(),hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    pendingRef.current.clear();
     await discardAllDrafts();
     await load();
-    pendingRef.current.clear();
     setSaveStatus('idle');
     setSaveError(null);
   }, [load]);
@@ -202,5 +216,6 @@ export function useContentWorkspace(): ContentWorkspace {
     flushPendingSaves,
     discardAll,
     reload: load,
+    contentEpoch,
   };
 }

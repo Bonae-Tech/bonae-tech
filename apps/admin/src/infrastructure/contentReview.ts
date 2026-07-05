@@ -6,48 +6,291 @@ import {
   type SiteSettings,
 } from '@bonae/content/schema';
 
-export type ReviewGroupId = 'es' | 'en' | 'settings';
+export type ReviewChangeKind = 'changed' | 'added' | 'removed';
 
-export interface ReviewGroupResult {
-  id: ReviewGroupId;
+export interface ReviewFieldChange {
+  locale: 'es' | 'en' | 'settings';
   label: string;
-  hasChanges: boolean;
-  changes: string[];
-  validationErrors: string[];
-  missingTranslationIssues: string[];
+  kind: ReviewChangeKind;
+  before?: string;
+  after?: string;
 }
 
-const LOCALE_SECTIONS: (keyof ContentDocument)[] = [
-  'hero',
-  'valueProp',
-  'about',
-  'contact',
-  'plans',
-  'footer',
-  'nav',
-  'siteName',
-  'siteTagline',
-  'metaDescription',
-];
+export interface ReviewWarning {
+  label: string;
+  message: string;
+}
 
-function localeSectionChanges(
+export interface PublishReview {
+  changes: ReviewFieldChange[];
+  warnings: ReviewWarning[];
+  validationErrors: string[];
+  changeCount: number;
+}
+
+const SECTION_TITLES: Record<string, string> = {
+  nav: 'Navigation',
+  hero: 'Hero',
+  valueProp: 'Services',
+  keyFigures: 'Key figures',
+  about: 'About',
+  plans: 'Plans',
+  contact: 'Contact',
+  footer: 'Footer',
+  cookieBanner: 'Cookie banner',
+};
+
+const HERO_FIELDS: Record<string, string> = {
+  badge: 'Badge',
+  headline: 'Headline',
+  subheadline: 'Subtitle',
+  cta: 'Primary CTA',
+  ctaSecondary: 'Secondary CTA',
+  ctaSub: 'Reassurance note',
+};
+
+const VALUE_PROP_FIELDS: Record<string, string> = {
+  sectionBadge: 'Section badge',
+  title: 'Title',
+  subheadline: 'Subheadline',
+};
+
+const VALUE_PROP_ITEM_FIELDS: Record<string, string> = {
+  icon: 'Icon',
+  title: 'Title',
+  description: 'Description',
+  backLabel: 'Back label',
+  backDescription: 'Back description',
+};
+
+const TOP_LEVEL_STRING_FIELDS: Record<string, string> = {
+  siteName: 'Site name',
+  siteTagline: 'Site tagline',
+  metaDescription: 'Meta description',
+};
+
+function truncate(value: string, max = 140): string {
+  const trimmed = value.trim();
+  if (trimmed.length <= max) {
+    return trimmed;
+  }
+  return `${trimmed.slice(0, max - 1)}…`;
+}
+
+function pushStringChange(
+  changes: ReviewFieldChange[],
+  locale: ReviewFieldChange['locale'],
+  label: string,
+  before: string,
+  after: string,
+): void {
+  if (before === after) {
+    return;
+  }
+  changes.push({
+    locale,
+    label,
+    kind: 'changed',
+    before: truncate(before),
+    after: truncate(after),
+  });
+}
+
+function diffRecordStrings(
+  changes: ReviewFieldChange[],
+  locale: ReviewFieldChange['locale'],
+  sectionTitle: string,
+  fieldLabels: Record<string, string>,
+  draft: Record<string, unknown>,
+  published: Record<string, unknown>,
+): void {
+  for (const [field, fieldLabel] of Object.entries(fieldLabels)) {
+    const before = published[field];
+    const after = draft[field];
+    if (typeof before !== 'string' || typeof after !== 'string') {
+      continue;
+    }
+    pushStringChange(changes, locale, `${sectionTitle} · ${fieldLabel}`, before, after);
+  }
+}
+
+function diffValuePropItems(
+  changes: ReviewFieldChange[],
+  locale: 'es' | 'en',
   draft: ContentDocument,
   published: ContentDocument,
-): string[] {
-  const changes: string[] = [];
-  for (const key of LOCALE_SECTIONS) {
-    if (JSON.stringify(draft[key]) !== JSON.stringify(published[key])) {
-      changes.push(`Changed: ${key}`);
+): void {
+  const draftItems = draft.valueProp.items;
+  const publishedItems = published.valueProp.items;
+
+  for (let i = 0; i < draftItems.length; i++) {
+    const draftItem = draftItems[i];
+    const publishedItem = publishedItems[i];
+
+    if (!publishedItem) {
+      for (const [field, fieldLabel] of Object.entries(VALUE_PROP_ITEM_FIELDS)) {
+        const value = draftItem[field as keyof typeof draftItem];
+        if (typeof value !== 'string') {
+          continue;
+        }
+        changes.push({
+          locale,
+          label: `Services · Item ${i + 1} · ${fieldLabel}`,
+          kind: 'added',
+          after: truncate(value),
+        });
+      }
+      continue;
+    }
+
+    for (const [field, fieldLabel] of Object.entries(VALUE_PROP_ITEM_FIELDS)) {
+      const before = publishedItem[field as keyof typeof publishedItem];
+      const after = draftItem[field as keyof typeof draftItem];
+      if (typeof before !== 'string' || typeof after !== 'string') {
+        continue;
+      }
+      pushStringChange(changes, locale, `Services · Item ${i + 1} · ${fieldLabel}`, before, after);
     }
   }
+
+  for (let i = draftItems.length; i < publishedItems.length; i++) {
+    const publishedItem = publishedItems[i];
+    const labelParts = Object.entries(VALUE_PROP_ITEM_FIELDS)
+      .map(([field, fieldLabel]) => {
+        const value = publishedItem[field as keyof typeof publishedItem];
+        return typeof value === 'string' ? `${fieldLabel}: ${truncate(value, 60)}` : null;
+      })
+      .filter(Boolean);
+    changes.push({
+      locale,
+      label: `Services · Item ${i + 1}`,
+      kind: 'removed',
+      before: labelParts.join(' · ') || 'Removed item',
+    });
+  }
+}
+
+function diffLocaleDocument(
+  locale: 'es' | 'en',
+  draft: ContentDocument,
+  published: ContentDocument,
+): ReviewFieldChange[] {
+  const changes: ReviewFieldChange[] = [];
+
+  diffRecordStrings(changes, locale, 'Document', TOP_LEVEL_STRING_FIELDS, draft, published);
+
+  for (const [sectionKey, sectionTitle] of Object.entries(SECTION_TITLES)) {
+    const draftSection = draft[sectionKey as keyof ContentDocument];
+    const publishedSection = published[sectionKey as keyof ContentDocument];
+    if (
+      typeof draftSection !== 'object' ||
+      draftSection === null ||
+      typeof publishedSection !== 'object' ||
+      publishedSection === null
+    ) {
+      continue;
+    }
+
+    if (sectionKey === 'hero') {
+      diffRecordStrings(
+        changes,
+        locale,
+        sectionTitle,
+        HERO_FIELDS,
+        draftSection as Record<string, unknown>,
+        publishedSection as Record<string, unknown>,
+      );
+      continue;
+    }
+
+    if (sectionKey === 'valueProp') {
+      diffRecordStrings(
+        changes,
+        locale,
+        sectionTitle,
+        VALUE_PROP_FIELDS,
+        draftSection as Record<string, unknown>,
+        publishedSection as Record<string, unknown>,
+      );
+      diffValuePropItems(changes, locale, draft, published);
+      continue;
+    }
+
+    if (JSON.stringify(draftSection) !== JSON.stringify(publishedSection)) {
+      changes.push({
+        locale,
+        label: sectionTitle,
+        kind: 'changed',
+        before: truncate(JSON.stringify(publishedSection)),
+        after: truncate(JSON.stringify(draftSection)),
+      });
+    }
+  }
+
   return changes;
 }
 
-function settingsChanges(draft: SiteSettings, published: SiteSettings): string[] {
+function diffSettings(draft: SiteSettings, published: SiteSettings): ReviewFieldChange[] {
+  const changes: ReviewFieldChange[] = [];
   if (JSON.stringify(draft) === JSON.stringify(published)) {
-    return [];
+    return changes;
   }
-  return ['Site settings differ from published'];
+
+  const walk = (path: string, d: unknown, p: unknown): void => {
+    if (typeof d === 'string' && typeof p === 'string') {
+      pushStringChange(changes, 'settings', `Settings · ${path}`, p, d);
+      return;
+    }
+    if (Array.isArray(d) && Array.isArray(p)) {
+      if (JSON.stringify(d) !== JSON.stringify(p)) {
+        changes.push({
+          locale: 'settings',
+          label: `Settings · ${path}`,
+          kind: 'changed',
+          before: truncate(JSON.stringify(p)),
+          after: truncate(JSON.stringify(d)),
+        });
+      }
+      return;
+    }
+    if (typeof d === 'object' && d !== null && typeof p === 'object' && p !== null) {
+      for (const key of new Set([...Object.keys(d as object), ...Object.keys(p as object)])) {
+        walk(path ? `${path} · ${key}` : key, (d as Record<string, unknown>)[key], (p as Record<string, unknown>)[key]);
+      }
+    }
+  };
+
+  walk('', draft, published);
+  return changes;
+}
+
+function missingEnTranslationWarnings(
+  enDraft: ContentDocument,
+  enPublished: ContentDocument,
+  esChanges: ReviewFieldChange[],
+): ReviewWarning[] {
+  const warnings: ReviewWarning[] = [];
+
+  for (const change of esChanges) {
+    if (change.locale !== 'es' || change.kind !== 'changed') {
+      continue;
+    }
+
+    const heroMatch = change.label.match(/^Hero · (.+)$/);
+    if (heroMatch) {
+      const fieldLabel = heroMatch[1];
+      const fieldKey = Object.entries(HERO_FIELDS).find(([, label]) => label === fieldLabel)?.[0];
+      if (fieldKey) {
+        const enBefore = enPublished.hero[fieldKey as keyof typeof enPublished.hero];
+        const enAfter = enDraft.hero[fieldKey as keyof typeof enDraft.hero];
+        if (typeof enBefore === 'string' && typeof enAfter === 'string' && enBefore === enAfter) {
+          warnings.push({ label: change.label, message: 'Missing EN translation' });
+        }
+      }
+    }
+  }
+
+  return warnings;
 }
 
 function validationErrorsForLocale(draft: unknown, label: string): string[] {
@@ -73,7 +316,7 @@ function validationErrorsForSettings(draft: unknown): string[] {
 export function buildPublishReview(input: {
   draft: { es: unknown; en: unknown; settings: unknown };
   published: { es: unknown; en: unknown; settings: unknown };
-}): ReviewGroupResult[] {
+}): PublishReview {
   const esDraft = input.draft.es as ContentDocument;
   const enDraft = input.draft.en as ContentDocument;
   const esPublished = input.published.es as ContentDocument;
@@ -81,53 +324,40 @@ export function buildPublishReview(input: {
   const settingsDraft = input.draft.settings as SiteSettings;
   const settingsPublished = input.published.settings as SiteSettings;
 
-  let parityIssues: string[] = [];
-  try {
-    const es = parseContentDocument(input.draft.es);
-    const en = parseContentDocument(input.draft.en);
-    parityIssues = checkLocaleParity(es, en).map((i) => `${i.path}: ${i.message}`);
-  } catch {
-    // Locale parse errors surface in per-locale validation groups.
-  }
+  const esChanges = diffLocaleDocument('es', esDraft, esPublished);
+  const enChanges = diffLocaleDocument('en', enDraft, enPublished);
+  const settingsChanges = diffSettings(settingsDraft, settingsPublished);
 
-  const esChanges = localeSectionChanges(esDraft, esPublished);
-  const enChanges = localeSectionChanges(enDraft, enPublished);
-  const settingsChangeList = settingsChanges(settingsDraft, settingsPublished);
+  const changes = [...esChanges, ...enChanges, ...settingsChanges];
 
-  return [
-    {
-      id: 'es',
-      label: 'Spanish (ES)',
-      hasChanges: esChanges.length > 0,
-      changes: esChanges,
-      validationErrors: validationErrorsForLocale(input.draft.es, 'ES'),
-      missingTranslationIssues: parityIssues,
-    },
-    {
-      id: 'en',
-      label: 'English (EN)',
-      hasChanges: enChanges.length > 0,
-      changes: enChanges,
-      validationErrors: validationErrorsForLocale(input.draft.en, 'EN'),
-      missingTranslationIssues: parityIssues,
-    },
-    {
-      id: 'settings',
-      label: 'Site settings',
-      hasChanges: settingsChangeList.length > 0,
-      changes: settingsChangeList,
-      validationErrors: validationErrorsForSettings(input.draft.settings),
-      missingTranslationIssues: [],
-    },
+  const parityWarnings = checkLocaleParity(
+    parseContentDocument(input.draft.es),
+    parseContentDocument(input.draft.en),
+  ).map((issue) => ({
+    label: issue.path,
+    message: issue.message,
+  }));
+
+  const translationWarnings = missingEnTranslationWarnings(enDraft, enPublished, esChanges);
+
+  const validationErrors = [
+    ...validationErrorsForLocale(input.draft.es, 'ES'),
+    ...validationErrorsForLocale(input.draft.en, 'EN'),
+    ...validationErrorsForSettings(input.draft.settings),
   ];
+
+  return {
+    changes,
+    warnings: [...translationWarnings, ...parityWarnings],
+    validationErrors,
+    changeCount: changes.length,
+  };
 }
 
-export function reviewBlocksPublish(groups: ReviewGroupResult[]): boolean {
-  return groups.some(
-    (g) => g.validationErrors.length > 0 || g.missingTranslationIssues.length > 0,
-  );
+export function reviewBlocksPublish(review: PublishReview): boolean {
+  return review.validationErrors.length > 0;
 }
 
-export function reviewHasNoChanges(groups: ReviewGroupResult[]): boolean {
-  return groups.every((g) => !g.hasChanges);
+export function reviewHasNoChanges(review: PublishReview): boolean {
+  return review.changeCount === 0;
 }

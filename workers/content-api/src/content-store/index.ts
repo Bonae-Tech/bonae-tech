@@ -9,7 +9,7 @@ import {
 import type { Env } from '../types.js';
 import { bootstrapFromGitIfNeeded } from './bootstrap.js';
 import { runMigrations } from './migrations.js';
-import { handlePublishAlarm, handlePublishCallback, handlePublishRequest } from './publish.js';
+import { handlePublishAlarm, handlePublishAbort, handlePublishCallback, handlePublishRequest } from './publish.js';
 import {
   discardAllDrafts,
   discardSection,
@@ -80,6 +80,11 @@ export class ContentStore implements DurableObject {
         if (result.status === 204) {
           return new Response(null, { status: 204 });
         }
+        return this.json(result.status, result.body);
+      }
+
+      if (request.method === 'POST' && path === '/publish/abort') {
+        const result = await handlePublishAbort(this.sql, () => this.ctx.storage.deleteAlarm());
         return this.json(result.status, result.body);
       }
 

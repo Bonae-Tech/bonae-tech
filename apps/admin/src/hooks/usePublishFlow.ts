@@ -1,11 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isPublishInFlight } from '@bonae/content/content-store';
 import type { PublishStateValue, PublishStatusResponse } from '@bonae/content/content-store';
-import { ContentApiError, fetchPublishStatus, publishContent } from '../infrastructure/contentApi.js';
+import { ContentApiError, abortPublish, fetchPublishStatus, publishContent } from '../infrastructure/contentApi.js';
+import { PublishStatusPoller } from './publishStatusPoller.js';
 
 /** Interval between status polls while a publish is in flight. */
 const POLL_MS = 3000;
 const PUBLISHED_BANNER_MS = 5000;
+/** Stop client polling slightly after the worker alarm (15 min). */
+const MAX_CLIENT_POLL_MS = 16 * 60 * 1000;
+/**
+ * Circuit breaker: at POLL_MS=3000 a healthy loop makes ~1 request every 3s.
+ * Cap well above that (10 requests / 10s) so any future scheduling regression
+ * trips the breaker in seconds instead of hammering the API indefinitely.
+ */
+const CIRCUIT_MAX_REQUESTS = 10;
+const CIRCUIT_WINDOW_MS = 10_000;
+const DISMISS_SESSION_KEY = 'bonae-admin-publish-tracking-dismissed';
 
 export type PublishDisplayPhase = PublishStateValue | 'idle';
 
@@ -13,9 +24,12 @@ export interface PublishFlow {
   /** Short label for the header status line, e.g. "Publishing…" or "Published." */
   statusLabel: string | null;
   isPublishing: boolean;
+  isTracking: boolean;
   isFailed: boolean;
   runUrl: string | null;
   startPublish: (flushSaves: () => Promise<void>) => Promise<void>;
+  /** Stop polling the API; does not cancel a server-side deploy. */
+  dismissPublishTracking: () => void;
 }
 
 function statusLabelFor(
@@ -48,6 +62,14 @@ function publishStatusUnchanged(a: PublishStatusResponse | null, b: PublishStatu
   );
 }
 
+function isTrackingDismissed(): boolean {
+  try {
+    return sessionStorage.getItem(DISMISS_SESSION_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 export function usePublishFlow(
   onComplete: () => void,
   serverPublishState?: PublishStateValue,
@@ -55,71 +77,89 @@ export function usePublishFlow(
   const [phase, setPhase] = useState<PublishDisplayPhase>('idle');
   const [status, setStatus] = useState<PublishStatusResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pollingActiveRef = useRef(false);
-  const requestInFlightRef = useRef(false);
+  const [isTracking, setIsTracking] = useState(false);
   const resumedServerStateRef = useRef<PublishStateValue | null>(null);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
-  const stopPolling = useCallback(() => {
-    pollingActiveRef.current = false;
-    if (pollTimerRef.current) {
-      clearTimeout(pollTimerRef.current);
-      pollTimerRef.current = null;
-    }
-  }, []);
-
-  const pollOnce = useCallback(async () => {
-    if (requestInFlightRef.current) {
-      return;
-    }
-    requestInFlightRef.current = true;
-    try {
-      const next = await fetchPublishStatus();
-      setStatus((prev) => (publishStatusUnchanged(prev, next) ? prev : next));
-      setPhase((prev) => (prev === next.state ? prev : next.state));
-      if (!isPublishInFlight(next.state)) {
-        stopPolling();
+  const pollerRef = useRef<PublishStatusPoller<PublishStatusResponse> | null>(null);
+  if (!pollerRef.current) {
+    pollerRef.current = new PublishStatusPoller<PublishStatusResponse>({
+      fetchStatus: fetchPublishStatus,
+      isInFlight: (s) => isPublishInFlight(s.state),
+      intervalMs: POLL_MS,
+      maxDurationMs: MAX_CLIENT_POLL_MS,
+      maxRequestsPerWindow: CIRCUIT_MAX_REQUESTS,
+      windowMs: CIRCUIT_WINDOW_MS,
+      onUpdate: (next) => {
+        setStatus((prev) => (publishStatusUnchanged(prev, next) ? prev : next));
+        setPhase((prev) => (prev === next.state ? prev : next.state));
+      },
+      onSettled: (next) => {
+        setIsTracking(false);
+        try {
+          sessionStorage.removeItem(DISMISS_SESSION_KEY);
+        } catch {
+          /* ignore */
+        }
         if (next.state === 'success') {
           onCompleteRef.current();
         }
-      }
-    } catch {
-      // Keep polling — a transient network error should not stop tracking an in-flight publish.
-    } finally {
-      requestInFlightRef.current = false;
-    }
-  }, [stopPolling]);
+      },
+      onTimeout: () => {
+        setIsTracking(false);
+        setPhase('failure');
+        setError('Publish status tracking timed out. The deploy may still be running on the server.');
+      },
+      onCircuitBreak: ({ count, windowMs }) => {
+        setIsTracking(false);
+        setPhase('failure');
+        setError('Publish status checks were happening too fast and were stopped automatically. Refresh the page to check the current status.');
+        console.error(
+          JSON.stringify({ action: 'publish_status_circuit_break', count, windowMs }),
+        );
+      },
+    });
+  }
+  const poller = pollerRef.current;
 
-  const scheduleNextPoll = useCallback(() => {
-    if (!pollingActiveRef.current) {
-      return;
-    }
-    pollTimerRef.current = setTimeout(() => {
-      void pollOnce().finally(() => {
-        scheduleNextPoll();
-      });
-    }, POLL_MS);
-  }, [pollOnce]);
+  const stopPolling = useCallback(() => {
+    poller.stop();
+    setIsTracking(false);
+  }, [poller]);
 
   const startPolling = useCallback(() => {
-    if (pollingActiveRef.current) {
+    if (poller.isRunning()) {
       return;
     }
-    pollingActiveRef.current = true;
-    void pollOnce().finally(() => {
-      if (pollingActiveRef.current) {
-        scheduleNextPoll();
-      }
-    });
-  }, [pollOnce, scheduleNextPoll]);
+    poller.reset();
+    poller.start();
+    setIsTracking(true);
+  }, [poller]);
 
   const startPollingRef = useRef(startPolling);
   startPollingRef.current = startPolling;
 
+  const dismissPublishTracking = useCallback(() => {
+    try {
+      sessionStorage.setItem(DISMISS_SESSION_KEY, '1');
+    } catch {
+      /* ignore */
+    }
+    stopPolling();
+    setPhase('idle');
+    setStatus(null);
+    setError(null);
+    void abortPublish().catch(() => {
+      /* best-effort — local polling already stopped */
+    });
+  }, [stopPolling]);
+
   // Resume at most once per server-side in-flight state (page reload mid-publish).
   useEffect(() => {
+    if (isTrackingDismissed()) {
+      return;
+    }
     if (!serverPublishState || !isPublishInFlight(serverPublishState)) {
       return;
     }
@@ -131,8 +171,21 @@ export function usePublishFlow(
     startPollingRef.current();
   }, [serverPublishState]);
 
+  // Stop polling when local phase reaches a terminal state (e.g. startPublish error path).
+  useEffect(() => {
+    if (!isPublishInFlight(phase) && phase !== 'idle') {
+      stopPolling();
+    }
+  }, [phase, stopPolling]);
+
   const startPublish = useCallback(
     async (flushSaves: () => Promise<void>) => {
+      try {
+        sessionStorage.removeItem(DISMISS_SESSION_KEY);
+      } catch {
+        /* ignore */
+      }
+      resumedServerStateRef.current = null;
       setError(null);
       setStatus(null);
       setPhase('committing');
@@ -176,8 +229,10 @@ export function usePublishFlow(
   return {
     statusLabel,
     isPublishing,
+    isTracking,
     isFailed: phase === 'failure',
     runUrl: status?.runUrl ?? null,
     startPublish,
+    dismissPublishTracking,
   };
 }

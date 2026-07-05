@@ -85,6 +85,11 @@ export function discardAllDrafts(sql: SqlStorage): void {
       now,
     );
   }
+  // #region agent log
+  const draft = readLocaleMap(sql, 'drafts');
+  const published = readLocaleMap(sql, 'published_cache');
+  fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b1d439'},body:JSON.stringify({sessionId:'b1d439',location:'queries.ts:discardAllDrafts',message:'drafts reset from published_cache',data:{draftMatchesPublished:JSON.stringify(draft.es)===JSON.stringify(published.es)},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
 }
 
 export function discardSection(sql: SqlStorage, section: ContentSection): void {

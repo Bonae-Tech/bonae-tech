@@ -1,9 +1,18 @@
 import type { AuthContext } from './auth/authorize.js';
 import { requireAuthorized } from './auth/authorize.js';
 import { contentStoreRequest } from './content-store/client.js';
+import { createRateLimiter } from './rate-limiter.js';
 import type { Env } from './types.js';
 
 type RouteResult = { status: number; body: unknown };
+
+/**
+ * Guard against any client-side bug turning status polling into a runaway
+ * loop: the healthy client polls ~1x/3s per user, so 20 requests / 10s per
+ * user leaves generous headroom while still capping worst-case load on the
+ * Durable Object several orders of magnitude below an unbounded loop.
+ */
+const publishStatusLimiter = createRateLimiter(20, 10_000);
 
 function storePath(workerPath: string): string {
   return workerPath.replace(/^\/content/, '') || '/';
@@ -128,6 +137,10 @@ export async function handleContentRequest(
 
   if (method === 'GET' && path === '/content/publish/status') {
     requireAuthorized(authContext, 'read_draft');
+    if (!publishStatusLimiter.isAllowed(authContext.sub)) {
+      console.warn(JSON.stringify({ action: 'publish_status_rate_limited', actor: authContext.sub }));
+      return { status: 429, body: { error: 'Too many status checks. Slow down and try again shortly.' } };
+    }
     return forwardToStore(env, '/content/publish/status');
   }
 
@@ -149,6 +162,11 @@ export async function handleContentRequest(
       throw new Error(error);
     }
     return { status, body };
+  }
+
+  if (method === 'POST' && path === '/content/publish/abort') {
+    requireAuthorized(authContext, 'publish');
+    return forwardToStore(env, '/content/publish/abort', { method: 'POST', body: '{}' });
   }
 
   throw new Error('Not found');

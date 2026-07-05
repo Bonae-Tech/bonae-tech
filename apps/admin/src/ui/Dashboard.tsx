@@ -50,7 +50,8 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
     workspace.publishState.state,
   );
 
-  const { startPublish, statusLabel, isPublishing, isFailed, runUrl } = publishFlow;
+  const { startPublish, statusLabel, isPublishing, isFailed, isTracking, runUrl, dismissPublishTracking } =
+    publishFlow;
 
   const manualSaveMutation = useMutation({
     mutationFn: async () => {
@@ -116,7 +117,13 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
                 : 'Not published yet'}
             </span>
             <div className="flex flex-wrap items-center gap-3">
-              <PublishStatusIndicator label={statusLabel} runUrl={runUrl} failed={isFailed} />
+              <PublishStatusIndicator
+                label={statusLabel}
+                runUrl={runUrl}
+                failed={isFailed}
+                tracking={isTracking}
+                onStopTracking={dismissPublishTracking}
+              />
               {statusMessage && <span>{statusMessage}</span>}
               <button
                 type="button"
@@ -182,7 +189,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
 
           {doc && section === 'hero' && (
             <HeroSectionForm
-              key={locale}
+              key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}
               onSave={() => manualSaveMutation.mutate()}
@@ -191,7 +198,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
           )}
           {doc && section === 'valueProp' && (
             <ValuePropSectionForm
-              key={locale}
+              key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}
               onSave={() => manualSaveMutation.mutate()}
@@ -200,7 +207,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
           )}
           {doc && section === 'about' && (
             <AboutSectionForm
-              key={locale}
+              key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}
               onSave={() => manualSaveMutation.mutate()}
@@ -209,7 +216,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
           )}
           {doc && section === 'contact' && (
             <ContactSectionForm
-              key={locale}
+              key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}
               onSave={() => manualSaveMutation.mutate()}
@@ -218,7 +225,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
           )}
           {doc && section === 'advanced' && (
             <JsonSectionEditor
-              key={locale}
+              key={`${locale}-${workspace.contentEpoch}`}
               title={`Full document (${locale})`}
               value={doc}
               onSave={(next) => {
@@ -230,6 +237,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
           )}
           {section === 'settings' && workspace.draftSettings && (
             <SettingsSectionForm
+              key={`settings-${workspace.contentEpoch}`}
               settings={workspace.draftSettings}
               onEdit={workspace.updateSettings}
               onSave={() => manualSaveMutation.mutate()}

@@ -255,6 +255,15 @@ export async function mockHandleRequest(
     return { status: 204, body: null };
   }
 
+  if (method === 'POST' && url === '/content/publish/abort') {
+    clearPublishTimer();
+    if (isPublishInFlight(publishState.state)) {
+      await completePublishFailure('Publish aborted by administrator');
+      return { status: 200, body: { aborted: true, state: 'failure' } };
+    }
+    return { status: 200, body: { aborted: false, state: publishState.state } };
+  }
+
   return { status: 404, body: { error: 'Not found' } };
 }
 

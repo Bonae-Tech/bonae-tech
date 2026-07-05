@@ -149,6 +149,10 @@ export function fetchPublishStatus(): Promise<PublishStatusResponse> {
   return apiFetch('/content/publish/status');
 }
 
+export function abortPublish(): Promise<{ aborted: boolean; state: string }> {
+  return apiFetch('/content/publish/abort', { method: 'POST', body: '{}' });
+}
+
 /** @deprecated Use fetchContentState — kept for gradual migration */
 export type ContentResponse<T> = {
   locale: ContentResource;
