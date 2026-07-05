@@ -13,15 +13,16 @@ packages/content/dist/
 # Astro internals
 .astro/
 
-# OS
-.DS_Store
-
+# AI Tools
+.cursor/debug*.log
 # Env
 .env
 .env.*
 !.env.example
 !.env.mock
 
+# OS
+.DS_Store
 
 # Terraform
 infra/terraform/.terraform/
