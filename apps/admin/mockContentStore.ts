@@ -14,28 +14,24 @@ import {
   type PublishStatusResponse,
 } from '@bonae/content';
 
-const contentRoot = path.resolve(
+const publishedRoot = path.resolve(
   fileURLToPath(new URL('.', import.meta.url)),
-  '../static/content',
+  '../static/content/published',
 );
 
 type Resource = ContentLocale;
-
-function tierDir(tier: 'drafts' | 'published'): string {
-  return path.join(contentRoot, tier);
-}
 
 function fileNameFor(resource: Resource): string {
   return resource === 'settings' ? 'settings.json' : `${resource}.json`;
 }
 
-async function readJson(tier: 'drafts' | 'published', resource: Resource): Promise<unknown> {
-  const raw = await fs.readFile(path.join(tierDir(tier), fileNameFor(resource)), 'utf8');
+async function readPublishedJson(resource: Resource): Promise<unknown> {
+  const raw = await fs.readFile(path.join(publishedRoot, fileNameFor(resource)), 'utf8');
   return JSON.parse(raw) as unknown;
 }
 
-async function writeJson(tier: 'drafts' | 'published', resource: Resource, data: unknown): Promise<void> {
-  const filePath = path.join(tierDir(tier), fileNameFor(resource));
+async function writePublishedJson(resource: Resource, data: unknown): Promise<void> {
+  const filePath = path.join(publishedRoot, fileNameFor(resource));
   await fs.writeFile(filePath, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
 }
 
@@ -52,15 +48,11 @@ async function ensureLoaded(): Promise<void> {
     return;
   }
   for (const resource of ['es', 'en', 'settings'] as Resource[]) {
-    const published = await readJson('published', resource);
+    const published = await readPublishedJson(resource);
     memoryPublished[resource] = published;
-    try {
-      memoryDrafts[resource] = await readJson('drafts', resource);
-    } catch {
-      memoryDrafts[resource] = published;
-    }
+    memoryDrafts[resource] = structuredClone(published);
   }
-  const stat = await fs.stat(path.join(tierDir('published'), 'es.json'));
+  const stat = await fs.stat(path.join(publishedRoot, 'es.json'));
   lastPublishedAt = stat.mtimeMs;
 }
 
@@ -103,8 +95,7 @@ async function completePublishSuccess(commitSha: string): Promise<void> {
     const draft = memoryDrafts[resource];
     if (draft) {
       memoryPublished[resource] = draft;
-      await writeJson('published', resource, draft);
-      await writeJson('drafts', resource, draft);
+      await writePublishedJson(resource, draft);
     }
   }
   lastCommitSha = commitSha;
@@ -173,14 +164,12 @@ export async function mockHandleRequest(
     const payload = JSON.parse(bodyText) as { content?: unknown };
     const content = payload.content ?? payload;
     memoryDrafts[resource] = content;
-    await writeJson('drafts', resource, content);
     return { status: 200, body: { savedAt: Date.now() } };
   }
 
   if (method === 'POST' && url === '/content/drafts/discard') {
     for (const resource of ['es', 'en', 'settings'] as Resource[]) {
-      memoryDrafts[resource] = memoryPublished[resource];
-      await writeJson('drafts', resource, memoryPublished[resource]);
+      memoryDrafts[resource] = structuredClone(memoryPublished[resource]);
     }
     return { status: 200, body: { discarded: true } };
   }
@@ -192,7 +181,6 @@ export async function mockHandleRequest(
       const published = memoryPublished[locale] as Record<string, unknown>;
       draft[section] = published[section];
       memoryDrafts[locale] = draft;
-      await writeJson('drafts', locale, draft);
     }
     return { status: 200, body: { discarded: true } };
   }

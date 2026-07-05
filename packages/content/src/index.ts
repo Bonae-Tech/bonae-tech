@@ -37,8 +37,6 @@ export {
 } from './content-store.js';
 export {
   loadPublishedFromDir,
-  loadLocaleFromDir,
-  loadSettingsFromDir,
   buildWhatsAppHref,
   type PublishedContentBundle,
 } from './load.js';

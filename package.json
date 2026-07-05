@@ -25,7 +25,6 @@
     "deploy:all": "turbo run deploy --filter=bonae-static --filter=bonae-admin --filter=@bonae/content-api-worker",
     "content:build": "turbo run build --filter=@bonae/content",
     "content:validate": "turbo run validate:published --filter=@bonae/content",
-    "content:validate:drafts": "turbo run validate:drafts --filter=@bonae/content",
     "admin:dev": "npm run dev:admin",
     "admin:dev:mock": "npm run dev:admin:mock",
     "admin:build": "turbo run build --filter=bonae-admin",

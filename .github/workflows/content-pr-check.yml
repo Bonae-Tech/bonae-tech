@@ -20,4 +20,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-monorepo
-      - run: npx turbo run build validate:published validate:drafts --filter=@bonae/content
+      - run: npx turbo run build validate:published --filter=@bonae/content

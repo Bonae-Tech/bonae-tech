@@ -16,7 +16,7 @@ packages/content/dist/
 # AI Tools
 .cursor/debug*.log
 # Env
-.env
+**/.env
 .env.*
 !.env.example
 !.env.mock

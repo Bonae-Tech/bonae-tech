@@ -29,16 +29,16 @@ npm run admin:dev:mock
 4. Guarda draft en **ES** y repite en **EN** con la misma cantidad de cartas.
 5. Publica cuando ambos idiomas estén alineados.
 
-### Opción 2 — JSON directo
+### Opción 2 — JSON directo (solo contenido publicado)
 
-Archivos por idioma:
+Para cambios que afecten el sitio en build, edita:
 
 ```
-apps/static/content/drafts/es.json      ← borradores (admin)
-apps/static/content/drafts/en.json
-apps/static/content/published/es.json   ← lo que ve el sitio en build
+apps/static/content/published/es.json
 apps/static/content/published/en.json
 ```
+
+En desarrollo con admin mock, edita vía la UI y publica; eso escribe `published/` en disco.
 
 Ejemplo de una carta en `valueProp.items`:
 
@@ -58,7 +58,7 @@ Iconos permitidos: `accessible`, `simple`, `secure`, `close`.
 
 - **Paridad ES/EN:** debe haber la misma cantidad de cartas en `es.json` y `en.json` (entre 1 y 8). Si no coinciden, guardar o publicar fallará con error 400.
 - **Campos obligatorios:** `title`, `description` y `backDescription` no pueden estar vacíos.
-- **Drafts vs published:** el sitio Astro lee solo `published/` en build. El admin edita `drafts/`; al publicar, drafts se copia a published.
+- **Drafts vs published:** el sitio Astro lee solo `published/` en build. Los borradores viven en ContentStore DO (producción) o en memoria (admin mock); al publicar, se commitea a `published/`.
 
 ## Probar cambios localmente
 
@@ -71,7 +71,7 @@ npm run dev                    # ver sitio con published/
 Tras editar JSON a mano en `published/`, valida antes del build:
 
 ```bash
-npm run content:validate:drafts
+npm run content:validate
 cd apps/static && npm run build
 ```
 

@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { parseContentDocument, parseSiteSettings, type ContentDocument, type Locale, type SiteSettings } from './schema.js';
+import { parseContentDocument, parseSiteSettings, type ContentDocument, type SiteSettings } from './schema.js';
 import { assertLocaleParity } from './validate.js';
 
 export interface PublishedContentBundle {
@@ -27,26 +27,6 @@ export function loadPublishedFromDir(contentRoot: string): PublishedContentBundl
   assertLocaleParity(es, en);
 
   return { es, en, settings };
-}
-
-export function loadLocaleFromDir(
-  contentRoot: string,
-  locale: Locale,
-  tier: 'drafts' | 'published',
-): ContentDocument {
-  const filePath = join(contentRoot, tier, `${locale}.json`);
-  if (!existsSync(filePath)) {
-    throw new Error(`Missing content file: ${filePath}`);
-  }
-  return parseContentDocument(JSON.parse(readFileSync(filePath, 'utf8')));
-}
-
-export function loadSettingsFromDir(contentRoot: string, tier: 'drafts' | 'published'): SiteSettings {
-  const filePath = join(contentRoot, tier, 'settings.json');
-  if (!existsSync(filePath)) {
-    throw new Error(`Missing settings file: ${filePath}`);
-  }
-  return parseSiteSettings(JSON.parse(readFileSync(filePath, 'utf8')));
 }
 
 export function buildWhatsAppHref(number: string, message: string): string {

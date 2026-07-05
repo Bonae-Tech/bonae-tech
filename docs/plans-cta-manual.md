@@ -15,7 +15,7 @@ La sección `#planes` dejó de ser un bloque centrado con badge "PLANES" y pasó
 
 ---
 
-## Archivos modificados (7)
+## Archivos modificados (5)
 
 | # | Archivo | Qué cambió |
 |---|---------|------------|
@@ -23,9 +23,7 @@ La sección `#planes` dejó de ser un bloque centrado con badge "PLANES" y pasó
 | 2 | `apps/static/src/components/Plans.astro` | Layout 2 columnas; sin badge; un solo botón WhatsApp |
 | 3 | `apps/static/content/published/es.json` | Copy ES + `cta`: "Cotiza Ahora" |
 | 4 | `apps/static/content/published/en.json` | Copy EN traducido |
-| 5 | `apps/static/content/drafts/es.json` | Igual que published (admin mock) |
-| 6 | `apps/static/content/drafts/en.json` | Igual que published (admin mock) |
-| 7 | `docs/plans-cta-manual.md` | Este manual |
+| 5 | `docs/plans-cta-manual.md` | Este manual |
 
 **No se modificaron:** `index.astro`, `en/index.astro`, Header, Footer, admin forms (Planes solo se edita vía **Advanced JSON** en el admin).
 
@@ -62,8 +60,8 @@ npm run admin:dev:mock
 3. Guarda draft en ambos idiomas → **Publish site**.
 
 ### JSON directo
-- Borradores: `apps/static/content/drafts/es.json` y `en.json`
 - Sitio en build: `apps/static/content/published/es.json` y `en.json`
+- Con admin mock, usa la UI y publica para escribir `published/` en disco
 
 ---
 
@@ -95,7 +93,7 @@ Estilos en `apps/static/src/styles/global.css` (clases `.plans-cta*`).
 Tras cambiar el esquema:
 ```bash
 npm run content:build
-npm run content:validate:drafts
+npm run content:validate
 ```
 
 ---

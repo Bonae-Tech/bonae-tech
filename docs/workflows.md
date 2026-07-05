@@ -191,7 +191,7 @@ Compila todos los workspaces vía `npx turbo run build test validate:published`.
 
 ### Content PR check
 
-Valida `published/` y `drafts/` con `npx turbo run build validate:published validate:drafts --filter=@bonae/content`. Sin deploy.
+Valida `published/` con `npx turbo run build validate:published --filter=@bonae/content`. Sin deploy.
 
 ### Terraform plan
 

@@ -34,7 +34,7 @@ npm run admin:build      # tsc --noEmit + vite build
 ### Paquete de contenido (`packages/content`)
 ```bash
 npm run content:build    # turbo run build --filter=@bonae/content
-npm run content:validate:drafts   # turbo run validate:drafts --filter=@bonae/content
+npm run content:validate # turbo run validate:published --filter=@bonae/content
 ```
 
 ### Worker de API de contenido (`workers/content-api`)
@@ -61,15 +61,17 @@ npm run deploy:all  # site, admin Pages y worker (turbo run deploy con tres filt
 
 ### Flujo de datos de contenido
 
-Todo el copy del sitio vive como archivos JSON en `apps/static/content/`:
+Todo el copy publicado del sitio vive como archivos JSON en `apps/static/content/published/`:
+
 ```
-drafts/    es.json  en.json  settings.json   ← editado por el admin
 published/ es.json  en.json  settings.json   ← consumido por el sitio Astro
 ```
 
-**En producción:** edición en el admin → middleware `/content/*` de Cloudflare Pages → Worker `bonae-content-api` → API de GitHub (vía secretos de GitHub App) → commits JSON al repo → CI reconstruye el sitio estático.
+Los borradores viven en el ContentStore Durable Object (SQLite). En modo mock local, el plugin Vite los mantiene en memoria.
 
-**En modo mock (`dev:mock`):** el plugin Vite `contentApiMockPlugin` (`apps/admin/vite.mockApi.ts`) intercepta todas las rutas `/content/*` y lee/escribe estos archivos directamente en disco.
+**En producción:** edición en el admin → middleware `/content/*` de Cloudflare Pages → Worker `bonae-content-api` → ContentStore DO (borradores) → publish commit atómico a `published/` vía GitHub App → CI reconstruye el sitio estático.
+
+**En modo mock (`dev:mock`):** el plugin Vite `contentApiMockPlugin` (`apps/admin/vite.mockApi.ts`) intercepta todas las rutas `/content/*` con borradores en memoria; publish escribe solo `published/` en disco.
 
 ### Esquema compartido (`packages/content`)
 
@@ -85,7 +87,7 @@ published/ es.json  en.json  settings.json   ← consumido por el sitio Astro
 
 ### Worker de API de contenido (`workers/content-api/`)
 
-Verifica JWTs de Cognito vía JWKS (`jose`). Requiere que los llamadores estén en el grupo Cognito `Administrators`. Todas las operaciones de GitHub pasan por `@octokit/auth-app` (credenciales de GitHub App desde secretos del Worker). Cada guardado confirma en `drafts/`; publish valida paridad ES/EN + settings y luego copia `drafts/` → `published/` en un solo commit.
+Verifica JWTs de Cognito vía JWKS (`jose`). Requiere que los llamadores estén en el grupo Cognito `Administrators`. Todas las operaciones de GitHub pasan por `@octokit/auth-app` (credenciales de GitHub App desde secretos del Worker). Los borradores se persisten en el ContentStore DO; publish valida paridad ES/EN + settings y hace un commit atómico a `published/` vía Git Trees API.
 
 Admin Pages hace proxy de `/content/*` a este Worker vía `functions/content/_middleware.ts` y el service binding `CONTENT_API` en `apps/admin/wrangler.toml`.
 
