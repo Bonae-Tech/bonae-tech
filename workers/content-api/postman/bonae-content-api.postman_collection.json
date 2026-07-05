@@ -1,0 +1,301 @@
+{
+  "info": {
+    "_postman_id": "bonae-content-api",
+    "name": "bonae-content-api",
+    "description": "Cloudflare Worker content API (`workers/content-api`).\n\n**Auth (admin routes):** `Authorization: Bearer {{cognitoIdToken}}` — Cognito ID token; requires `Administrators` group (or future site-scoped groups).\n\n**Auth (callback):** `Authorization: Bearer {{publishCallbackSecret}}` — shared secret (`PUBLISH_CALLBACK_SECRET`), used by deploy-site CI only.\n\nSet collection variables `baseUrl`, `cognitoIdToken`, and `publishCallbackSecret` before sending requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://bonae-content-api.<account>.workers.dev"
+    },
+    {
+      "key": "cognitoIdToken",
+      "value": ""
+    },
+    {
+      "key": "publishCallbackSecret",
+      "value": ""
+    },
+    {
+      "key": "locale",
+      "value": "es"
+    },
+    {
+      "key": "section",
+      "value": "hero"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{cognitoIdToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "State",
+      "item": [
+        {
+          "name": "Get content state",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/state",
+            "description": "Full workspace snapshot: drafts, published cache, last publish metadata, and `publishState`.\n\n**Auth:** `read_draft`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Drafts",
+      "item": [
+        {
+          "name": "Get draft (locale)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/drafts/{{locale}}",
+            "description": "Read a single draft resource.\n\n**Path:** `locale` = `es` | `en` | `settings`\n\n**Auth:** `read_draft`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get draft — es",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/drafts/es",
+            "description": "**Auth:** `read_draft`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get draft — en",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/drafts/en",
+            "description": "**Auth:** `read_draft`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get draft — settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/drafts/settings",
+            "description": "**Auth:** `read_draft`"
+          },
+          "response": []
+        },
+        {
+          "name": "Save draft (locale)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": {}\n}"
+            },
+            "url": "{{baseUrl}}/content/drafts/{{locale}}",
+            "description": "Validate and persist a draft. ES/EN must stay in locale parity (matching array lengths).\n\n**Body:** `{ \"content\": <ContentDocument | SiteSettings> }` — bare document also accepted.\n\n**Response:** `{ locale, content, tier: \"drafts\", savedAt }`\n\n**Auth:** `write_draft`"
+          },
+          "response": []
+        },
+        {
+          "name": "Discard all drafts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/content/drafts/discard",
+            "description": "Reset all drafts to match the published cache.\n\n**Response:** `{ \"discarded\": true }`\n\n**Auth:** `write_draft`"
+          },
+          "response": []
+        },
+        {
+          "name": "Discard section",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section\": \"{{section}}\"\n}"
+            },
+            "url": "{{baseUrl}}/content/drafts/discard-section",
+            "description": "Revert one section in ES and EN drafts to published values.\n\n**Body:** `{ \"section\": \"nav\" | \"hero\" | \"valueProp\" | \"about\" | \"contact\" | \"plans\" | \"footer\" }`\n\n**Response:** `{ \"discarded\": true }`\n\n**Auth:** `write_draft`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Published",
+      "item": [
+        {
+          "name": "Get published (locale)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/published/{{locale}}",
+            "description": "Read published content from the Durable Object cache (not GitHub directly).\n\n**Path:** `locale` = `es` | `en` | `settings`\n\n**Response:** `{ locale, content, tier: \"published\" }`\n\n**Auth:** `read_published`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get published — es",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/published/es",
+            "description": "**Auth:** `read_published`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get published — en",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/published/en",
+            "description": "**Auth:** `read_published`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get published — settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/published/settings",
+            "description": "**Auth:** `read_published`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Publish",
+      "item": [
+        {
+          "name": "Publish drafts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/content/publish",
+            "description": "Validate drafts, commit published JSON to GitHub (atomic), set `publish_state` to `building`, return immediately. Client polls status.\n\n**Response (200):** `{ \"accepted\": true }`\n\n**Errors:** `409` publish in flight, `422` validation errors `{ errors: string[] }`, `500` GitHub commit failed.\n\n**Auth:** `publish`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get publish status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/content/publish/status",
+            "description": "Poll publish progress. Safe to call every ~3s while in flight.\n\n**Response:** `{ state, commitSha, runUrl, error }` where `state` is `idle` | `committing` | `building` | `success` | `failure`.\n\n**Errors:** `429` rate limited (20 req / 10s per user).\n\n**Auth:** `read_draft`"
+          },
+          "response": []
+        },
+        {
+          "name": "Abort publish tracking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/content/publish/abort",
+            "description": "Mark in-flight publish as `failure` and clear the DO alarm. Does not cancel GitHub Actions / Cloudflare deploy.\n\n**Response:** `{ aborted: boolean, state: string }`\n\n**Auth:** `publish`"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CI callback",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{publishCallbackSecret}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "Publish callback (deploy-site)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{publishCallbackSecret}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commitSha\": \"<git-commit-sha>\",\n  \"status\": \"success\",\n  \"runUrl\": \"https://github.com/Bonae-Tech/bonae-tech/actions/runs/<run-id>\"\n}"
+            },
+            "url": "{{baseUrl}}/content/publish/callback",
+            "description": "Called by `deploy-site.yml` when the Cloudflare Pages deploy finishes (`if: always()`).\n\n**Auth:** `PUBLISH_CALLBACK_SECRET` bearer token (not Cognito).\n\n**Body:** `{ commitSha, status: \"success\" | \"failure\" | \"cancelled\", runUrl }`\n\n**Response:** `204` empty body (applied or ignored if SHA/state mismatch).\n\n**Errors:** `401` bad secret, `400` invalid payload."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
