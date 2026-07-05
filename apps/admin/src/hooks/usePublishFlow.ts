@@ -4,18 +4,13 @@ import type { PublishStateValue, PublishStatusResponse } from '@bonae/content/co
 import { ContentApiError, abortPublish, fetchPublishStatus, publishContent } from '../infrastructure/contentApi.js';
 import { PublishStatusPoller } from './publishStatusPoller.js';
 
-/** First gap between status polls; doubles each poll up to POLL_MAX_MS. */
-const POLL_INITIAL_MS = 10_000;
-const POLL_MAX_MS = 60_000;
-/** Hard cap on status fetches while publish stays in flight (~8 checks worst case). */
-const MAX_POLL_COUNT = 8;
+/** Fixed 3s between publish status polls (INITIAL === MAX disables backoff). */
+const POLL_INITIAL_MS = 3_000;
+const POLL_MAX_MS = 3_000;
 const PUBLISHED_BANNER_MS = 15000;
-/** Stop client polling after this wall-clock time regardless of state. */
+/** Stop client polling after 5 minutes regardless of state. */
 const MAX_CLIENT_POLL_MS = 5 * 60 * 1000;
-/**
- * Circuit breaker: healthy backoff tops out at 1 request / 60s.
- * 10 requests / 10s catches scheduling regressions without tripping normal use.
- */
+/** Circuit breaker: ~3 req/10s at 3s polling; trips only on scheduling bugs. */
 const CIRCUIT_MAX_REQUESTS = 10;
 const CIRCUIT_WINDOW_MS = 10_000;
 const DISMISS_SESSION_KEY = 'bonae-admin-publish-tracking-dismissed';
@@ -99,7 +94,6 @@ export function usePublishFlow(
       isInFlight: (s) => isPublishInFlight(s.state),
       intervalMs: POLL_INITIAL_MS,
       getIntervalMs: publishPollIntervalMs,
-      maxPollCount: MAX_POLL_COUNT,
       maxDurationMs: MAX_CLIENT_POLL_MS,
       maxRequestsPerWindow: CIRCUIT_MAX_REQUESTS,
       windowMs: CIRCUIT_WINDOW_MS,

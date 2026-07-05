@@ -158,9 +158,6 @@ export class PublishStatusPoller<T> {
         return;
       }
       this.pollCount += 1;
-      // #region agent log
-      fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c8cfcf'},body:JSON.stringify({sessionId:'c8cfcf',location:'publishStatusPoller.ts:pollOnce',message:'publish status poll',data:{pollCount:this.pollCount,nextIntervalMs:this.nextIntervalMs(),stillInFlight:this.opts.isInFlight(status)},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       this.opts.onUpdate?.(status);
       if (!this.opts.isInFlight(status)) {
         this.stop();
