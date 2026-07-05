@@ -284,7 +284,7 @@ Mejoras de autenticación del admin (sesión, refresh, reset de contraseña, SES
 
 Iniciar sesión → editar ES/EN/settings (autosave o Save draft en el DO) → **Review & publish** → overlay (committing → building → success) → **Deploy site** en CI.
 
-Los archivos en `apps/static/content/drafts/` en el repo son legado/local mock; en producción los borradores viven solo en el ContentStore DO.
+Los borradores viven solo en el ContentStore DO (producción) o en memoria (admin mock). Git almacena únicamente `published/`.
 
 ### Rotación de credenciales
 
@@ -298,7 +298,6 @@ Los archivos en `apps/static/content/drafts/` en el repo son legado/local mock; 
 
 ```bash
 npm run content:validate
-npm run content:validate:drafts
 ```
 
 ### Dominios personalizados

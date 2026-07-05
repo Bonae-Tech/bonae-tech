@@ -9,7 +9,7 @@ Cloudflare Worker que hace proxy de operaciones de contenido autenticadas hacia 
 | GET | `/content/drafts/{es\|en\|settings}` | Leer JSON de borrador |
 | PUT | `/content/drafts/{es\|en\|settings}` | Validar y confirmar borrador |
 | GET | `/content/published/{es\|en\|settings}` | Leer JSON publicado |
-| POST | `/content/publish` | Copiar drafts → published |
+| POST | `/content/publish` | Commit atómico de borradores DO → `published/` en GitHub |
 
 ## Auth
 

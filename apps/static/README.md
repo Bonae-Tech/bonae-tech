@@ -25,17 +25,13 @@ npm run preview  # previsualizar el build de producción localmente
 
 ```
 content/
-  drafts/
-    es.json          ← editado vía admin SPA
-    en.json
-    settings.json
   published/
     es.json          ← leído por Astro en tiempo de build
     en.json
     settings.json
 ```
 
-**Solo `content/published/` es leído por el sitio.** Los cambios en borradores no son visibles hasta publicarlos vía el admin. El esquema y la validación viven en `packages/content`.
+**Solo `content/published/` es leído por el sitio.** Los borradores viven en el ContentStore Durable Object (producción) o en memoria (admin mock). Los cambios en borradores no son visibles en el sitio hasta publicarlos vía el admin. El esquema y la validación viven en `packages/content`.
 
 ## Validar contenido publicado
 
@@ -44,5 +40,3 @@ npm run content:validate    # desde la raíz del repo
 ```
 
 Es la misma verificación que ejecutan los hooks `predev` y `prebuild`. Si `published/` es inválido, el sitio no compilará.
-
-Para borradores: `npm run content:validate:drafts` desde la raíz del repo.

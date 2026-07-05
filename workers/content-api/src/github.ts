@@ -48,17 +48,16 @@ export async function createOctokit(config: GitHubConfig): Promise<Octokit> {
   return new Octokit({ auth: installationAuth.token });
 }
 
-export function contentFilePath(config: GitHubConfig, tier: 'drafts' | 'published', name: string): string {
-  return `${config.contentPathPrefix}/${tier}/${name}`;
+export function publishedFilePath(config: GitHubConfig, name: string): string {
+  return `${config.contentPathPrefix}/published/${name}`;
 }
 
-export async function readRepoJson(
+export async function readPublishedJson(
   octokit: Octokit,
   config: GitHubConfig,
-  tier: 'drafts' | 'published',
   fileName: string,
 ): Promise<{ data: unknown; sha?: string }> {
-  const path = contentFilePath(config, tier, fileName);
+  const path = publishedFilePath(config, fileName);
   try {
     const res = await octokit.repos.getContent({
       owner: config.owner,
@@ -74,45 +73,6 @@ export async function readRepoJson(
   } catch (err: unknown) {
     if (typeof err === 'object' && err !== null && 'status' in err && err.status === 404) {
       throw new Error(`Content file not found: ${path}`);
-    }
-    throw err;
-  }
-}
-
-export async function writeRepoJson(
-  octokit: Octokit,
-  config: GitHubConfig,
-  tier: 'drafts' | 'published',
-  fileName: string,
-  data: unknown,
-  sha: string | undefined,
-  message: string,
-): Promise<string> {
-  const path = contentFilePath(config, tier, fileName);
-  const content = Buffer.from(JSON.stringify(data, null, 2) + '\n').toString('base64');
-  try {
-    const res = await octokit.repos.createOrUpdateFileContents({
-      owner: config.owner,
-      repo: config.repo,
-      path,
-      message,
-      content,
-      branch: config.branch,
-      sha,
-    });
-    return res.data.commit.sha ?? 'unknown';
-  } catch (err: unknown) {
-    const status = typeof err === 'object' && err !== null && 'status' in err ? err.status : undefined;
-    const message = err instanceof Error ? err.message : String(err);
-    if (status === 403 && message.includes('Resource not accessible by integration')) {
-      throw new Error(
-        'GitHub App lacks Contents write permission. In GitHub App settings set Repository permissions → Contents → Read and write, then approve the update on the app installation.',
-      );
-    }
-    if (status === 409 && message.includes('Changes must be made through a pull request')) {
-      throw new Error(
-        'Branch protection blocks direct commits on the configured branch. Allow the bonae-content-api GitHub App to bypass the pull request requirement for main (or point GITHUB_BRANCH at an unprotected branch).',
-      );
     }
     throw err;
   }
@@ -153,7 +113,7 @@ export async function publishDraftsAtomic(
       encoding: 'utf-8',
     });
     treeEntries.push({
-      path: contentFilePath(config, 'published', fileName),
+      path: publishedFilePath(config, fileName),
       mode: '100644',
       type: 'blob',
       sha: blob.data.sha,
@@ -199,65 +159,4 @@ export async function publishDraftsAtomic(
   }
 
   return { commitSha: commit.data.sha };
-}
-
-export async function publishContent(
-  octokit: Octokit,
-  config: GitHubConfig,
-  actor: string,
-): Promise<{ commitSha: string }> {
-  const files = ['es.json', 'en.json', 'settings.json'] as const;
-  let lastSha = 'unknown';
-
-  for (const file of files) {
-    const draft = await readRepoJson(octokit, config, 'drafts', file);
-    lastSha = await publishFile(octokit, config, file, draft.data, actor);
-  }
-
-  return { commitSha: lastSha };
-}
-
-export async function publishDraftsToGit(
-  octokit: Octokit,
-  config: GitHubConfig,
-  drafts: { es: unknown; en: unknown; settings: unknown },
-  actor: string,
-): Promise<{ commitSha: string }> {
-  const entries = [
-    ['es.json', drafts.es],
-    ['en.json', drafts.en],
-    ['settings.json', drafts.settings],
-  ] as const;
-  let lastSha = 'unknown';
-
-  for (const [file, data] of entries) {
-    lastSha = await publishFile(octokit, config, file, data, actor);
-  }
-
-  return { commitSha: lastSha };
-}
-
-async function publishFile(
-  octokit: Octokit,
-  config: GitHubConfig,
-  file: string,
-  data: unknown,
-  actor: string,
-): Promise<string> {
-  let publishedSha: string | undefined;
-  try {
-    const published = await readRepoJson(octokit, config, 'published', file);
-    publishedSha = published.sha;
-  } catch {
-    publishedSha = undefined;
-  }
-  return writeRepoJson(
-    octokit,
-    config,
-    'published',
-    file,
-    data,
-    publishedSha,
-    `chore(content): publish ${file} via admin (${actor})`,
-  );
 }

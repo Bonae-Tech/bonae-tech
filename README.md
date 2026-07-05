@@ -12,18 +12,16 @@ Monorepo npm workspaces + Turborepo. Componentes principales:
 - **packages/content** — Esquema Zod compartido, validación y paridad de locales; consumido por static, admin y worker.
 - **infra/terraform** — Infraestructura Terraform; solo identidad Cognito (AWS sa-east-1).
 
-El contenido vive en `apps/static/content/`:
+El contenido publicado vive en `apps/static/content/published/`:
 
 ```
-drafts/    
-  es.json  
-  en.json  
-  settings.json   ← guardado por el admin
-published/ 
-  es.json  
-  en.json  
+published/
+  es.json
+  en.json
   settings.json   ← leído por Astro en tiempo de build
 ```
+
+Los borradores viven en el ContentStore Durable Object (producción) o en memoria (admin mock). No hay carpeta `drafts/` en el repositorio.
 
 ---
 
@@ -132,8 +130,7 @@ turbo run build --filter=@bonae/content-api-worker   # alias: npm run worker:bui
 #### Validar contenido
 
 ```bash
-turbo run validate:published --filter=@bonae/content    # published/ — alias: npm run content:validate
-turbo run validate:drafts --filter=@bonae/content       # drafts/ — alias: npm run content:validate:drafts
+turbo run validate:published --filter=@bonae/content    # alias: npm run content:validate
 ```
 
 Contenido inválido en `published/` bloquea `dev` y `build` del sitio.
@@ -183,7 +180,7 @@ Guía completa: [docs/workflows.md#instalación-única](docs/workflows.md#instal
 
 ### Flujo de contenido
 
-Los editores inician sesión en el admin SPA → editan secciones en ES/EN → **Save draft** (confirma en `drafts/`) → **Publish** (copia `drafts/` → `published/` en un commit, dispara rebuild de Cloudflare).
+Los editores inician sesión en el admin SPA → editan secciones en ES/EN → **Save draft** (persiste en ContentStore DO) → **Publish** (commit atómico a `published/` en GitHub, dispara rebuild de Cloudflare).
 
 Ver [apps/admin/README.md](apps/admin/README.md) para el flujo completo del editor e instrucciones de desarrollo local.
 
@@ -206,7 +203,6 @@ Ver [docs/workflows.md](docs/workflows.md).
 
 ```bash
 npm run content:validate         # published/ (ver [Onboarding](#onboarding))
-npm run content:validate:drafts  # drafts/
 ```
 
 ---
@@ -240,7 +236,6 @@ La tabla lista los scripts `npm run …` del root como referencia rápida; para 
 | `npm run dev` | Servidor de desarrollo del sitio de marketing |
 | `npm run content:build` | Compilar solo `@bonae/content` |
 | `npm run content:validate` | Validar JSON publicado |
-| `npm run content:validate:drafts` | Validar JSON en borradores |
 
 ## Agregar un paquete nuevo
 

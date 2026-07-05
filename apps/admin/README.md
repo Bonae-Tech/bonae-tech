@@ -27,7 +27,7 @@ Completar `.env`:
 
 ## Desarrollo
 
-**Modo mock** — sin AWS, sin backend. Lee/escribe `apps/static/content/` en disco:
+**Modo mock** — sin AWS, sin backend. Borradores en memoria; publish escribe `apps/static/content/published/` en disco:
 
 ```bash
 npm run dev:mock
@@ -146,7 +146,7 @@ En producción el callback de **Deploy site** cierra el paso *building*. En mock
 ## Reglas
 
 - La paridad de locale se valida al **publicar** (cliente y servidor), no en cada autosave de borrador.
-- El sitio estático lee solo `content/published/` — nunca `content/drafts/`.
+- El sitio estático lee solo `content/published/` en git — los borradores viven en ContentStore DO (o en memoria en mock).
 - Los usuarios son solo por invitación — sin auto-registro. Crear usuarios vía `aws cognito-idp admin-create-user`.
 
 ## Deploy

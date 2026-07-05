@@ -2,7 +2,7 @@ import { CONTENT_LOCALES, type ContentLocale } from '@bonae/content';
 import {
   createOctokit,
   parseGitHubConfig,
-  readRepoJson,
+  readPublishedJson,
 } from '../github.js';
 import { loadGitHubSecrets } from '../secrets.js';
 import type { Env } from '../types.js';
@@ -47,7 +47,7 @@ export async function bootstrapFromGitIfNeeded(sql: SqlStorage, env: Env): Promi
   const now = Date.now();
 
   for (const locale of CONTENT_LOCALES) {
-    const { data } = await readRepoJson(octokit, config, 'published', fileNameFor(locale));
+    const { data } = await readPublishedJson(octokit, config, fileNameFor(locale));
     const content = JSON.stringify(data);
 
     sql.exec(

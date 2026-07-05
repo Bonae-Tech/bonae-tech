@@ -33,7 +33,6 @@ npm run build    # tsc → dist/
 ```bash
 # Desde la raíz del repo (Turbo)
 npm run content:validate           # published/
-npm run content:validate:drafts    # drafts/
 ```
 
 ## Reglas
