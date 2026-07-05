@@ -16,12 +16,18 @@
  *    continuing to hammer the API.
  * 5. A max total tracking duration, independent of the breaker, so a stuck
  *   server-side state can't be polled forever.
+ * 6. Optional per-poll backoff and a hard poll-count cap so long builds don't
+ *   imply one status request per fixed interval for the entire tracking window.
  */
 export interface PublishStatusPollerOptions<T> {
   fetchStatus: () => Promise<T>;
   isInFlight: (status: T) => boolean;
-  /** Delay between polls while in flight. */
+  /** Default delay between polls when `getIntervalMs` is not set. */
   intervalMs: number;
+  /** Delay before the next poll; `completedPolls` is how many fetches have finished. */
+  getIntervalMs?: (completedPolls: number) => number;
+  /** Stop after this many status fetches while still in flight. */
+  maxPollCount?: number;
   /** Stop tracking after this much wall-clock time regardless of state. */
   maxDurationMs: number;
   /** Circuit breaker: max requests allowed within `windowMs`. */
@@ -31,6 +37,7 @@ export interface PublishStatusPollerOptions<T> {
   /** Called once when polling stops because the status left the in-flight set. */
   onSettled?: (status: T) => void;
   onTimeout?: () => void;
+  onPollLimit?: (info: { pollCount: number }) => void;
   onCircuitBreak?: (info: { count: number; windowMs: number }) => void;
 }
 
@@ -42,6 +49,7 @@ export class PublishStatusPoller<T> {
   private timer: ReturnType<typeof setTimeout> | null = null;
   private startedAt: number | null = null;
   private requestTimestamps: number[] = [];
+  private pollCount = 0;
 
   constructor(private readonly opts: PublishStatusPollerOptions<T>) {}
 
@@ -78,6 +86,11 @@ export class PublishStatusPoller<T> {
     this.stop();
     this.tripped = false;
     this.requestTimestamps = [];
+    this.pollCount = 0;
+  }
+
+  private nextIntervalMs(): number {
+    return this.opts.getIntervalMs?.(this.pollCount) ?? this.opts.intervalMs;
   }
 
   private scheduleNow(generation: number): void {
@@ -98,7 +111,7 @@ export class PublishStatusPoller<T> {
           this.scheduleNext(generation);
         }
       });
-    }, this.opts.intervalMs);
+    }, this.nextIntervalMs());
   }
 
   /** Returns false (and trips the breaker) if the request rate exceeds the configured cap. */
@@ -132,6 +145,11 @@ export class PublishStatusPoller<T> {
     if (!this.recordRequestAndCheckCircuit(Date.now())) {
       return;
     }
+    if (this.opts.maxPollCount !== undefined && this.pollCount >= this.opts.maxPollCount) {
+      this.stop();
+      this.opts.onPollLimit?.({ pollCount: this.pollCount });
+      return;
+    }
 
     this.requestInFlight = true;
     try {
@@ -139,6 +157,10 @@ export class PublishStatusPoller<T> {
       if (generation !== this.generation) {
         return;
       }
+      this.pollCount += 1;
+      // #region agent log
+      fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c8cfcf'},body:JSON.stringify({sessionId:'c8cfcf',location:'publishStatusPoller.ts:pollOnce',message:'publish status poll',data:{pollCount:this.pollCount,nextIntervalMs:this.nextIntervalMs(),stillInFlight:this.opts.isInFlight(status)},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
+      // #endregion
       this.opts.onUpdate?.(status);
       if (!this.opts.isInFlight(status)) {
         this.stop();

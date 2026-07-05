@@ -161,4 +161,60 @@ describe('PublishStatusPoller', () => {
     expect(onTimeout).toHaveBeenCalledTimes(1);
     expect(poller.isRunning()).toBe(false);
   });
+
+  it('uses getIntervalMs backoff between polls', async () => {
+    const fetchStatus = vi.fn(async (): Promise<FakeStatus> => ({ state: 'building' }));
+
+    const poller = new PublishStatusPoller<FakeStatus>({
+      fetchStatus,
+      isInFlight: inFlight,
+      intervalMs: 1000,
+      getIntervalMs: (completedPolls) => completedPolls * 1000,
+      maxDurationMs: 60_000,
+      maxRequestsPerWindow: 100,
+      windowMs: 10_000,
+    });
+
+    poller.start();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetchStatus).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(999);
+    expect(fetchStatus).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(1999);
+    expect(fetchStatus).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fetchStatus).toHaveBeenCalledTimes(3);
+  });
+
+  it('stops after maxPollCount while still in flight', async () => {
+    const fetchStatus = vi.fn(async (): Promise<FakeStatus> => ({ state: 'building' }));
+    const onPollLimit = vi.fn();
+
+    const poller = new PublishStatusPoller<FakeStatus>({
+      fetchStatus,
+      isInFlight: inFlight,
+      intervalMs: 100,
+      maxPollCount: 3,
+      maxDurationMs: 60_000,
+      maxRequestsPerWindow: 100,
+      windowMs: 10_000,
+      onPollLimit,
+    });
+
+    poller.start();
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(500);
+    expect(fetchStatus).toHaveBeenCalledTimes(3);
+    expect(onPollLimit).toHaveBeenCalledTimes(1);
+    expect(poller.isRunning()).toBe(false);
+
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(fetchStatus).toHaveBeenCalledTimes(3);
+  });
 });

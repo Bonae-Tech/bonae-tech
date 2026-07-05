@@ -4,19 +4,29 @@ import type { PublishStateValue, PublishStatusResponse } from '@bonae/content/co
 import { ContentApiError, abortPublish, fetchPublishStatus, publishContent } from '../infrastructure/contentApi.js';
 import { PublishStatusPoller } from './publishStatusPoller.js';
 
-/** Interval between status polls while a publish is in flight. */
-const POLL_MS = 3000;
-const PUBLISHED_BANNER_MS = 5000;
-/** Stop client polling slightly after the worker alarm (15 min). */
-const MAX_CLIENT_POLL_MS = 16 * 60 * 1000;
+/** First gap between status polls; doubles each poll up to POLL_MAX_MS. */
+const POLL_INITIAL_MS = 10_000;
+const POLL_MAX_MS = 60_000;
+/** Hard cap on status fetches while publish stays in flight (~8 checks worst case). */
+const MAX_POLL_COUNT = 8;
+const PUBLISHED_BANNER_MS = 15000;
+/** Stop client polling after this wall-clock time regardless of state. */
+const MAX_CLIENT_POLL_MS = 5 * 60 * 1000;
 /**
- * Circuit breaker: at POLL_MS=3000 a healthy loop makes ~1 request every 3s.
- * Cap well above that (10 requests / 10s) so any future scheduling regression
- * trips the breaker in seconds instead of hammering the API indefinitely.
+ * Circuit breaker: healthy backoff tops out at 1 request / 60s.
+ * 10 requests / 10s catches scheduling regressions without tripping normal use.
  */
 const CIRCUIT_MAX_REQUESTS = 10;
 const CIRCUIT_WINDOW_MS = 10_000;
 const DISMISS_SESSION_KEY = 'bonae-admin-publish-tracking-dismissed';
+
+function publishPollIntervalMs(completedPolls: number): number {
+  if (completedPolls < 1) {
+    return POLL_INITIAL_MS;
+  }
+  const exponent = completedPolls - 1;
+  return Math.min(POLL_INITIAL_MS * 2 ** exponent, POLL_MAX_MS);
+}
 
 export type PublishDisplayPhase = PublishStateValue | 'idle';
 
@@ -87,7 +97,9 @@ export function usePublishFlow(
     pollerRef.current = new PublishStatusPoller<PublishStatusResponse>({
       fetchStatus: fetchPublishStatus,
       isInFlight: (s) => isPublishInFlight(s.state),
-      intervalMs: POLL_MS,
+      intervalMs: POLL_INITIAL_MS,
+      getIntervalMs: publishPollIntervalMs,
+      maxPollCount: MAX_POLL_COUNT,
       maxDurationMs: MAX_CLIENT_POLL_MS,
       maxRequestsPerWindow: CIRCUIT_MAX_REQUESTS,
       windowMs: CIRCUIT_WINDOW_MS,
@@ -110,6 +122,13 @@ export function usePublishFlow(
         setIsTracking(false);
         setPhase('failure');
         setError('Publish status tracking timed out. The deploy may still be running on the server.');
+      },
+      onPollLimit: () => {
+        setIsTracking(false);
+        setPhase('failure');
+        setError(
+          'Stopped checking publish status automatically. Open the deploy run link to see progress, or refresh the page.',
+        );
       },
       onCircuitBreak: ({ count, windowMs }) => {
         setIsTracking(false);
