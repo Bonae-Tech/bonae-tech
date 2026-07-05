@@ -8,9 +8,8 @@ type RouteResult = { status: number; body: unknown };
 
 /**
  * Guard against any client-side bug turning status polling into a runaway
- * loop: the healthy client polls ~1x/3s per user, so 20 requests / 10s per
- * user leaves generous headroom while still capping worst-case load on the
- * Durable Object several orders of magnitude below an unbounded loop.
+ * loop: the healthy client uses exponential backoff (10s → 60s) with a hard
+ * cap of 8 polls, so 20 requests / 10s per user is far above normal load.
  */
 const publishStatusLimiter = createRateLimiter(20, 10_000);
 

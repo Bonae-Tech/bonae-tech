@@ -33,7 +33,7 @@ flowchart TD
     subgraph Cloudflare
         AdminPages["Pages bonae-admin"]
         Worker["Worker bonae-content-api"]
-        DO["ContentStore DO\nborradores + publish_state"]
+        DO["ContentStore DO\ndrafts + publish_state"]
         CFPages["Pages bonae-tech"]
     end
 
