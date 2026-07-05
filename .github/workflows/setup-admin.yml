@@ -84,7 +84,7 @@ jobs:
           set -euo pipefail
           if ! curl -sf \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=100" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=25" \
             | jq -e '.result[] | select(.name == "bonae-admin")' >/dev/null; then
             echo "::error::Pages project bonae-admin does not exist. Run Setup admin (action: setup)."
             exit 1

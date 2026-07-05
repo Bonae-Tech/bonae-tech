@@ -36,7 +36,7 @@ runs:
 
         list_json="$(curl -sS \
           -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-          "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=100")"
+          "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects?per_page=25")"
 
         if echo "$list_json" | jq -e --arg name "$PROJECT_NAME" '.result[]? | select(.name == $name)' >/dev/null; then
           echo "Cloudflare Pages project ${PROJECT_NAME} already exists."
