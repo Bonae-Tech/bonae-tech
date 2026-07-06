@@ -10,6 +10,8 @@ Diseño de la plataforma, infraestructura, flujos de datos y operaciones del dí
 2. [Workspaces](#2-workspaces)
 3. [Infraestructura en la nube](#3-infraestructura-en-la-nube)
 4. [Flujos de datos](#4-flujos-de-datos)
+   - [Niveles de contenido](#niveles-de-contenido-draft-vs-publicado)
+   - [Mapa admin ↔ API](./admin-content-api-map.md)
 5. [CI/CD](#5-cicd)
 6. [Operaciones](#6-operaciones)
 
@@ -113,14 +115,7 @@ Piezas clave: `config.ts` (IDs de Cognito en tiempo de build), `infrastructure/a
 | `src/content-store/` | Durable Object SQLite: borradores, caché publicado, máquina de estados de publish |
 | `src/github.ts` | Cliente Octokit · commit atómico Git Trees API |
 
-Rutas principales:
-* `GET /content/state` — bootstrap (borradores + publicado + publishState)
-* `GET/PUT /content/drafts/{es|en|settings}`
-* `POST /content/drafts/discard` · `POST /content/drafts/discard-section`
-* `POST /content/publish` → `{ accepted: true }` · `GET /content/publish/status`
-* `POST /content/publish/callback` — CI (Bearer `PUBLISH_CALLBACK_SECRET`)
-
-Especificación completa: [admin-content-storage-spec.md](./admin-content-storage-spec.md)
+Rutas HTTP y niveles de almacenamiento: [§ Niveles de contenido](#niveles-de-contenido-draft-vs-publicado). Mapa detallado admin ↔ API (secciones, Postman): [admin-content-api-map.md](./admin-content-api-map.md).
 
 ### Modelo de seguridad
 
@@ -194,6 +189,36 @@ Tabla completa de secretos: [workflows.md § Secretos](./workflows.md#secretos-y
 ---
 
 ## 4. Flujos de datos
+
+### Niveles de contenido (draft vs publicado)
+
+Referencia canónica del modelo draft/publish. No hay carpeta `content/drafts/` en el repositorio — las rutas API `/content/drafts/*` son endpoints HTTP, no rutas de archivos en git.
+
+| Nivel | Dónde vive | En git | Quién lo lee |
+|-------|------------|--------|--------------|
+| **Borrador** | Tabla `drafts` del ContentStore Durable Object (SQLite) en producción; en memoria en admin mock (`mockContentStore.ts`) | No | Admin SPA vía Worker |
+| **Publicado** | `apps/static/content/published/{es,en,settings}.json` | Sí (`main`) | Astro en build; Worker (bootstrap + diff) |
+
+El DO también mantiene `published_cache` (copia de lo último publicado, sembrada desde git al arranque) y `publish_state` (máquina de estados committing → building → success/failure).
+
+**Guardado de borrador** — autosave (~2.5s) y **Save draft** llaman `PUT /content/drafts/{es|en|settings}`. Last-write-wins; el borrador puede estar incompleto. No dispara CI.
+
+**Publicación** — `POST /content/publish` valida esquema + paridad ES/EN, bloquea si hay otro publish en curso (409), hace un commit atómico (Git Trees API) solo bajo `published/`, y devuelve `{ accepted: true }`. El admin hace poll de `GET /content/publish/status` hasta que CI llama `POST /content/publish/callback`.
+
+| Método | Ruta | Rol |
+|--------|------|-----|
+| `GET` | `/content/state` | Bootstrap: draft, published, `lastPublishedAt`, `publishState` |
+| `GET` / `PUT` | `/content/drafts/{es\|en\|settings}` | Leer / persistir borrador en el DO |
+| `POST` | `/content/drafts/discard` | Restablecer borradores desde `published_cache` |
+| `POST` | `/content/drafts/discard-section` | Restablecer una sección en ES y EN |
+| `GET` | `/content/published/{es\|en\|settings}` | Leer snapshot publicado (desde caché del DO) |
+| `POST` | `/content/publish` | Validar y commitear a git |
+| `GET` | `/content/publish/status` | Estado del overlay de publish |
+| `POST` | `/content/publish/callback` | CI → Worker (Bearer `PUBLISH_CALLBACK_SECRET`) |
+
+**Mock local** — `vite.mockApi.ts` intercepta `/content/*`: borradores en memoria, sembrados desde `published/` en disco; publish escribe solo `published/`.
+
+**CI** — `deploy-site.yml` se dispara solo con cambios en `apps/static/content/published/**` o `packages/content/**`, no con actividad de borrador.
 
 ### Edición de contenido (admin → borrador)
 
@@ -282,9 +307,7 @@ Mejoras de autenticación del admin (sesión, refresh, reset de contraseña, SES
 
 ### Flujo de contenido
 
-Iniciar sesión → editar ES/EN/settings (autosave o Save draft en el DO) → **Review & publish** → overlay (committing → building → success) → **Deploy site** en CI.
-
-Los borradores viven solo en el ContentStore DO (producción) o en memoria (admin mock). Git almacena únicamente `published/`.
+Iniciar sesión → editar ES/EN/settings → autosave o **Save draft** → **Approve & publish** en el rail → overlay (committing → building → success) → **Deploy site** en CI. Detalle de niveles de almacenamiento: [§ Niveles de contenido](#niveles-de-contenido-draft-vs-publicado).
 
 ### Rotación de credenciales
 

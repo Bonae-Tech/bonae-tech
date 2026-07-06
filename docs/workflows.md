@@ -107,7 +107,7 @@ Se disparan automáticamente en push a `main` cuando coinciden los filtros de ru
 | Deploy worker | `workers/content-api/**`, `packages/content/**` |
 | Deploy cognito | `infra/terraform/cognito.tf` y archivos TF relacionados |
 
-Publicar desde el admin SPA confirma en `content/published/` y dispara **Deploy site**. Los borradores ya no tocan git, así que no disparan este workflow.
+Publicar desde el admin escribe solo `content/published/` y dispara **Deploy site**. Los borradores no están en git — ver [architecture.md § Niveles de contenido](./architecture.md#niveles-de-contenido-draft-vs-publicado).
 
 Cambios solo en código Astro (`apps/static/src/**`, etc.) no disparan **Deploy site** en push — usar **Deploy (manual)** → `site` o ampliar el workflow si necesitas auto-deploy de UI.
 

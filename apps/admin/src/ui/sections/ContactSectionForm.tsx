@@ -1,58 +1,61 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
+import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
+import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
+import { useFormEditSync } from '../../hooks/useFormEditSync.js';
+import { FieldCard } from '../components/FieldCard.js';
+import { SectionHeader } from '../components/SectionHeader.js';
+import { InlineCallout } from '../components/InlineCallout.js';
 
 interface Props {
   doc: ContentDocument;
-  onSave: () => void;
   onEdit?: (doc: ContentDocument) => void;
-  saving?: boolean;
+  errors: LocaleSectionErrors;
 }
 
-export function ContactSectionForm({ doc, onSave, onEdit, saving }: Props) {
+export function ContactSectionForm({ doc, onEdit, errors }: Props) {
+  const docRef = useRef(doc);
+  docRef.current = doc;
+
   const { register, watch } = useForm({
     defaultValues: {
       title: doc.contact.title,
       subtitle: doc.contact.subtitle,
-      email: doc.contact.email,
-      phone: doc.contact.phone,
-      whatsappMessage: doc.contact.whatsappMessage,
-      locationNote: doc.contact.locationNote,
     },
   });
   const values = watch();
-  const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+  useFormEditSync(watch, (formValues) => {
     onEdit?.({
-      ...doc,
+      ...docRef.current,
       contact: {
-        ...doc.contact,
-        ...values,
+        ...docRef.current.contact,
+        title: formValues.title ?? '',
+        subtitle: formValues.subtitle ?? '',
       },
     });
-  }, [values]);
+  });
 
   return (
-    <form
-      className="card space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave();
-      }}
-    >
-      <h2 className="text-lg font-bold">Contact</h2>
-      <input className="field-input" placeholder="Title" {...register('title')} />
-      <textarea className="field-input" placeholder="Subtitle" {...register('subtitle')} />
-      <input className="field-input" placeholder="Email" {...register('email')} />
-      <input className="field-input" placeholder="Phone display" {...register('phone')} />
-      <textarea className="field-input" placeholder="WhatsApp prefill message" {...register('whatsappMessage')} />
-      <textarea className="field-input" placeholder="Location note" {...register('locationNote')} />
-      <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save draft'}</button>
-    </form>
+    <div className="space-y-4">
+      <SectionHeader title="Contact" />
+
+      <FieldCard label="Title" error={getLocaleFieldError(errors, 'contact', 'title')}>
+        <input className="editor-input" {...register('title')} />
+      </FieldCard>
+
+      <FieldCard
+        label="Description"
+        counter={{ current: (values.subtitle ?? '').length, max: 240 }}
+        error={getLocaleFieldError(errors, 'contact', 'subtitle')}
+      >
+        <textarea className="editor-textarea" {...register('subtitle')} />
+      </FieldCard>
+
+      <InlineCallout>
+        Channels live under <strong className="text-editor-brand">Site settings</strong>.
+      </InlineCallout>
+    </div>
   );
 }

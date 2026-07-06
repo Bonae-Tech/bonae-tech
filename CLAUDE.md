@@ -61,17 +61,13 @@ npm run deploy:all  # site, admin Pages y worker (turbo run deploy con tres filt
 
 ### Flujo de datos de contenido
 
-Todo el copy publicado del sitio vive como archivos JSON en `apps/static/content/published/`:
+**Publicado** — JSON en `apps/static/content/published/` (consumido por Astro en build). **Borradores** — no en git; ContentStore DO en producción o memoria en mock. Publish commitea solo `published/` vía GitHub App.
 
-```
-published/ es.json  en.json  settings.json   ← consumido por el sitio Astro
-```
+Detalle canónico: [docs/architecture.md § Niveles de contenido](docs/architecture.md#niveles-de-contenido-draft-vs-publicado).
 
-Los borradores viven en el ContentStore Durable Object (SQLite). En modo mock local, el plugin Vite los mantiene en memoria.
+**En producción:** admin → `/content/*` (Pages middleware) → Worker → DO (borradores) → publish atómico a `published/` → CI rebuild.
 
-**En producción:** edición en el admin → middleware `/content/*` de Cloudflare Pages → Worker `bonae-content-api` → ContentStore DO (borradores) → publish commit atómico a `published/` vía GitHub App → CI reconstruye el sitio estático.
-
-**En modo mock (`dev:mock`):** el plugin Vite `contentApiMockPlugin` (`apps/admin/vite.mockApi.ts`) intercepta todas las rutas `/content/*` con borradores en memoria; publish escribe solo `published/` en disco.
+**En mock:** `vite.mockApi.ts` + `mockContentStore.ts` — borradores en memoria; publish escribe `published/` en disco.
 
 ### Esquema compartido (`packages/content`)
 
@@ -87,7 +83,7 @@ Los borradores viven en el ContentStore Durable Object (SQLite). En modo mock lo
 
 ### Worker de API de contenido (`workers/content-api/`)
 
-Verifica JWTs de Cognito vía JWKS (`jose`). Requiere que los llamadores estén en el grupo Cognito `Administrators`. Todas las operaciones de GitHub pasan por `@octokit/auth-app` (credenciales de GitHub App desde secretos del Worker). Los borradores se persisten en el ContentStore DO; publish valida paridad ES/EN + settings y hace un commit atómico a `published/` vía Git Trees API.
+Verifica JWTs de Cognito vía JWKS (`jose`). Grupo `Administrators` requerido. GitHub App para commits a `published/` únicamente. Borradores en ContentStore DO; publish valida paridad ES/EN + settings. Ver [docs/architecture.md](docs/architecture.md#niveles-de-contenido-draft-vs-publicado).
 
 Admin Pages hace proxy de `/content/*` a este Worker vía `functions/content/_middleware.ts` y el service binding `CONTENT_API` en `apps/admin/wrangler.toml`.
 
@@ -102,6 +98,6 @@ El hosting del admin y la API de contenido corren en Cloudflare (Pages + Worker)
 ## Restricciones clave
 
 - **`packages/content` debe compilarse antes** de ejecutar el modo mock del admin o compilar consumidores. Turborepo `dependsOn: ["^build"]` lo maneja automáticamente; `admin:dev:mock` y `worker:build` también disparan builds de content vía Turbo.
-- **La paridad de locale se aplica** en cada guardado de borrador (ES y EN deben tener longitudes de arreglo coincidentes en todas las rutas mapeadas) y de nuevo al publicar. Los errores aparecen como respuestas 400 de la API.
+- **La paridad de locale se valida al publicar** (cliente y servidor). Los autosaves de borrador son last-write-wins y pueden estar incompletos.
 - **El sitio estático valida el contenido publicado** antes de `dev` y `build` vía hooks `predev`/`prebuild`. Si `apps/static/content/published/` es inválido, el sitio no compilará.
 - **Los usuarios del admin son solo por invitación** (`allow_admin_create_user_only = true`). Crear usuarios vía `aws cognito-idp admin-create-user` y agregarlos al grupo `Administrators`.

@@ -1,42 +1,90 @@
-import { useEffect, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import type { SiteSettings } from '@bonae/content';
+import type { ContentDocument, SiteSettings } from '@bonae/content';
+import {
+  readSettingsForm,
+  type SettingsFormValues,
+} from '../../infrastructure/settingsEditorAdapter.js';
+import type { FieldErrors } from '../../hooks/useFieldValidation.js';
+import { useFormEditSync } from '../../hooks/useFormEditSync.js';
+import { FieldCard } from '../components/FieldCard.js';
+import { SectionHeader } from '../components/SectionHeader.js';
 
 interface Props {
+  draftEs: ContentDocument;
+  draftEn: ContentDocument;
   settings: SiteSettings;
-  onSave: () => void;
-  onEdit?: (settings: SiteSettings) => void;
-  saving?: boolean;
+  onApply: (values: SettingsFormValues) => void;
+  errors: FieldErrors;
 }
 
-export function SettingsSectionForm({ settings, onSave, onEdit, saving }: Props) {
-  const { register, watch } = useForm({ defaultValues: settings });
-  const values = watch();
-  const isFirstRender = useRef(true);
+export function SettingsSectionForm({ draftEs, settings, onApply, errors }: Props) {
+  const onApplyRef = useRef(onApply);
+  onApplyRef.current = onApply;
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    onEdit?.(values);
-  }, [values]);
+  const { register, watch } = useForm<SettingsFormValues>({
+    defaultValues: readSettingsForm(draftEs, settings),
+  });
+  const values = watch();
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  useFormEditSync(watch, (formValues) => {
+    onApplyRef.current(formValues);
+  });
 
   return (
-    <form
-      className="card space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave();
-      }}
-    >
-      <h2 className="text-lg font-bold">Site settings</h2>
-      <input className="field-input" placeholder="Site URL" {...register('siteUrl')} />
-      <input className="field-input" placeholder="WhatsApp number (digits only)" {...register('whatsappNumber')} />
-      <input className="field-input" placeholder="Instagram URL" {...register('socialLinks.instagram')} />
-      <input className="field-input" placeholder="Facebook URL" {...register('socialLinks.facebook')} />
-      <input className="field-input" placeholder="LinkedIn URL" {...register('socialLinks.linkedin')} />
-      <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save settings draft'}</button>
-    </form>
+    <div className="space-y-4">
+      <SectionHeader title="Settings" description="Shared across languages" />
+
+      <FieldCard
+        label="Site name"
+        counter={{ current: (values.siteName ?? '').length, max: 40 }}
+        error={errors.siteName}
+      >
+        <input className="editor-input" {...register('siteName')} />
+      </FieldCard>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FieldCard label="WhatsApp number" error={errors.whatsapp}>
+          <input className="editor-input" {...register('whatsapp')} />
+        </FieldCard>
+        <FieldCard label="Contact email" error={errors.email}>
+          <input className="editor-input" type="email" {...register('email')} />
+        </FieldCard>
+      </div>
+
+      <FieldCard label="Address" error={errors.address}>
+        <input className="editor-input" {...register('address')} />
+      </FieldCard>
+
+      <FieldCard label="Footer text" error={errors.footerText}>
+        <input className="editor-input" {...register('footerText')} />
+      </FieldCard>
+
+      <button
+        type="button"
+        className="text-xs font-semibold text-editor-muted underline"
+        onClick={() => setMoreOpen((v) => !v)}
+      >
+        {moreOpen ? 'Hide more settings' : 'More settings (URL & social)'}
+      </button>
+
+      {moreOpen && (
+        <div className="space-y-4">
+          <FieldCard label="Site URL" error={errors.siteUrl}>
+            <input className="editor-input" {...register('siteUrl')} />
+          </FieldCard>
+          <FieldCard label="Instagram URL">
+            <input className="editor-input" {...register('socialInstagram')} />
+          </FieldCard>
+          <FieldCard label="Facebook URL">
+            <input className="editor-input" {...register('socialFacebook')} />
+          </FieldCard>
+          <FieldCard label="LinkedIn URL">
+            <input className="editor-input" {...register('socialLinkedin')} />
+          </FieldCard>
+        </div>
+      )}
+    </div>
   );
 }

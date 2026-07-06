@@ -51,31 +51,70 @@ Ejecuta `tsc --noEmit` y luego `vite build`. La salida va a `dist/`.
 
 ## Arquitectura
 
-Flujos de autenticación end to end (sign-in, refresh, expiry, password reset, SES, API autorizada): **[docs/admin-authentication.md](../../docs/admin-authentication.md)** — documento canónico del repositorio para estos flujos.
+Almacenamiento draft/publish: [docs/architecture.md § Niveles de contenido](../../docs/architecture.md#niveles-de-contenido-draft-vs-publicado). Mapa secciones ↔ API: [admin-content-api-map.md](../../docs/admin-content-api-map.md).
 
-### Componentes en el admin SPA
+Flujos de autenticación: **[docs/admin-authentication.md](../../docs/admin-authentication.md)**.
+
+### Editor (post-rediseño)
+
+El editor es una SPA de una sola pantalla con shell persistente de tres columnas. No hay routing entre páginas — el estado local controla `locale`, `section` y la pestaña del rail.
+
+```mermaid
+graph TD
+    subgraph Shell["EditorShell"]
+        TopBar["EditorTopBar\nlogo · stepper · save · usuario"]
+        Sidebar["EditorSidebar\n210px · locale · secciones"]
+        Main["Área de formulario\nmax 600px · scroll"]
+        Rail["EditorRail\n320px · Changes / History"]
+    end
+
+    Dashboard["Dashboard.tsx\norquestación"]
+    Workspace["useContentWorkspace\nautosave 2.5s"]
+    Validation["useFieldValidation\nlímites + required"]
+    Review["contentReview.ts\nbuildPublishReview"]
+    Publish["usePublishFlow\noverlay + polling"]
+
+    Dashboard --> Shell
+    Dashboard --> Workspace
+    Dashboard --> Validation
+    Dashboard --> Review
+    Dashboard --> Publish
+    Rail --> Review
+```
+
+**Top bar** — wordmark Bonae, stepper Draft → Review → Publish, estado de guardado, **Save draft** (`flushPendingSaves`), última publicación, menú de usuario.
+
+**Sidebar** — toggle ES/EN, navegación por sección con badge de errores, **Discard all drafts** al pie.
+
+**Formulario** — formularios por sección (`Hero`, `Services / value prop`, `About / team`, `Contact`, `Site settings`, `Advanced JSON`). Campos en `FieldCard` con contadores y validación inline.
+
+**Rail derecho** — pestaña **Changes**: diff draft vs publicado (`ChangeRow`), banners de unsaved/validación, **Approve & publish**. Pestaña **History**: stub con `lastPublishedAt` y `lastCommitSha`.
+
+Las pantallas de auth (`LoginForm`, etc.) conservan el estilo anterior (`slate` / `dark-blue`). El editor usa tokens `editor.*` en `tailwind.config.js` e `index.css`.
+
+### Componentes y datos
 
 ```mermaid
 graph TD
     subgraph Browser
         App["App.tsx\n(puerta de auth)"]
-        Dashboard["Dashboard\n(formularios de sección + locale)"]
-        Auth["infrastructure/auth.ts\n(cargador lazy)"]
+        Dashboard["Dashboard"]
+        Auth["infrastructure/auth.ts"]
         API["infrastructure/contentApi.ts"]
     end
 
     subgraph "Capa de auth"
-        MockAuth["auth.mock.ts\n(sessionStorage)"]
+        MockAuth["auth.mock.ts"]
         CognitoAuth["auth.cognito.ts"]
     end
 
     subgraph "Modo real"
         Cognito["AWS Cognito"]
-        ContentAPI["Content API\n(Cloudflare Worker)"]
+        ContentAPI["Content API Worker"]
     end
 
     subgraph "Modo mock"
-        VitePlugin["Plugin mock de Vite"]
+        VitePlugin["vite.mockApi.ts"]
         LocalDisk["apps/static/content/"]
     end
 
@@ -90,30 +129,57 @@ graph TD
     VitePlugin --> LocalDisk
 ```
 
-Vista resumida de componentes locales. Secuencias detalladas, principios de diseño y servicios AWS: [docs/admin-authentication.md](../../docs/admin-authentication.md).
-
 ### Árbol de archivos
 
 ```
+public/
+  bonae-logo.svg             # Logo Bonae (top bar)
 src/
-  config.ts                  # Lee vars de entorno, expone isConfigured()
-  App.tsx                    # Puerta de auth: login | forgot | reset | newPassword | Dashboard
+  config.ts
+  App.tsx
+  index.css                  # Utilidades editor (.editor-shell, .btn-editor-save, …)
   infrastructure/
-    auth.ts                  # Carga lazy auth.mock.ts o auth.cognito.ts
-    auth.mock.ts             # Auth no-op para modo mock
-    auth.cognito.ts          # SRP, refresh, forgot/confirm password
-    cognitoErrors.ts         # Mensajes de error amigables (Cognito)
-    passwordPolicy.ts        # Validación de contraseña (cliente)
+    auth.ts / auth.mock.ts / auth.cognito.ts
+    cognitoErrors.ts
+    passwordPolicy.ts
+    session.ts
     contentApi.ts            # fetchContentState, saveDraft, publish, publish/status
-    contentReview.ts         # Review modal: diff, validation, parity
+    contentReview.ts         # buildPublishReview, diff labels, validation gate
+    settingsEditorAdapter.ts # Formulario Site settings ↔ ES/EN docs + SiteSettings
   hooks/
     useContentWorkspace.ts   # Autosave, discard, bootstrap state
     usePublishFlow.ts        # Publish overlay + polling
+    useFieldValidation.ts    # Límites de caracteres y required por sección
+    useFormEditSync.ts       # watch() subscription → onEdit sin re-render loop
+    publishStatusPoller.ts
   ui/
-    Dashboard.tsx            # Review & publish, status bar, discard
+    Dashboard.tsx            # Orquesta shell, secciones, rail, publish
+    editor/
+      EditorShell.tsx
+      EditorTopBar.tsx
+      EditorSidebar.tsx
+      EditorRail.tsx
+      EditorRailChanges.tsx
+      EditorRailHistory.tsx
+      WorkflowStepper.tsx
+      types.ts               # SectionId, NAV_ITEMS, RailTab
+    sections/
+      HeroSectionForm.tsx
+      ValuePropSectionForm.tsx
+      AboutSectionForm.tsx
+      ContactSectionForm.tsx
+      SettingsSectionForm.tsx
+      AdvancedJsonSection.tsx
     components/
-      PublishingOverlay.tsx
-      ReviewPublishModal.tsx
+      FieldCard.tsx
+      SectionHeader.tsx
+      CharCounter.tsx
+      FieldError.tsx
+      InlineCallout.tsx
+      ChangeRow.tsx
+      JsonReadOnlyViewer.tsx
+      UserMenu.tsx
+      PublishStatusIndicator.tsx
     LoginForm.tsx
     ForgotPasswordForm.tsx
     ResetPasswordForm.tsx
@@ -122,32 +188,37 @@ src/
 
 ### Superficie de API (`contentApi.ts`)
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `GET` | `/content/state` | Bootstrap: borradores, publicado, publishState |
-| `GET` | `/content/drafts/{es\|en\|settings}` | Cargar borrador (legacy; preferir `/content/state`) |
-| `PUT` | `/content/drafts/{es\|en\|settings}` | Guardar borrador (autosave y Save draft) |
-| `POST` | `/content/drafts/discard` | Descartar todos los borradores |
-| `POST` | `/content/publish` | Iniciar publicación → `{ accepted: true }` |
-| `GET` | `/content/publish/status` | Estado del overlay (poll cada ~1.5s) |
+Catálogo completo (Postman + secciones UI): [admin-content-api-map.md](../../docs/admin-content-api-map.md).
 
-En modo mock el plugin Vite (`mockContentStore.ts`) simula la misma API y máquina de estados de publish.
+Resumen: `GET /content/state` al cargar; `PUT /content/drafts/*` en autosave y Save draft; `POST /content/drafts/discard` al descartar; `POST /content/publish` + poll `GET /content/publish/status` desde el rail.
 
 ## Flujo del editor
 
 1. Iniciar sesión (Cognito `Administrators`, o cualquier credencial en modo mock)
 2. `GET /content/state` carga borradores y baseline publicado
-3. Editar — autosave (~2.5s) o **Save draft** → `PUT /content/drafts/{locale}`
-4. **Review & publish** — diff/validación ES, EN y settings
-5. Overlay: committing → building → success (poll `GET /content/publish/status`)
+3. Editar una sección — cambios en memoria; autosave (~2.5s) persiste vía `PUT /content/drafts/{locale}`
+4. Estado visible en top bar: **Unsaved edits** → **Saving draft…** → **Draft saved {time}**. **Save draft** fuerza `flushPendingSaves`
+5. **Changes** (rail) — diff entre draft actual y publicado (`buildPublishReview`). Validación inline bloquea **Approve & publish**
+6. **Approve & publish** → overlay de publish; poll `GET /content/publish/status` hasta success/failure
 
 En producción el callback de **Deploy site** cierra el paso *building*. En mock el éxito se simula tras ~2s.
 
+### Site settings
+
+El formulario de configuración usa campos orientados al editor (`siteName`, `whatsapp`, `email`, …). `settingsEditorAdapter.ts` reparte los valores en `ContentDocument` ES/EN y `SiteSettings` al guardar.
+
+### Validación
+
+- Límites de caracteres y campos requeridos por sección (`useFieldValidation`)
+- Badges de error en la navegación lateral
+- Paridad ES/EN y esquema Zod al publicar (cliente vía `contentReview` + servidor en el Worker)
+- Los errores de validación no bloquean el autosave de borrador; sí bloquean publish
+
 ## Reglas
 
-- La paridad de locale se valida al **publicar** (cliente y servidor), no en cada autosave de borrador.
-- El sitio estático lee solo `content/published/` en git — los borradores viven en ContentStore DO (o en memoria en mock).
-- Los usuarios son solo por invitación — sin auto-registro. Crear usuarios vía `aws cognito-idp admin-create-user`.
+- Paridad ES/EN y esquema Zod se validan al **publicar**, no en cada autosave de borrador.
+- El sitio estático solo lee `content/published/`.
+- Usuarios solo por invitación — ver sección Cognito más abajo.
 
 ## Deploy
 

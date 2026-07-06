@@ -1,12 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import type { ContentDocument, ValuePropIcon } from '@bonae/content';
+import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
+import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
+import { useFormEditSync } from '../../hooks/useFormEditSync.js';
+import { FieldCard } from '../components/FieldCard.js';
+import { SectionHeader } from '../components/SectionHeader.js';
+import { InlineCallout } from '../components/InlineCallout.js';
 
 interface Props {
   doc: ContentDocument;
-  onSave: () => void;
   onEdit?: (doc: ContentDocument) => void;
-  saving?: boolean;
+  errors: LocaleSectionErrors;
 }
 
 const valuePropIconOptions: ValuePropIcon[] = ['accessible', 'simple', 'secure', 'close', 'education'];
@@ -32,7 +37,10 @@ const defaultItem = (): ValuePropFormValues['items'][number] => ({
   backDescription: '',
 });
 
-export function ValuePropSectionForm({ doc, onSave, onEdit, saving }: Props) {
+export function ValuePropSectionForm({ doc, onEdit, errors }: Props) {
+  const docRef = useRef(doc);
+  docRef.current = doc;
+
   const { register, control, watch } = useForm<ValuePropFormValues>({
     defaultValues: {
       sectionBadge: doc.valueProp.sectionBadge,
@@ -42,86 +50,114 @@ export function ValuePropSectionForm({ doc, onSave, onEdit, saving }: Props) {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({ control, name: 'items' });
+  const { fields, append, remove, move } = useFieldArray({ control, name: 'items' });
   const values = watch();
-  const isFirstRender = useRef(true);
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    onEdit?.({ ...doc, valueProp: { ...doc.valueProp, ...values } });
-  }, [values]);
+  useFormEditSync(watch, (formValues) => {
+    const current = docRef.current;
+    onEdit?.({ ...current, valueProp: { ...current.valueProp, ...formValues } });
+  });
 
   return (
-    <form
-      className="card space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave();
-      }}
-    >
-      <h2 className="text-lg font-bold">Value proposition</h2>
-      <input className="field-input" placeholder="Section badge" {...register('sectionBadge')} />
-      <input className="field-input" placeholder="Title" {...register('title')} />
-      <textarea className="field-input min-h-[80px]" placeholder="Subheadline" {...register('subheadline')} />
+    <div className="space-y-4">
+      <SectionHeader title="Services" description="Grid of what you offer" />
 
-      <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+      <FieldCard label="Eyebrow label" error={getLocaleFieldError(errors, 'valueProp', 'sectionBadge')}>
+        <input className="editor-input" {...register('sectionBadge')} />
+      </FieldCard>
+
+      <FieldCard
+        label="Section title"
+        counter={{ current: (values.title ?? '').length, max: 90 }}
+        error={getLocaleFieldError(errors, 'valueProp', 'title')}
+      >
+        <input className="editor-input" {...register('title')} />
+      </FieldCard>
+
+      <InlineCallout tone="warning">
         ES and EN must have the same number of cards. Add or remove cards in both locales before publishing.
-      </p>
+      </InlineCallout>
+
+      <div className="flex items-center justify-between">
+        <span className="editor-label">Service cards</span>
+        <button
+          type="button"
+          className="btn-editor-add"
+          disabled={fields.length >= 8}
+          onClick={() => append(defaultItem())}
+        >
+          + Add card
+        </button>
+      </div>
 
       {fields.map((field, index) => (
-        <div key={field.id} className="rounded-lg border border-slate-200 p-4 space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <label className="text-xs font-semibold uppercase text-slate-500">Card {index + 1}</label>
-            <button
-              type="button"
-              className="text-sm text-red-600 hover:text-red-800 disabled:opacity-40 disabled:cursor-not-allowed"
-              disabled={fields.length <= 1}
-              onClick={() => remove(index)}
-            >
-              Remove
-            </button>
+        <div key={field.id} className="editor-card space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase text-editor-faint">Card {index + 1}</span>
+            <div className="flex gap-1.5">
+              <button type="button" className="btn-editor-mini" disabled={index === 0} onClick={() => move(index, index - 1)}>
+                ↑
+              </button>
+              <button
+                type="button"
+                className="btn-editor-mini"
+                disabled={index === fields.length - 1}
+                onClick={() => move(index, index + 1)}
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                className="btn-editor-mini-danger"
+                disabled={fields.length <= 1}
+                onClick={() => remove(index)}
+              >
+                Remove
+              </button>
+            </div>
           </div>
-          <select className="field-input" {...register(`items.${index}.icon` as const)}>
-            {valuePropIconOptions.map((icon) => (
-              <option key={icon} value={icon}>
-                {icon}
-              </option>
-            ))}
-          </select>
-          <input className="field-input" placeholder="Title (frente)" {...register(`items.${index}.title` as const)} />
-          <textarea
-            className="field-input min-h-[80px]"
-            placeholder="Descripción (frente)"
-            {...register(`items.${index}.description` as const)}
-          />
-          <input
-            className="field-input"
-            placeholder="Etiqueta reverso (ej. Nuestra propuesta, Accesible…)"
-            {...register(`items.${index}.backLabel` as const)}
-          />
-          <textarea
-            className="field-input min-h-[80px]"
-            placeholder="Texto reverso"
-            {...register(`items.${index}.backDescription` as const)}
-          />
+          <input className="editor-input" placeholder="Title" {...register(`items.${index}.title` as const)} />
+          {getLocaleFieldError(errors, 'valueProp', 'items', index, 'title') && (
+            <p className="editor-error-text">{getLocaleFieldError(errors, 'valueProp', 'items', index, 'title')}</p>
+          )}
+          <textarea className="editor-textarea-sm" placeholder="Description" {...register(`items.${index}.description` as const)} />
+          {getLocaleFieldError(errors, 'valueProp', 'items', index, 'description') && (
+            <p className="editor-error-text">
+              {getLocaleFieldError(errors, 'valueProp', 'items', index, 'description')}
+            </p>
+          )}
+          <button
+            type="button"
+            className="text-xs font-semibold text-editor-muted underline"
+            onClick={() => setExpandedCards((s) => ({ ...s, [field.id]: !s[field.id] }))}
+          >
+            {expandedCards[field.id] ? 'Hide card details' : 'Card details (flip side)'}
+          </button>
+          {expandedCards[field.id] && (
+            <div className="space-y-2 border-t border-editor-track pt-2">
+              <select className="editor-input" {...register(`items.${index}.icon` as const)}>
+                {valuePropIconOptions.map((icon) => (
+                  <option key={icon} value={icon}>
+                    {icon}
+                  </option>
+                ))}
+              </select>
+              <input className="editor-input" placeholder="Back label" {...register(`items.${index}.backLabel` as const)} />
+              <textarea
+                className="editor-textarea-sm"
+                placeholder="Back description"
+                {...register(`items.${index}.backDescription` as const)}
+              />
+            </div>
+          )}
         </div>
       ))}
 
-      <button
-        type="button"
-        className="btn-secondary w-full"
-        disabled={fields.length >= 8}
-        onClick={() => append(defaultItem())}
-      >
-        Add card
-      </button>
-
-      <button type="submit" className="btn-primary" disabled={saving}>
-        {saving ? 'Saving…' : 'Save draft'}
-      </button>
-    </form>
+      <details className="editor-card">
+        <summary className="cursor-pointer text-xs font-semibold text-editor-muted">Advanced: section subheadline</summary>
+        <textarea className="editor-textarea mt-2" {...register('subheadline')} />
+      </details>
+    </div>
   );
 }

@@ -37,5 +37,6 @@ npm run content:validate           # published/
 
 ## Reglas
 
-- Los documentos ES y EN deben tener **longitudes de arreglo coincidentes** en todas las rutas mapeadas. `assertLocaleParity` se llama en cada guardado de borrador y de nuevo al publicar.
-- El entrypoint `cli.js` lo usan los hooks `prebuild` y `predev` en `apps/static` — si `dist/` no existe, esos hooks fallarán.
+- **Paridad ES/EN** (`assertLocaleParity` / `checkLocaleParity`) se aplica al **publicar**, no en cada autosave de borrador.
+- `loadPublishedFromDir` — Astro carga solo `published/` en build.
+- El CLI valida únicamente `published/` (`validate:published`).

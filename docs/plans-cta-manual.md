@@ -57,7 +57,7 @@ npm run admin:dev:mock
 ```
 1. **Advanced JSON** → busca el objeto `"plans"`.
 2. Edita `title`, `subtitle`, `cta` en ES y EN.
-3. Guarda draft en ambos idiomas → **Publish site**.
+3. Guarda draft en ambos idiomas → **Approve & publish** en el rail.
 
 ### JSON directo
 - Sitio en build: `apps/static/content/published/es.json` y `en.json`

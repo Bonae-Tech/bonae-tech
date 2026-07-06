@@ -26,3 +26,121 @@ body {
 .field-input {
   @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-dark-blue focus:ring-1 focus:ring-dark-blue;
 }
+
+@layer components {
+  .editor-canvas {
+    @apply min-h-screen bg-editor-canvas p-4 md:p-10;
+  }
+
+  .editor-shell {
+    @apply mx-auto flex min-h-[calc(100vh-2rem)] max-w-[1440px] flex-col overflow-hidden rounded-[14px] border border-editor-border bg-editor-surface shadow-editor-shell md:min-h-[860px];
+  }
+
+  .editor-card {
+    @apply rounded-[10px] border border-editor-border bg-white p-3.5;
+  }
+
+  .editor-label {
+    @apply text-[12.5px] font-bold text-editor-brand;
+  }
+
+  .editor-chip {
+    @apply inline-block rounded-md bg-editor-accentSoft px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-editor-brand;
+  }
+
+  .editor-input {
+    @apply mt-1.5 w-full rounded-lg border border-editor-input bg-white px-3 py-2 text-[13.5px] text-editor-text outline-none focus:border-editor-brand focus:ring-1 focus:ring-editor-brand;
+  }
+
+  .editor-textarea {
+    @apply editor-input min-h-[74px] resize-y leading-relaxed;
+  }
+
+  .editor-textarea-sm {
+    @apply editor-input min-h-[54px] resize-y leading-snug;
+  }
+
+  .editor-nav-btn {
+    @apply flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold text-editor-muted transition-colors hover:bg-editor-track focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-brand;
+  }
+
+  .editor-nav-btn-active {
+    @apply bg-editor-accentSoft text-editor-brand;
+  }
+
+  .editor-segment-track {
+    @apply flex gap-0.5 rounded-lg bg-editor-track p-0.5;
+  }
+
+  .editor-segment-btn {
+    @apply flex-1 rounded-md border-none py-1.5 text-xs font-bold text-editor-faint transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-brand;
+  }
+
+  .editor-segment-btn-active {
+    @apply bg-white text-editor-brand shadow-editor-segment;
+  }
+
+  .btn-editor-save {
+    @apply inline-flex items-center justify-center rounded-lg border-none px-3.5 py-2 text-[12.5px] font-bold text-white transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-brand disabled:cursor-not-allowed disabled:bg-editor-disabled;
+  }
+
+  .btn-editor-save-active {
+    @apply bg-editor-brand hover:opacity-90;
+  }
+
+  .btn-editor-publish {
+    @apply w-full rounded-lg border-none px-4 py-2.5 text-[13px] font-bold text-white transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-accent disabled:cursor-not-allowed disabled:bg-editor-disabled;
+  }
+
+  .btn-editor-publish-active {
+    @apply bg-editor-accent hover:opacity-90;
+  }
+
+  .btn-editor-secondary {
+    @apply w-full rounded-lg border border-editor-input bg-white px-3 py-2 text-[12.5px] font-semibold text-editor-muted transition-colors hover:border-editor-faint hover:text-editor-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-brand disabled:opacity-50;
+  }
+
+  .btn-editor-mini {
+    @apply rounded-md border border-editor-input bg-white px-2 py-0.5 text-[11px] font-semibold text-editor-muted hover:border-editor-faint focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-brand;
+  }
+
+  .btn-editor-mini-danger {
+    @apply rounded-md border border-editor-warningBorder bg-white px-2 py-0.5 text-[11px] font-semibold text-editor-error hover:bg-editor-errorBg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-error;
+  }
+
+  .btn-editor-add {
+    @apply rounded-md border border-editor-border bg-editor-accentSoft px-2.5 py-1.5 text-xs font-bold text-editor-brand hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-brand;
+  }
+
+  .editor-banner-warning {
+    @apply rounded-lg border border-editor-warningBorder bg-editor-warningBg px-3 py-2 text-[11.5px] font-semibold text-editor-warning;
+  }
+
+  .editor-banner-error {
+    @apply rounded-lg border border-editor-errorBorder bg-editor-errorBg px-[11px] py-[9px] text-[11.5px] font-semibold text-editor-errorStrike;
+  }
+
+  .editor-error-text {
+    @apply mt-1 text-[11.5px] font-semibold text-editor-error;
+  }
+
+  .editor-counter {
+    @apply text-[11px] text-editor-faint;
+  }
+
+  .editor-info-callout {
+    @apply rounded-[10px] border border-editor-border bg-editor-accentSoft px-3.5 py-3 text-xs text-editor-muted;
+  }
+
+  .editor-rail-tab {
+    @apply flex-1 border-b-2 border-transparent py-[11px] text-[12.5px] font-bold text-editor-faint transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-accent;
+  }
+
+  .editor-rail-tab-active {
+    @apply border-editor-accent text-editor-text;
+  }
+
+  .editor-selection ::selection {
+    background: #ffd9cf;
+  }
+}
