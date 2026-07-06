@@ -51,14 +51,14 @@
       {
         "icon": "close",
         "title": "Consultoría digital",
-        "description": "Deja atrás los procesos manuales y obsoletos. Diagnosticamos tu negocio para eliminar tareas repetitivas, automatizar tu operación diaria y adaptar tu empresa al reto de reducir errores.",
+        "description": "Deja atrás los procesos manuales. Diagnosticamos tu negocio para eliminar tareas repetitivas, automatizar tu operación y reducir errores drásticamente.",
         "backLabel": "Seguro",
         "backDescription": "Optimizamos cada proceso técnico y estratégico para profesionalizar tu imagen y proteger la confianza de tus clientes."
       },
       {
         "icon": "education",
         "title": "Plataformas de E-learning y Aulas Virtuales",
-        "description": "Creamos y configuramos tu propia academia online para que puedas digitalizar tus cursos, automatizar las inscripciones y vender tu conocimiento sin límites geográficos.",
+        "description": "Creamos tu academia online para que digitalices tus cursos, automatices las inscripciones y vendas tu conocimiento sin límites geográficos.",
         "backLabel": "Educación sin Fronteras",
         "backDescription": "Desplegamos tus cursos y clases para que tu conocimiento llegue a cualquier parte del mundo."
       }

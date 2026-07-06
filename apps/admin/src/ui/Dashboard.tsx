@@ -1,18 +1,22 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 import type { Locale } from '@bonae/content/schema';
+import { buildPublishReview, reviewHasNoChanges } from '../infrastructure/contentReview.js';
+import { applySettingsForm } from '../infrastructure/settingsEditorAdapter.js';
 import { useContentWorkspace } from '../hooks/useContentWorkspace.js';
+import { useFieldValidation } from '../hooks/useFieldValidation.js';
 import { usePublishFlow } from '../hooks/usePublishFlow.js';
+import { EditorShell } from './editor/EditorShell.js';
+import { EditorTopBar } from './editor/EditorTopBar.js';
+import { EditorSidebar } from './editor/EditorSidebar.js';
+import { EditorRail } from './editor/EditorRail.js';
+import type { SectionId } from './editor/types.js';
 import { HeroSectionForm } from './sections/HeroSectionForm.js';
 import { ValuePropSectionForm } from './sections/ValuePropSectionForm.js';
 import { AboutSectionForm } from './sections/AboutSectionForm.js';
 import { ContactSectionForm } from './sections/ContactSectionForm.js';
 import { SettingsSectionForm } from './sections/SettingsSectionForm.js';
-import { JsonSectionEditor } from './components/JsonSectionEditor.js';
-import { PublishStatusIndicator } from './components/PublishStatusIndicator.js';
-import { ReviewPublishModal } from './components/ReviewPublishModal.js';
-
-type SectionId = 'hero' | 'valueProp' | 'about' | 'contact' | 'settings' | 'advanced';
+import { AdvancedJsonSection } from './sections/AdvancedJsonSection.js';
 
 interface Props {
   onLogout: () => void;
@@ -20,28 +24,20 @@ interface Props {
   onDismissSessionMessage?: () => void;
 }
 
-function saveStatusLabel(status: string, error: string | null): string | null {
-  switch (status) {
-    case 'pending':
-      return 'Unsaved changes…';
-    case 'saving':
-      return 'Saving draft…';
-    case 'saved':
-      return 'Draft saved.';
-    case 'error':
-      return error ?? 'Save failed.';
-    default:
-      return null;
-  }
+function formatSavedTime(date: Date): string {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }: Props) {
   const [locale, setLocale] = useState<Locale>('es');
   const [section, setSection] = useState<SectionId>('hero');
-  const [reviewOpen, setReviewOpen] = useState(false);
+  const [railOpen, setRailOpen] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const queryClient = useQueryClient();
 
   const workspace = useContentWorkspace();
+  const validation = useFieldValidation(workspace.draftEs, workspace.draftEn, workspace.draftSettings);
+
   const publishFlow = usePublishFlow(
     () => {
       void workspace.reload();
@@ -53,32 +49,24 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
   const { startPublish, statusLabel, isPublishing, isFailed, isTracking, runUrl, dismissPublishTracking } =
     publishFlow;
 
-  const manualSaveMutation = useMutation({
-    mutationFn: async () => {
-      if (section === 'settings') {
-        await workspace.saveDraftManual('settings');
-      } else {
-        await workspace.saveDraftManual(locale);
-      }
-    },
+  useEffect(() => {
+    if (workspace.saveStatus === 'saved') {
+      setSavedAt(new Date());
+    }
+  }, [workspace.saveStatus]);
+
+  const saveMutation = useMutation({
+    mutationFn: () => workspace.flushPendingSaves(),
   });
 
   const discardMutation = useMutation({
     mutationFn: workspace.discardAll,
   });
 
-  const navItems: [SectionId, string][] = [
-    ['hero', 'Hero'],
-    ['valueProp', 'Services / value prop'],
-    ['about', 'About / team'],
-    ['contact', 'Contact'],
-    ['settings', 'Site settings'],
-    ['advanced', 'Advanced JSON'],
-  ];
-
-  const statusMessage = saveStatusLabel(workspace.saveStatus, workspace.saveError);
   const doc = locale === 'es' ? workspace.draftEs : workspace.draftEn;
+  const localeErrors = locale === 'es' ? validation.errorsEs : validation.errorsEn;
   const updateDoc = locale === 'es' ? workspace.updateDraftEs : workspace.updateDraftEn;
+
   const canReview =
     workspace.draftEs &&
     workspace.draftEn &&
@@ -87,113 +75,131 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
     workspace.publishedEn &&
     workspace.publishedSettings;
 
+  const review = canReview
+    ? buildPublishReview({
+        draft: {
+          es: workspace.draftEs!,
+          en: workspace.draftEn!,
+          settings: workspace.draftSettings!,
+        },
+        published: {
+          es: workspace.publishedEs!,
+          en: workspace.publishedEn!,
+          settings: workspace.publishedSettings!,
+        },
+      })
+    : null;
+
+  const hasPendingChanges = review ? !reviewHasNoChanges(review) : false;
+  const pendingCount = review?.changeCount ?? 0;
+
+  const saveStatusText = useMemo(() => {
+    switch (workspace.saveStatus) {
+      case 'pending':
+        return 'Unsaved edits';
+      case 'saving':
+        return 'Saving draft…';
+      case 'saved':
+        return savedAt ? `Draft saved ${formatSavedTime(savedAt)}` : 'Draft saved';
+      case 'error':
+        return workspace.saveError ?? 'Save failed';
+      default:
+        return 'Draft up to date';
+    }
+  }, [workspace.saveStatus, workspace.saveError, savedAt]);
+
+  const saveStatusTone =
+    workspace.saveStatus === 'pending' || workspace.saveStatus === 'saving'
+      ? 'warning'
+      : workspace.saveStatus === 'error'
+        ? 'error'
+        : 'muted';
+
+  const saveDraftDisabled = workspace.saveStatus !== 'pending';
+
+  const handleApplySettings = useCallback(
+    (values: Parameters<typeof applySettingsForm>[0]) => {
+      if (!workspace.draftEs || !workspace.draftEn || !workspace.draftSettings) {
+        return;
+      }
+      const next = applySettingsForm(values, workspace.draftEs, workspace.draftEn, workspace.draftSettings);
+      workspace.updateDraftEs(next.es);
+      workspace.updateDraftEn(next.en);
+      workspace.updateSettings(next.settings);
+    },
+    [workspace],
+  );
+
+  const lastPublishedLabel = workspace.lastPublishedAt
+    ? new Date(workspace.lastPublishedAt).toLocaleString()
+    : 'Not published yet';
+
+  const jsonTree =
+    workspace.draftEs && workspace.draftEn && workspace.draftSettings
+      ? { es: workspace.draftEs, en: workspace.draftEn, settings: workspace.draftSettings }
+      : null;
+
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <div>
-            <h1 className="text-lg font-bold text-slate-900">BONAE Content Admin</h1>
-            <p className="text-xs text-slate-500">Draft → review → publish</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => setReviewOpen(true)}
-              disabled={!canReview || isPublishing}
-            >
-              Review &amp; publish
-            </button>
-            <button type="button" className="btn-secondary" onClick={onLogout}>
-              Sign out
-            </button>
-          </div>
-        </div>
-        <div className="border-t border-slate-100 bg-slate-50">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2 text-sm text-slate-600">
-            <span>
-              {workspace.lastPublishedAt
-                ? `Last published ${new Date(workspace.lastPublishedAt).toLocaleString()}`
-                : 'Not published yet'}
-            </span>
-            <div className="flex flex-wrap items-center gap-3">
-              <PublishStatusIndicator
-                label={statusLabel}
-                runUrl={runUrl}
-                failed={isFailed}
-                tracking={isTracking}
-                onStopTracking={dismissPublishTracking}
-              />
-              {statusMessage && <span>{statusMessage}</span>}
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => discardMutation.mutate()}
-                disabled={discardMutation.isPending}
-              >
-                Discard all drafts
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[220px_1fr]">
-        <aside className="card h-fit space-y-4">
-          {section !== 'settings' && (
-            <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Locale</p>
-              <div className="flex gap-2">
-                {(['es', 'en'] as Locale[]).map((loc) => (
-                  <button
-                    key={loc}
-                    type="button"
-                    className={`rounded-lg px-3 py-1 text-sm font-medium ${locale === loc ? 'bg-dark-blue text-white' : 'bg-slate-100 text-slate-700'}`}
-                    onClick={() => setLocale(loc)}
-                  >
-                    {loc.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <nav className="flex flex-col gap-1">
-            {navItems.map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                className={`rounded-lg px-3 py-2 text-left text-sm ${section === id ? 'bg-slate-100 font-semibold' : 'hover:bg-slate-50'}`}
-                onClick={() => setSection(id)}
-              >
-                {label}
-              </button>
-            ))}
-          </nav>
-        </aside>
-
-        <main className="space-y-4">
+    <EditorShell
+      showRailToggle={!!canReview}
+      onOpenRail={() => setRailOpen(true)}
+      topBar={
+        <EditorTopBar
+          saveStatusText={saveStatusText}
+          saveStatusTone={saveStatusTone}
+          saveDraftDisabled={saveDraftDisabled}
+          saving={workspace.saveStatus === 'saving' || saveMutation.isPending}
+          onSaveDraft={() => saveMutation.mutate()}
+          lastPublishedLabel={lastPublishedLabel}
+          userInitials="BT"
+          onLogout={onLogout}
+          hasPendingChanges={hasPendingChanges}
+          isPublishing={isPublishing}
+          publishStatusLabel={statusLabel}
+          publishFailed={isFailed}
+          publishRunUrl={runUrl}
+          publishTracking={isTracking}
+          onStopPublishTracking={dismissPublishTracking}
+        />
+      }
+      sidebar={
+        <EditorSidebar
+          locale={locale}
+          section={section}
+          showLocale={section !== 'settings' && section !== 'advanced'}
+          onLocaleChange={setLocale}
+          onSectionChange={setSection}
+          onDiscard={() => discardMutation.mutate()}
+          discardPending={discardMutation.isPending}
+          navErrorCount={validation.navErrorCount}
+        />
+      }
+      main={
+        <>
           {sessionMessage && (
             <div className="flex items-start justify-between gap-3 rounded-lg bg-emerald-50 px-4 py-2 text-sm text-emerald-900">
               <p>{sessionMessage}</p>
               {onDismissSessionMessage && (
-                <button type="button" className="shrink-0 text-emerald-700 underline" onClick={onDismissSessionMessage}>
+                <button
+                  type="button"
+                  className="shrink-0 text-emerald-700 underline"
+                  onClick={onDismissSessionMessage}
+                >
                   Dismiss
                 </button>
               )}
             </div>
           )}
 
-          {workspace.loading && <div className="card">Loading content…</div>}
-          {workspace.error && <div className="card text-red-700">{workspace.error}</div>}
+          {workspace.loading && <div className="editor-card">Loading content…</div>}
+          {workspace.error && <div className="editor-card text-editor-error">{workspace.error}</div>}
 
           {doc && section === 'hero' && (
             <HeroSectionForm
               key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}
-              onSave={() => manualSaveMutation.mutate()}
-              saving={manualSaveMutation.isPending || workspace.saveStatus === 'saving'}
+              errors={localeErrors}
             />
           )}
           {doc && section === 'valueProp' && (
@@ -201,8 +207,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
               key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}
-              onSave={() => manualSaveMutation.mutate()}
-              saving={manualSaveMutation.isPending || workspace.saveStatus === 'saving'}
+              errors={localeErrors}
             />
           )}
           {doc && section === 'about' && (
@@ -210,8 +215,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
               key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}
-              onSave={() => manualSaveMutation.mutate()}
-              saving={manualSaveMutation.isPending || workspace.saveStatus === 'saving'}
+              errors={localeErrors}
             />
           )}
           {doc && section === 'contact' && (
@@ -219,55 +223,54 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
               key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}
-              onSave={() => manualSaveMutation.mutate()}
-              saving={manualSaveMutation.isPending || workspace.saveStatus === 'saving'}
+              errors={localeErrors}
             />
           )}
-          {doc && section === 'advanced' && (
-            <JsonSectionEditor
-              key={`${locale}-${workspace.contentEpoch}`}
-              title={`Full document (${locale})`}
-              value={doc}
-              onSave={(next) => {
-                updateDoc(next);
-                void workspace.saveDraftManual(locale);
-              }}
-              saving={manualSaveMutation.isPending || workspace.saveStatus === 'saving'}
-            />
-          )}
-          {section === 'settings' && workspace.draftSettings && (
+          {section === 'settings' && workspace.draftEs && workspace.draftEn && workspace.draftSettings && (
             <SettingsSectionForm
               key={`settings-${workspace.contentEpoch}`}
+              draftEs={workspace.draftEs}
+              draftEn={workspace.draftEn}
               settings={workspace.draftSettings}
-              onEdit={workspace.updateSettings}
-              onSave={() => manualSaveMutation.mutate()}
-              saving={manualSaveMutation.isPending || workspace.saveStatus === 'saving'}
+              onApply={handleApplySettings}
+              errors={validation.settingsErrors}
             />
           )}
-        </main>
-      </div>
-
-      {canReview && (
-        <ReviewPublishModal
-          open={reviewOpen}
-          draft={{
-            es: workspace.draftEs!,
-            en: workspace.draftEn!,
-            settings: workspace.draftSettings!,
-          }}
-          published={{
-            es: workspace.publishedEs!,
-            en: workspace.publishedEn!,
-            settings: workspace.publishedSettings!,
-          }}
-          publishing={isPublishing}
-          onClose={() => setReviewOpen(false)}
-          onConfirm={() => {
-            setReviewOpen(false);
-            void startPublish(workspace.flushPendingSaves);
-          }}
-        />
-      )}
-    </div>
+          {section === 'advanced' && jsonTree && (
+            <AdvancedJsonSection key={`json-${workspace.contentEpoch}`} value={jsonTree} />
+          )}
+        </>
+      }
+      rail={
+        canReview ? (
+          <EditorRail
+            draft={{
+              es: workspace.draftEs!,
+              en: workspace.draftEn!,
+              settings: workspace.draftSettings!,
+            }}
+            published={{
+              es: workspace.publishedEs!,
+              en: workspace.publishedEn!,
+              settings: workspace.publishedSettings!,
+            }}
+            saveStatus={workspace.saveStatus}
+            publishing={isPublishing}
+            hasClientErrors={validation.hasGlobalErrors}
+            pendingCount={pendingCount}
+            lastPublishedAt={workspace.lastPublishedAt}
+            lastCommitSha={workspace.lastCommitSha}
+            onPublish={() => {
+              setRailOpen(false);
+              void startPublish(workspace.flushPendingSaves);
+            }}
+            mobileOpen={railOpen}
+            onMobileClose={() => setRailOpen(false)}
+          />
+        ) : (
+          <aside className="hidden w-[320px] shrink-0 border-l border-editor-border bg-white lg:block" />
+        )
+      }
+    />
   );
 }

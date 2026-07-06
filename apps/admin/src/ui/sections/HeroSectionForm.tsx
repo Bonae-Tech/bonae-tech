@@ -1,49 +1,76 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
+import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
+import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
+import { useFormEditSync } from '../../hooks/useFormEditSync.js';
+import { FieldCard } from '../components/FieldCard.js';
+import { SectionHeader } from '../components/SectionHeader.js';
 
 interface Props {
   doc: ContentDocument;
-  onSave: () => void;
   onEdit?: (doc: ContentDocument) => void;
-  saving?: boolean;
+  errors: LocaleSectionErrors;
 }
 
 type HeroFields = ContentDocument['hero'];
 
-export function HeroSectionForm({ doc, onSave, onEdit, saving }: Props) {
+const FIELD_LABELS: Record<keyof HeroFields, string> = {
+  badge: 'Badge',
+  headline: 'Headline',
+  subheadline: 'Subheadline',
+  cta: 'Primary button',
+  ctaSecondary: 'Secondary button',
+  ctaSub: 'Trust note',
+};
+
+const COUNTERS: Partial<Record<keyof HeroFields, number>> = {
+  badge: 60,
+  headline: 90,
+  subheadline: 240,
+};
+
+export function HeroSectionForm({ doc, onEdit, errors }: Props) {
+  const docRef = useRef(doc);
+  docRef.current = doc;
+
   const { register, watch } = useForm<HeroFields>({ defaultValues: doc.hero });
   const values = watch();
-  const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    onEdit?.({ ...doc, hero: values });
-  }, [values]);
+  useFormEditSync(watch, (formValues) => {
+    onEdit?.({ ...docRef.current, hero: formValues });
+  });
 
   return (
-    <form
-      className="card space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave();
-      }}
-    >
-      <h2 className="text-lg font-bold">Hero</h2>
-      {(['badge', 'headline', 'subheadline', 'cta', 'ctaSecondary', 'ctaSub'] as const).map((field) => (
-        <div key={field}>
-          <label className="field-label">{field}</label>
+    <div className="space-y-4">
+      <SectionHeader title="Hero" description="First thing visitors see" />
+
+      {(['badge', 'headline', 'subheadline'] as const).map((field) => (
+        <FieldCard
+          key={field}
+          label={FIELD_LABELS[field]}
+          counter={COUNTERS[field] ? { current: (values[field] ?? '').length, max: COUNTERS[field]! } : undefined}
+          error={getLocaleFieldError(errors, 'hero', field)}
+        >
           {field === 'subheadline' ? (
-            <textarea className="field-input min-h-[100px]" {...register(field)} />
+            <textarea className="editor-textarea" {...register(field)} />
           ) : (
-            <input className="field-input" {...register(field)} />
+            <input className="editor-input" {...register(field)} />
           )}
-        </div>
+        </FieldCard>
       ))}
-      <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save draft'}</button>
-    </form>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {(['cta', 'ctaSecondary'] as const).map((field) => (
+          <FieldCard key={field} label={FIELD_LABELS[field]} error={getLocaleFieldError(errors, 'hero', field)}>
+            <input className="editor-input" {...register(field)} />
+          </FieldCard>
+        ))}
+      </div>
+
+      <FieldCard label={FIELD_LABELS.ctaSub} error={getLocaleFieldError(errors, 'hero', 'ctaSub')}>
+        <input className="editor-input" {...register('ctaSub')} />
+      </FieldCard>
+    </div>
   );
 }
