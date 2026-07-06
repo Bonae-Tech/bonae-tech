@@ -77,6 +77,15 @@ function truncate(value: string, max = 140): string {
   return `${trimmed.slice(0, max - 1)}…`;
 }
 
+function humanizeSegment(segment: string): string {
+  return segment.charAt(0).toUpperCase() + segment.slice(1).replace(/([A-Z])/g, ' $1');
+}
+
+function formatChangeLabel(locale: ReviewFieldChange['locale'], ...segments: string[]): string {
+  const prefix = locale === 'settings' ? 'Settings' : locale.toUpperCase();
+  return [prefix, ...segments].join(' › ');
+}
+
 function pushStringChange(
   changes: ReviewFieldChange[],
   locale: ReviewFieldChange['locale'],
@@ -110,7 +119,7 @@ function diffRecordStrings(
     if (typeof before !== 'string' || typeof after !== 'string') {
       continue;
     }
-    pushStringChange(changes, locale, `${sectionTitle} · ${fieldLabel}`, before, after);
+    pushStringChange(changes, locale, formatChangeLabel(locale, sectionTitle, fieldLabel), before, after);
   }
 }
 
@@ -135,7 +144,7 @@ function diffValuePropItems(
         }
         changes.push({
           locale,
-          label: `Services · Item ${i + 1} · ${fieldLabel}`,
+          label: formatChangeLabel(locale, 'Services', `Item ${i + 1}`, fieldLabel),
           kind: 'added',
           after: truncate(value),
         });
@@ -149,7 +158,13 @@ function diffValuePropItems(
       if (typeof before !== 'string' || typeof after !== 'string') {
         continue;
       }
-      pushStringChange(changes, locale, `Services · Item ${i + 1} · ${fieldLabel}`, before, after);
+      pushStringChange(
+        changes,
+        locale,
+        formatChangeLabel(locale, 'Services', `Item ${i + 1}`, fieldLabel),
+        before,
+        after,
+      );
     }
   }
 
@@ -163,7 +178,7 @@ function diffValuePropItems(
       .filter(Boolean);
     changes.push({
       locale,
-      label: `Services · Item ${i + 1}`,
+      label: formatChangeLabel(locale, 'Services', `Item ${i + 1}`),
       kind: 'removed',
       before: labelParts.join(' · ') || 'Removed item',
     });
@@ -219,7 +234,7 @@ function diffLocaleDocument(
     if (JSON.stringify(draftSection) !== JSON.stringify(publishedSection)) {
       changes.push({
         locale,
-        label: sectionTitle,
+        label: formatChangeLabel(locale, sectionTitle),
         kind: 'changed',
         before: truncate(JSON.stringify(publishedSection)),
         after: truncate(JSON.stringify(draftSection)),
@@ -238,14 +253,16 @@ function diffSettings(draft: SiteSettings, published: SiteSettings): ReviewField
 
   const walk = (path: string, d: unknown, p: unknown): void => {
     if (typeof d === 'string' && typeof p === 'string') {
-      pushStringChange(changes, 'settings', `Settings · ${path}`, p, d);
+      const segments = path.split(' · ').map(humanizeSegment);
+      pushStringChange(changes, 'settings', formatChangeLabel('settings', ...segments), p, d);
       return;
     }
     if (Array.isArray(d) && Array.isArray(p)) {
       if (JSON.stringify(d) !== JSON.stringify(p)) {
+        const segments = path.split(' · ').map(humanizeSegment);
         changes.push({
           locale: 'settings',
-          label: `Settings · ${path}`,
+          label: formatChangeLabel('settings', ...segments),
           kind: 'changed',
           before: truncate(JSON.stringify(p)),
           after: truncate(JSON.stringify(d)),
@@ -276,7 +293,7 @@ function missingEnTranslationWarnings(
       continue;
     }
 
-    const heroMatch = change.label.match(/^Hero · (.+)$/);
+    const heroMatch = change.label.match(/^ES › Hero › (.+)$/);
     if (heroMatch) {
       const fieldLabel = heroMatch[1];
       const fieldKey = Object.entries(HERO_FIELDS).find(([, label]) => label === fieldLabel)?.[0];

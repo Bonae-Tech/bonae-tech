@@ -45,14 +45,18 @@ export function EditorTopBar({
 
   return (
     <header className="flex shrink-0 items-center justify-between gap-4 border-b border-editor-border bg-white px-4 py-3.5 md:px-6">
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex min-w-0 shrink-0 items-center gap-3 whitespace-nowrap">
         <img
-          src="/bonae-logo.svg"
+          src="/bonae-logo.png"
           alt="Bonae Tech"
-          className="h-[30px] w-[30px] shrink-0 rounded-[7px] object-cover"
+          width={30}
+          height={30}
+          className="h-[30px] w-[30px] shrink-0 rounded-[7px] object-contain"
         />
-        <div className="min-w-0 whitespace-nowrap">
-          <div className="text-[14.5px] font-bold tracking-tight text-editor-text">Bonae Tech · Content</div>
+        <div className="shrink-0 whitespace-nowrap">
+          <div className="text-[14.5px] font-bold tracking-[-0.01em] text-editor-text">
+            Bonae Tech · Content
+          </div>
           <div className="text-[11.5px] text-editor-faint">Marketing site editor</div>
         </div>
       </div>

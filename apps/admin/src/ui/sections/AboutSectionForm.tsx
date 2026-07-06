@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
 import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
 import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
+import { useFormEditSync } from '../../hooks/useFormEditSync.js';
 import { FieldCard } from '../components/FieldCard.js';
 import { SectionHeader } from '../components/SectionHeader.js';
 
@@ -20,6 +21,9 @@ type AboutFormValues = {
 };
 
 export function AboutSectionForm({ doc, onEdit, errors }: Props) {
+  const docRef = useRef(doc);
+  docRef.current = doc;
+
   const { register, control, watch, setValue: setFormValue } = useForm<AboutFormValues>({
     defaultValues: {
       sectionBadge: doc.about.sectionBadge,
@@ -30,25 +34,20 @@ export function AboutSectionForm({ doc, onEdit, errors }: Props) {
   });
   const { fields } = useFieldArray({ control, name: 'members' });
   const values = watch();
-  const isFirstRender = useRef(true);
   const [expandedMember, setExpandedMember] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+  useFormEditSync(watch, (formValues) => {
     onEdit?.({
-      ...doc,
+      ...docRef.current,
       about: {
-        ...doc.about,
-        sectionBadge: values.sectionBadge,
-        title: values.title,
-        foundersTitle: values.foundersTitle,
-        members: values.members,
+        ...docRef.current.about,
+        sectionBadge: formValues.sectionBadge,
+        title: formValues.title,
+        foundersTitle: formValues.foundersTitle,
+        members: formValues.members,
       },
     });
-  }, [values]);
+  });
 
   return (
     <div className="space-y-4">

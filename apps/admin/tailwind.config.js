@@ -26,6 +26,8 @@ export default {
           error: '#C0392B',
           errorBg: '#FBE9E9',
           errorPill: '#FBE1E1',
+          errorBorder: '#F0C4C4',
+          errorStrike: '#B03434',
           disabled: '#C7CBCC',
           input: '#D9DCDD',
           code: '#23292B',

@@ -40,7 +40,6 @@ const defaultItem = (): ValuePropFormValues['items'][number] => ({
 export function ValuePropSectionForm({ doc, onEdit, errors }: Props) {
   const docRef = useRef(doc);
   docRef.current = doc;
-  const syncCount = useRef(0);
 
   const { register, control, watch } = useForm<ValuePropFormValues>({
     defaultValues: {
@@ -56,10 +55,6 @@ export function ValuePropSectionForm({ doc, onEdit, errors }: Props) {
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
   useFormEditSync(watch, (formValues) => {
-    syncCount.current += 1;
-    // #region agent log
-    fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'65ab30'},body:JSON.stringify({sessionId:'65ab30',location:'ValuePropSectionForm.tsx:sync',message:'onSync fired',data:{syncCount:syncCount.current,itemsLen:formValues.items?.length},timestamp:Date.now(),hypothesisId:'A',runId:'post-fix'})}).catch(()=>{});
-    // #endregion
     const current = docRef.current;
     onEdit?.({ ...current, valueProp: { ...current.valueProp, ...formValues } });
   });

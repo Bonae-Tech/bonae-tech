@@ -117,7 +117,7 @@ body {
   }
 
   .editor-banner-error {
-    @apply rounded-lg border border-editor-errorPill bg-editor-errorBg px-3 py-2 text-[11.5px] font-semibold text-editor-error;
+    @apply rounded-lg border border-editor-errorBorder bg-editor-errorBg px-[11px] py-[9px] text-[11.5px] font-semibold text-editor-errorStrike;
   }
 
   .editor-error-text {
@@ -133,7 +133,7 @@ body {
   }
 
   .editor-rail-tab {
-    @apply flex-1 border-b-2 border-transparent py-2.5 text-[12.5px] font-bold text-editor-faint transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-accent;
+    @apply flex-1 border-b-2 border-transparent py-[11px] text-[12.5px] font-bold text-editor-faint transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-accent;
   }
 
   .editor-rail-tab-active {

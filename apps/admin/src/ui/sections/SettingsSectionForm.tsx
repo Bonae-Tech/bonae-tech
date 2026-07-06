@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { ContentDocument, SiteSettings } from '@bonae/content';
 import {
@@ -6,6 +6,7 @@ import {
   type SettingsFormValues,
 } from '../../infrastructure/settingsEditorAdapter.js';
 import type { FieldErrors } from '../../hooks/useFieldValidation.js';
+import { useFormEditSync } from '../../hooks/useFormEditSync.js';
 import { FieldCard } from '../components/FieldCard.js';
 import { SectionHeader } from '../components/SectionHeader.js';
 
@@ -18,21 +19,18 @@ interface Props {
 }
 
 export function SettingsSectionForm({ draftEs, settings, onApply, errors }: Props) {
+  const onApplyRef = useRef(onApply);
+  onApplyRef.current = onApply;
+
   const { register, watch } = useForm<SettingsFormValues>({
     defaultValues: readSettingsForm(draftEs, settings),
   });
   const values = watch();
-  const isFirstRender = useRef(true);
   const [moreOpen, setMoreOpen] = useState(false);
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    onApply(values);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only sync when form values change
-  }, [values]);
+  useFormEditSync(watch, (formValues) => {
+    onApplyRef.current(formValues);
+  });
 
   return (
     <div className="space-y-4">

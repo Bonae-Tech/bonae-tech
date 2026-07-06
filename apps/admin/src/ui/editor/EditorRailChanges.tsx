@@ -36,20 +36,12 @@ export function EditorRailChanges({
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3.5">
         {isUnsaved && (
           <div className="editor-banner-warning mb-3">
-            Unsaved edits — saving shortly. Click <strong>Save draft</strong> to persist immediately before
-            review.
+            You have unsaved edits — click <strong>Save draft</strong> to add them here for review.
           </div>
         )}
         {(review.validationErrors.length > 0 || hasClientErrors) && (
           <div className="editor-banner-error mb-3">
             Validation errors block publish. Fix highlighted fields.
-            {review.validationErrors.length > 0 && (
-              <ul className="mt-1 list-inside list-disc font-normal">
-                {review.validationErrors.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            )}
           </div>
         )}
         {review.warnings.length > 0 && (

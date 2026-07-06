@@ -44,7 +44,7 @@ export function EditorRail({
         >
           Changes
           {pendingCount > 0 && (
-            <span className="ml-1.5 rounded-full bg-editor-accent px-1.5 py-0.5 text-[10px] font-extrabold text-white">
+            <span className="ml-1.5 rounded-[9px] bg-editor-accent px-1.5 py-px text-[10px] font-extrabold text-white">
               {pendingCount}
             </span>
           )}

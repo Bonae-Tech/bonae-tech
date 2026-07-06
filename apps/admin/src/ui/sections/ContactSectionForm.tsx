@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
 import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
 import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
+import { useFormEditSync } from '../../hooks/useFormEditSync.js';
 import { FieldCard } from '../components/FieldCard.js';
 import { SectionHeader } from '../components/SectionHeader.js';
 import { InlineCallout } from '../components/InlineCallout.js';
@@ -14,6 +15,9 @@ interface Props {
 }
 
 export function ContactSectionForm({ doc, onEdit, errors }: Props) {
+  const docRef = useRef(doc);
+  docRef.current = doc;
+
   const { register, watch } = useForm({
     defaultValues: {
       title: doc.contact.title,
@@ -21,22 +25,17 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
     },
   });
   const values = watch();
-  const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+  useFormEditSync(watch, (formValues) => {
     onEdit?.({
-      ...doc,
+      ...docRef.current,
       contact: {
-        ...doc.contact,
-        title: values.title,
-        subtitle: values.subtitle,
+        ...docRef.current.contact,
+        title: formValues.title ?? '',
+        subtitle: formValues.subtitle ?? '',
       },
     });
-  }, [values]);
+  });
 
   return (
     <div className="space-y-4">
