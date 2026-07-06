@@ -12,16 +12,7 @@ Monorepo npm workspaces + Turborepo. Componentes principales:
 - **packages/content** — Esquema Zod compartido, validación y paridad de locales; consumido por static, admin y worker.
 - **infra/terraform** — Infraestructura Terraform; solo identidad Cognito (AWS sa-east-1).
 
-El contenido publicado vive en `apps/static/content/published/`:
-
-```
-published/
-  es.json
-  en.json
-  settings.json   ← leído por Astro en tiempo de build
-```
-
-Los borradores viven en el ContentStore Durable Object (producción) o en memoria (admin mock). No hay carpeta `drafts/` en el repositorio.
+El contenido publicado vive en `apps/static/content/published/` (`es.json`, `en.json`, `settings.json`). Los borradores **no** están en git — persisten en el ContentStore Durable Object (producción) o en memoria (admin mock). Modelo completo: [docs/architecture.md § Niveles de contenido](docs/architecture.md#niveles-de-contenido-draft-vs-publicado).
 
 ---
 
@@ -180,9 +171,7 @@ Guía completa: [docs/workflows.md#instalación-única](docs/workflows.md#instal
 
 ### Flujo de contenido
 
-Los editores inician sesión en el admin SPA → editan secciones en ES/EN → **Save draft** (persiste en ContentStore DO) → **Publish** (commit atómico a `published/` en GitHub, dispara rebuild de Cloudflare).
-
-Ver [apps/admin/README.md](apps/admin/README.md) para el flujo completo del editor e instrucciones de desarrollo local.
+Los editores inician sesión en el admin SPA → editan secciones en ES/EN → **Save draft** (DO o memoria en mock) → **Publish** (commit atómico a `published/` en GitHub). Ver [docs/architecture.md](docs/architecture.md#niveles-de-contenido-draft-vs-publicado) y [apps/admin/README.md](apps/admin/README.md).
 
 Reglas aplicadas en cada guardado:
 - Los documentos ES y EN deben tener longitudes de arreglo coincidentes en todas las rutas mapeadas (paridad de locale)

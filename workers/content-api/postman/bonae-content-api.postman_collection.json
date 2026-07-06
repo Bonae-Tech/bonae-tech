@@ -111,7 +111,7 @@
               "raw": "{\n  \"content\": {}\n}"
             },
             "url": "{{baseUrl}}/content/drafts/{{locale}}",
-            "description": "Validate and persist a draft. ES/EN must stay in locale parity (matching array lengths).\n\n**Body:** `{ \"content\": <ContentDocument | SiteSettings> }` — bare document also accepted.\n\n**Response:** `{ locale, content, tier: \"drafts\", savedAt }`\n\n**Auth:** `write_draft`"
+            "description": "Persist a draft in the ContentStore DO (last-write-wins; may be incomplete). ES/EN parity is enforced at publish, not on every save.\n\n**Body:** `{ \"content\": <ContentDocument | SiteSettings> }` — bare document also accepted.\n\n**Response:** `{ savedAt }`\n\n**Auth:** `write_draft`"
           },
           "response": []
         },

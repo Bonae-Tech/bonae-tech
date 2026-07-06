@@ -25,13 +25,13 @@ npm run preview  # previsualizar el build de producción localmente
 
 ```
 content/
-  published/
-    es.json          ← leído por Astro en tiempo de build
+  published/       ← único nivel en git; leído por Astro en build
+    es.json
     en.json
     settings.json
 ```
 
-**Solo `content/published/` es leído por el sitio.** Los borradores viven en el ContentStore Durable Object (producción) o en memoria (admin mock). Los cambios en borradores no son visibles en el sitio hasta publicarlos vía el admin. El esquema y la validación viven en `packages/content`.
+Los borradores no están en el repositorio. Ver [docs/architecture.md § Niveles de contenido](../../docs/architecture.md#niveles-de-contenido-draft-vs-publicado).
 
 ## Validar contenido publicado
 

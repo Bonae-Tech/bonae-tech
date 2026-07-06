@@ -56,9 +56,9 @@ Iconos permitidos: `accessible`, `simple`, `secure`, `close`.
 
 ## Reglas importantes
 
-- **Paridad ES/EN:** debe haber la misma cantidad de cartas en `es.json` y `en.json` (entre 1 y 8). Si no coinciden, guardar o publicar fallará con error 400.
+- **Paridad ES/EN:** misma cantidad de cartas en ambos idiomas (requerida al **publicar**).
 - **Campos obligatorios:** `title`, `description` y `backDescription` no pueden estar vacíos.
-- **Drafts vs published:** el sitio Astro lee solo `published/` en build. Los borradores viven en ContentStore DO (producción) o en memoria (admin mock); al publicar, se commitea a `published/`.
+- **Borradores vs publicado:** [architecture.md § Niveles de contenido](./architecture.md#niveles-de-contenido-draft-vs-publicado).
 
 ## Probar cambios localmente
 

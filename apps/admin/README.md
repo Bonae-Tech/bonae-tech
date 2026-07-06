@@ -51,7 +51,9 @@ Ejecuta `tsc --noEmit` y luego `vite build`. La salida va a `dist/`.
 
 ## Arquitectura
 
-Flujos de autenticación end to end (sign-in, refresh, expiry, password reset, SES, API autorizada): **[docs/admin-authentication.md](../../docs/admin-authentication.md)** — documento canónico del repositorio para estos flujos.
+Almacenamiento draft/publish: [docs/architecture.md § Niveles de contenido](../../docs/architecture.md#niveles-de-contenido-draft-vs-publicado). Mapa secciones ↔ API: [admin-content-api-map.md](../../docs/admin-content-api-map.md).
+
+Flujos de autenticación: **[docs/admin-authentication.md](../../docs/admin-authentication.md)**.
 
 ### Editor (post-rediseño)
 
@@ -186,16 +188,9 @@ src/
 
 ### Superficie de API (`contentApi.ts`)
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `GET` | `/content/state` | Bootstrap: borradores, publicado, publishState |
-| `GET` | `/content/drafts/{es\|en\|settings}` | Cargar borrador (legacy; preferir `/content/state`) |
-| `PUT` | `/content/drafts/{es\|en\|settings}` | Guardar borrador (autosave y Save draft) |
-| `POST` | `/content/drafts/discard` | Descartar todos los borradores |
-| `POST` | `/content/publish` | Iniciar publicación → `{ accepted: true }` |
-| `GET` | `/content/publish/status` | Estado del overlay (poll cada ~1.5s) |
+Catálogo completo (Postman + secciones UI): [admin-content-api-map.md](../../docs/admin-content-api-map.md).
 
-En modo mock el plugin Vite (`mockContentStore.ts` + `vite.mockApi.ts`) simula la misma API y máquina de estados de publish.
+Resumen: `GET /content/state` al cargar; `PUT /content/drafts/*` en autosave y Save draft; `POST /content/drafts/discard` al descartar; `POST /content/publish` + poll `GET /content/publish/status` desde el rail.
 
 ## Flujo del editor
 
@@ -221,9 +216,9 @@ El formulario de configuración usa campos orientados al editor (`siteName`, `wh
 
 ## Reglas
 
-- La paridad de locale se valida al **publicar** (cliente y servidor), no en cada autosave de borrador.
-- El sitio estático lee solo `content/published/` en git — los borradores viven en ContentStore DO (o en memoria en mock).
-- Los usuarios son solo por invitación — sin auto-registro. Crear usuarios vía `aws cognito-idp admin-create-user`.
+- Paridad ES/EN y esquema Zod se validan al **publicar**, no en cada autosave de borrador.
+- El sitio estático solo lee `content/published/`.
+- Usuarios solo por invitación — ver sección Cognito más abajo.
 
 ## Deploy
 
