@@ -347,13 +347,20 @@ export function buildPublishReview(input: {
 
   const changes = [...esChanges, ...enChanges, ...settingsChanges];
 
-  const parityWarnings = checkLocaleParity(
-    parseContentDocument(input.draft.es),
-    parseContentDocument(input.draft.en),
-  ).map((issue) => ({
-    label: issue.path,
-    message: issue.message,
-  }));
+  const parityWarnings = (() => {
+    try {
+      return checkLocaleParity(
+        parseContentDocument(input.draft.es),
+        parseContentDocument(input.draft.en),
+      ).map((issue) => ({
+        label: issue.path,
+        message: issue.message,
+      }));
+    } catch {
+      // Invalid draft — schema issues are reported in validationErrors below.
+      return [];
+    }
+  })();
 
   const translationWarnings = missingEnTranslationWarnings(enDraft, enPublished, esChanges);
 
