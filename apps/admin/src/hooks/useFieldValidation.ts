@@ -93,7 +93,7 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
       title: checkField(doc.valueProp.title, { required: true, max: 90 }, 'Section title'),
       items: doc.valueProp.items.map((item) => ({
         title: checkField(item.title, { required: true, max: 60 }, 'Card title'),
-        description: checkField(item.description, { required: true, max: 160 }, 'Card description'),
+        description: checkField(item.description, { required: true, max: 180 }, 'Card description'),
       })),
     },
     about: {

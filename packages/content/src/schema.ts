@@ -6,9 +6,9 @@ export const localeSchema = z.enum(['es', 'en']);
 const iconItemSchema = z.object({
   icon: z.enum(valuePropIcons),
   title: z.string().min(1),
-  description: z.string().min(1),
+  description: z.string().min(1).max(180),
   backLabel: z.string().min(1),
-  backDescription: z.string().min(1),
+  backDescription: z.string().min(1).max(180),
 });
 
 const memberSchema = z.object({
