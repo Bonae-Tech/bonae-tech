@@ -13,6 +13,8 @@ on:
     branches: [main]
     paths:
       - 'apps/static/content/published/**'
+      - 'apps/static/public/**'
+      - 'apps/static/scripts/**'
       - 'packages/content/**'
   workflow_dispatch:
 
@@ -32,6 +34,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-monorepo
       - run: npx turbo run build validate:published --filter=bonae-static
+
+      - name: Inject SW build hash
+        working-directory: apps/static
+        env:
+          BUILD_HASH: ${{ github.sha }}
+        run: node ./scripts/inject-sw-build-hash.mjs
 
       - id: cloudflare
         uses: ./.github/actions/cloudflare-account

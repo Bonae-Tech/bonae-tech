@@ -1,5 +1,5 @@
 // BONAE TECH Service Worker - Cache-first strategy for offline support
-const CACHE_NAME = 'bonae tech-v1';
+const CACHE_NAME = 'bonae-tech-__BUILD_HASH__';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -26,13 +26,18 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests for same-origin or static assets
   if (event.request.method !== 'GET') return;
+
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/'))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-
       return fetch(event.request)
         .then((response) => {
           if (!response || response.status !== 200 || response.type !== 'basic') {
@@ -42,12 +47,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, toCache));
           return response;
         })
-        .catch(() => {
-          // Return offline fallback for navigation requests
-          if (event.request.mode === 'navigate') {
-            return caches.match('/');
-          }
-        });
+        .catch(() => caches.match('/'));
     })
   );
 });
