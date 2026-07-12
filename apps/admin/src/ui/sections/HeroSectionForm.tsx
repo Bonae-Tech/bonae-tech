@@ -16,12 +16,12 @@ interface Props {
 type HeroFields = ContentDocument['hero'];
 
 const FIELD_LABELS: Record<keyof HeroFields, string> = {
-  badge: 'Badge',
-  headline: 'Headline',
-  subheadline: 'Subheadline',
-  cta: 'Primary button',
-  ctaSecondary: 'Secondary button',
-  ctaSub: 'Trust note',
+  badge: 'Insignia',
+  headline: 'Titular',
+  subheadline: 'Subtítulo',
+  cta: 'Botón principal',
+  ctaSecondary: 'Botón secundario',
+  ctaSub: 'Nota de confianza',
 };
 
 const COUNTERS: Partial<Record<keyof HeroFields, number>> = {
@@ -43,7 +43,7 @@ export function HeroSectionForm({ doc, onEdit, errors }: Props) {
 
   return (
     <div className="space-y-4">
-      <SectionHeader title="Hero" description="First thing visitors see" />
+      <SectionHeader title="Hero" description="Lo primero que ven los visitantes" />
 
       {(['badge', 'headline', 'subheadline'] as const).map((field) => (
         <FieldCard

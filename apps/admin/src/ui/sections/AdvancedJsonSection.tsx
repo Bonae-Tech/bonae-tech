@@ -8,7 +8,7 @@ interface Props {
 export function AdvancedJsonSection({ value }: Props) {
   return (
     <div className="space-y-3">
-      <SectionHeader title="JSON" description="Read-only export" />
+      <SectionHeader title="JSON" description="Exportación de solo lectura" />
       <JsonReadOnlyViewer value={value} />
     </div>
   );

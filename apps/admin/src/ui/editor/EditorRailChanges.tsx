@@ -36,35 +36,40 @@ export function EditorRailChanges({
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3.5">
         {isUnsaved && (
           <div className="editor-banner-warning mb-3">
-            You have unsaved edits — click <strong>Save draft</strong> to add them here for review.
+            Hay cambios sin guardar — haz clic en <strong>Guardar borrador</strong> para incluirlos aquí
+            en la revisión.
           </div>
         )}
         {(review.validationErrors.length > 0 || hasClientErrors) && (
           <div className="editor-banner-error mb-3">
-            Validation errors block publish. Fix highlighted fields.
+            Los errores de validación bloquean la publicación. Corrige los campos resaltados.
           </div>
         )}
         {review.warnings.length > 0 && (
           <div className="editor-banner-warning mb-3 font-normal">
-            {review.warnings.length} warning(s) — won&apos;t block publishing
+            {review.warnings.length} advertencia(s) — no bloquean la publicación
           </div>
         )}
         {!isUnsaved && noChanges && !hasClientErrors && (
-          <p className="py-8 text-center text-[12.5px] text-editor-faint">Nothing pending. Everything is live.</p>
+          <p className="py-8 text-center text-[12.5px] text-editor-faint">
+            Nada pendiente. Todo está en vivo.
+          </p>
         )}
         {review.changes.map((change) => (
           <ChangeRow key={`${change.locale}-${change.label}-${change.kind}-${change.after}`} change={change} />
         ))}
       </div>
       <div className="shrink-0 border-t border-editor-border px-4 py-3.5">
-        <p className="mb-2 text-[11px] text-editor-faint">Review every change here before it goes live.</p>
+        <p className="mb-2 text-[11px] text-editor-faint">
+          Revisa cada cambio aquí antes de publicarlo.
+        </p>
         <button
           type="button"
           className={`btn-editor-publish ${publishDisabled ? '' : 'btn-editor-publish-active'}`}
           disabled={publishDisabled}
           onClick={onPublish}
         >
-          {publishing ? 'Starting…' : 'Approve & publish'}
+          {publishing ? 'Iniciando…' : 'Aprobar y publicar'}
         </button>
       </div>
     </div>

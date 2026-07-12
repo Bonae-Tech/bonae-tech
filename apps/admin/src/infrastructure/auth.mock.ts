@@ -36,7 +36,7 @@ export function signIn(
   password: string,
 ): Promise<{ type: 'success' } | { type: 'newPasswordRequired'; completeChallenge: (newPassword: string) => Promise<void> }> {
   if (!email.trim() || !password) {
-    return Promise.reject(new Error('Email and password required'));
+    return Promise.reject(new Error('Se requieren correo y contraseña'));
   }
   sessionStorage.setItem(STORAGE_KEY, email.trim());
   sessionStorage.setItem(EXPIRY_KEY, String(Date.now() + 60 * 60 * 1000));
@@ -88,14 +88,14 @@ export async function getIdToken(): Promise<string> {
   const session = await ensureValidMockSession(false);
   if (!session?.isValid()) {
     notifySessionExpired('expired');
-    throw new SessionExpiredError('Not authenticated');
+    throw new SessionExpiredError('No autenticado');
   }
   return 'mock-local-token';
 }
 
 export function requestPasswordReset(email: string): Promise<void> {
   if (!email.trim()) {
-    return Promise.reject(new Error('Email is required'));
+    return Promise.reject(new Error('Se requiere correo electrónico'));
   }
   sessionStorage.setItem(RESET_EMAIL_KEY, email.trim());
   return Promise.resolve();
@@ -104,13 +104,13 @@ export function requestPasswordReset(email: string): Promise<void> {
 export function confirmPasswordReset(email: string, code: string, newPassword: string): Promise<void> {
   const storedEmail = sessionStorage.getItem(RESET_EMAIL_KEY);
   if (!storedEmail || storedEmail !== email.trim()) {
-    return Promise.reject(new Error('Invalid verification code'));
+    return Promise.reject(new Error('Código de verificación inválido'));
   }
   if (code.trim() !== MOCK_RESET_CODE) {
-    return Promise.reject(new Error('Invalid verification code'));
+    return Promise.reject(new Error('Código de verificación inválido'));
   }
   if (!newPassword) {
-    return Promise.reject(new Error('Password is required'));
+    return Promise.reject(new Error('Se requiere contraseña'));
   }
   sessionStorage.removeItem(RESET_EMAIL_KEY);
   return Promise.resolve();

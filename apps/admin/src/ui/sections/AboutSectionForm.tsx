@@ -51,14 +51,14 @@ export function AboutSectionForm({ doc, onEdit, errors }: Props) {
 
   return (
     <div className="space-y-4">
-      <SectionHeader title="About" description="Story and founders" />
+      <SectionHeader title="Sobre nosotras" description="Historia y fundadoras" />
 
-      <FieldCard label="Title" error={getLocaleFieldError(errors, 'about', 'title')}>
+      <FieldCard label="Título" error={getLocaleFieldError(errors, 'about', 'title')}>
         <input className="editor-input" {...register('title')} />
       </FieldCard>
 
       <FieldCard
-        label="Description"
+        label="Descripción"
         counter={{ current: (values.foundersTitle ?? '').length, max: 300 }}
         error={getLocaleFieldError(errors, 'about', 'foundersTitle')}
       >
@@ -66,11 +66,13 @@ export function AboutSectionForm({ doc, onEdit, errors }: Props) {
       </FieldCard>
 
       <details className="editor-card">
-        <summary className="cursor-pointer text-xs font-semibold text-editor-muted">Advanced: section badge</summary>
+        <summary className="cursor-pointer text-xs font-semibold text-editor-muted">
+          Avanzado: insignia de sección
+        </summary>
         <input className="editor-input mt-2" {...register('sectionBadge')} />
       </details>
 
-      <span className="editor-label">Founders</span>
+      <span className="editor-label">Fundadoras</span>
 
       {fields.map((field, index) => (
         <div key={field.id} className="editor-card space-y-2">
@@ -78,7 +80,7 @@ export function AboutSectionForm({ doc, onEdit, errors }: Props) {
             <div>
               <input
                 className="editor-input"
-                placeholder="Name / initials"
+                placeholder="Nombre / iniciales"
                 {...register(`members.${index}.initials` as const)}
               />
               {getLocaleFieldError(errors, 'about', 'founders', index, 'name') && (
@@ -88,7 +90,7 @@ export function AboutSectionForm({ doc, onEdit, errors }: Props) {
               )}
             </div>
             <div>
-              <input className="editor-input" placeholder="Role" {...register(`members.${index}.role` as const)} />
+              <input className="editor-input" placeholder="Rol" {...register(`members.${index}.role` as const)} />
               {getLocaleFieldError(errors, 'about', 'founders', index, 'role') && (
                 <p className="editor-error-text">
                   {getLocaleFieldError(errors, 'about', 'founders', index, 'role')}
@@ -101,14 +103,14 @@ export function AboutSectionForm({ doc, onEdit, errors }: Props) {
             className="text-xs font-semibold text-editor-muted underline"
             onClick={() => setExpandedMember((s) => ({ ...s, [field.id]: !s[field.id] }))}
           >
-            {expandedMember[field.id] ? 'Hide bio & highlights' : 'Bio & highlights'}
+            {expandedMember[field.id] ? 'Ocultar bio y destacados' : 'Bio y destacados'}
           </button>
           {expandedMember[field.id] && (
             <div className="space-y-2 border-t border-editor-track pt-2">
               <textarea className="editor-textarea-sm" {...register(`members.${index}.bio` as const)} />
               <input
                 className="editor-input"
-                placeholder="Highlights (comma-separated)"
+                placeholder="Destacados (separados por comas)"
                 value={(values.members[index]?.highlights ?? []).join(', ')}
                 onChange={(e) => {
                   const highlights = e.target.value

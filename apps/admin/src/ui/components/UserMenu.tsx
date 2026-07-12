@@ -25,7 +25,7 @@ export function UserMenu({ initials, onLogout }: Props) {
         type="button"
         className="flex h-7 w-7 items-center justify-center rounded-full bg-editor-brand text-[11.5px] font-extrabold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-editor-brand"
         onClick={() => setOpen((v) => !v)}
-        aria-label="User menu"
+        aria-label="Menú de usuario"
         aria-expanded={open}
       >
         {initials}
@@ -40,7 +40,7 @@ export function UserMenu({ initials, onLogout }: Props) {
               onLogout();
             }}
           >
-            Sign out
+            Cerrar sesión
           </button>
         </div>
       )}

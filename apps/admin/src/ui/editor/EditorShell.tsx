@@ -24,7 +24,7 @@ export function EditorShell({ topBar, sidebar, main, rail, onOpenRail, showRailT
                   className="btn-editor-add mb-4 lg:hidden"
                   onClick={onOpenRail}
                 >
-                  Review changes
+                  Revisar cambios
                 </button>
               )}
               <div className="mx-auto flex max-w-[600px] flex-col gap-5">{main}</div>

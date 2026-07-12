@@ -28,7 +28,7 @@ export function PublishStatusIndicator({ label, runUrl, failed, tracking, onStop
           className="text-xs font-medium text-slate-500 underline hover:text-slate-800"
           onClick={onStopTracking}
         >
-          Stop tracking
+          Dejar de seguir
         </button>
       )}
       {failed && runUrl && (
@@ -38,7 +38,7 @@ export function PublishStatusIndicator({ label, runUrl, failed, tracking, onStop
           rel="noreferrer"
           className="font-medium text-dark-blue underline"
         >
-          View logs
+          Ver registros
         </a>
       )}
     </span>

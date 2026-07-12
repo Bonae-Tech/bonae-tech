@@ -16,17 +16,17 @@ interface Props {
 type KeyFiguresFields = ContentDocument['keyFigures'];
 
 const FIELD_LABELS: Record<keyof KeyFiguresFields, string> = {
-  years: 'Years value',
-  yearsLabel: 'Years label',
-  clientsValue: 'Clients value',
-  clients: 'Clients label',
-  projectsValue: 'Projects value',
-  projects: 'Projects label',
-  presenceValue: 'Presence value',
-  presenceLabel: 'Presence label',
-  presence: 'Presence short label',
-  foundersCount: 'Founders count',
-  foundersLabel: 'Founders label',
+  years: 'Valor de años',
+  yearsLabel: 'Etiqueta de años',
+  clientsValue: 'Valor de clientes',
+  clients: 'Etiqueta de clientes',
+  projectsValue: 'Valor de proyectos',
+  projects: 'Etiqueta de proyectos',
+  presenceValue: 'Valor de presencia',
+  presenceLabel: 'Etiqueta de presencia',
+  presence: 'Etiqueta corta de presencia',
+  foundersCount: 'Cantidad de fundadoras',
+  foundersLabel: 'Etiqueta de fundadoras',
 };
 
 const COUNTERS: Partial<Record<keyof KeyFiguresFields, number>> = {
@@ -45,28 +45,28 @@ const COUNTERS: Partial<Record<keyof KeyFiguresFields, number>> = {
 
 const GROUPS: { title: string; description: string; fields: (keyof KeyFiguresFields)[] }[] = [
   {
-    title: 'Experience',
-    description: 'First stat card on the site',
+    title: 'Experiencia',
+    description: 'Primera tarjeta de cifras en el sitio',
     fields: ['years', 'yearsLabel'],
   },
   {
-    title: 'Clients',
-    description: 'Second stat card',
+    title: 'Clientes',
+    description: 'Segunda tarjeta de cifras',
     fields: ['clientsValue', 'clients'],
   },
   {
-    title: 'Projects',
-    description: 'Third stat card',
+    title: 'Proyectos',
+    description: 'Tercera tarjeta de cifras',
     fields: ['projectsValue', 'projects'],
   },
   {
-    title: 'Regional presence',
-    description: 'Fourth stat card',
+    title: 'Presencia regional',
+    description: 'Cuarta tarjeta de cifras',
     fields: ['presenceValue', 'presenceLabel'],
   },
   {
-    title: 'Founders (hero)',
-    description: 'Shown in the hero sidebar on large screens',
+    title: 'Fundadoras (hero)',
+    description: 'Se muestra en la barra lateral del hero en pantallas grandes',
     fields: ['foundersCount', 'foundersLabel'],
   },
 ];
@@ -84,7 +84,7 @@ export function KeyFiguresSectionForm({ doc, onEdit, errors }: Props) {
 
   return (
     <div className="space-y-4">
-      <SectionHeader title="DatosClave" description="Stat cards and hero counters" />
+      <SectionHeader title="Datos Clave" description="Tarjetas de cifras y contadores del Hero" />
 
       {GROUPS.map((group) => (
         <div key={group.title} className="space-y-3">
@@ -113,7 +113,7 @@ export function KeyFiguresSectionForm({ doc, onEdit, errors }: Props) {
 
       <details className="editor-card">
         <summary className="cursor-pointer text-xs font-semibold text-editor-muted">
-          Advanced: presence short label
+          Avanzado: etiqueta corta de presencia
         </summary>
         <input className="editor-input mt-2" {...register('presence')} />
         {getLocaleFieldError(errors, 'keyFigures', 'presence') && (

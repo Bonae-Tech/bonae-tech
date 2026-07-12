@@ -97,15 +97,15 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
   const saveStatusText = useMemo(() => {
     switch (workspace.saveStatus) {
       case 'pending':
-        return 'Unsaved edits';
+        return 'Cambios sin guardar';
       case 'saving':
-        return 'Saving draft…';
+        return 'Guardando borrador…';
       case 'saved':
-        return savedAt ? `Draft saved ${formatSavedTime(savedAt)}` : 'Draft saved';
+        return savedAt ? `Borrador guardado ${formatSavedTime(savedAt)}` : 'Borrador guardado';
       case 'error':
-        return workspace.saveError ?? 'Save failed';
+        return workspace.saveError ?? 'Error al guardar';
       default:
-        return 'Draft up to date';
+        return 'Borrador actualizado';
     }
   }, [workspace.saveStatus, workspace.saveError, savedAt]);
 
@@ -133,7 +133,7 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
 
   const lastPublishedLabel = workspace.lastPublishedAt
     ? new Date(workspace.lastPublishedAt).toLocaleString()
-    : 'Not published yet';
+    : 'Aún no publicado';
 
   const jsonTree =
     workspace.draftEs && workspace.draftEn && workspace.draftSettings
@@ -186,13 +186,13 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
                   className="shrink-0 text-emerald-700 underline"
                   onClick={onDismissSessionMessage}
                 >
-                  Dismiss
+                  Cerrar
                 </button>
               )}
             </div>
           )}
 
-          {workspace.loading && <div className="editor-card">Loading content…</div>}
+          {workspace.loading && <div className="editor-card">Cargando contenido…</div>}
           {workspace.error && <div className="editor-card text-editor-error">{workspace.error}</div>}
 
           {doc && section === 'hero' && (

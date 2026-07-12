@@ -18,7 +18,7 @@ export function ResetPasswordForm({ email: initialEmail, onSubmit, onBack }: Pro
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (password !== confirm) {
-      setError('Passwords do not match');
+      setError('Las contraseñas no coinciden');
       return;
     }
     const policyError = validatePassword(password);
@@ -31,7 +31,7 @@ export function ResetPasswordForm({ email: initialEmail, onSubmit, onBack }: Pro
     try {
       await onSubmit(email, code, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to reset password');
+      setError(err instanceof Error ? err.message : 'No se pudo restablecer la contraseña');
     } finally {
       setLoading(false);
     }
@@ -40,13 +40,16 @@ export function ResetPasswordForm({ email: initialEmail, onSubmit, onBack }: Pro
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <form onSubmit={handleSubmit} className="card w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold text-slate-900">Choose a new password</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Elegir una nueva contraseña</h1>
         <p className="text-sm text-slate-600">
-          Enter the verification code from your email and a new password (12+ characters with upper, lower, and number).
+          Ingresa el código de verificación de tu correo y una nueva contraseña (12+ caracteres con
+          mayúscula, minúscula y número).
         </p>
         {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
         <div>
-          <label className="field-label" htmlFor="reset-email-confirm">Email</label>
+          <label className="field-label" htmlFor="reset-email-confirm">
+            Correo electrónico
+          </label>
           <input
             id="reset-email-confirm"
             type="email"
@@ -57,7 +60,9 @@ export function ResetPasswordForm({ email: initialEmail, onSubmit, onBack }: Pro
           />
         </div>
         <div>
-          <label className="field-label" htmlFor="verification-code">Verification code</label>
+          <label className="field-label" htmlFor="verification-code">
+            Código de verificación
+          </label>
           <input
             id="verification-code"
             type="text"
@@ -69,7 +74,9 @@ export function ResetPasswordForm({ email: initialEmail, onSubmit, onBack }: Pro
           />
         </div>
         <div>
-          <label className="field-label" htmlFor="reset-password">New password</label>
+          <label className="field-label" htmlFor="reset-password">
+            Nueva contraseña
+          </label>
           <input
             id="reset-password"
             type="password"
@@ -80,7 +87,9 @@ export function ResetPasswordForm({ email: initialEmail, onSubmit, onBack }: Pro
           />
         </div>
         <div>
-          <label className="field-label" htmlFor="reset-password-confirm">Confirm password</label>
+          <label className="field-label" htmlFor="reset-password-confirm">
+            Confirmar contraseña
+          </label>
           <input
             id="reset-password-confirm"
             type="password"
@@ -91,10 +100,10 @@ export function ResetPasswordForm({ email: initialEmail, onSubmit, onBack }: Pro
           />
         </div>
         <button type="submit" className="btn-primary w-full" disabled={loading}>
-          {loading ? 'Saving…' : 'Reset password'}
+          {loading ? 'Guardando…' : 'Restablecer contraseña'}
         </button>
         <button type="button" className="btn-secondary w-full" onClick={onBack}>
-          Back to sign in
+          Volver al inicio de sesión
         </button>
       </form>
     </div>

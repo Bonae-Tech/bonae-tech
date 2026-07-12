@@ -71,7 +71,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
   if ('requestPasswordReset' in auth && typeof auth.requestPasswordReset === 'function') {
     return auth.requestPasswordReset(email);
   }
-  throw new Error('Password reset is not available');
+  throw new Error('El restablecimiento de contraseña no está disponible');
 }
 
 export async function confirmPasswordReset(email: string, code: string, newPassword: string): Promise<void> {
@@ -79,7 +79,7 @@ export async function confirmPasswordReset(email: string, code: string, newPassw
   if ('confirmPasswordReset' in auth && typeof auth.confirmPasswordReset === 'function') {
     return auth.confirmPasswordReset(email, code, newPassword);
   }
-  throw new Error('Password reset is not available');
+  throw new Error('El restablecimiento de contraseña no está disponible');
 }
 
 export { SessionExpiredError } from './session.js';

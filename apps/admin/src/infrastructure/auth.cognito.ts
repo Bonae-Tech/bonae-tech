@@ -138,7 +138,7 @@ export async function getIdToken(): Promise<string> {
 
   if (!session) {
     notifySessionExpired('expired');
-    throw new SessionExpiredError('Not authenticated');
+    throw new SessionExpiredError('No autenticado');
   }
 
   return session.getIdToken().getJwtToken();

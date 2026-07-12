@@ -27,7 +27,7 @@ export function EditorSidebar({
     <aside className="flex w-full shrink-0 flex-col gap-4 border-b border-editor-border bg-white p-3.5 lg:w-[210px] lg:border-b-0 lg:border-r">
       {showLocale && (
         <div>
-          <p className="mb-2 px-1.5 text-[10.5px] font-bold uppercase tracking-wider text-editor-faint">Locale</p>
+          <p className="mb-2 px-1.5 text-[10.5px] font-bold uppercase tracking-wider text-editor-faint">Idioma</p>
           <div className="editor-segment-track">
             {(['es', 'en'] as Locale[]).map((loc) => (
               <button
@@ -76,7 +76,7 @@ export function EditorSidebar({
           onClick={onDiscard}
           disabled={discardPending}
         >
-          Discard all drafts
+          Descartar todos los borradores
         </button>
       </div>
     </aside>

@@ -73,8 +73,8 @@ async function apiFetch<T>(path: string, init?: RequestInit, retried = false): P
     });
   } catch {
     const hint = config.useMock
-      ? 'Could not reach the local mock API. Stop other dev servers, run `npm run admin:dev:mock` from the repo root, open the URL shown in the terminal (often http://localhost:5173), and look for the yellow “Local mock mode” banner.'
-      : 'Network error contacting the content API. Check VITE_API_BASE_URL in apps/admin/.env.';
+      ? 'No se pudo conectar con la API mock local. Detén otros servidores de desarrollo, ejecuta `npm run admin:dev:mock` desde la raíz del repositorio, abre la URL que aparece en la terminal (a menudo http://localhost:5173) y busca el banner amarillo de “Modo mock local”.'
+      : 'Error de red al contactar la API de contenido. Verifica VITE_API_BASE_URL en apps/admin/.env.';
     throw new Error(hint);
   }
 
@@ -89,13 +89,13 @@ async function apiFetch<T>(path: string, init?: RequestInit, retried = false): P
         return apiFetch(path, init, true);
       }
       sessionExpiredCallback?.('expired');
-      throw new SessionExpiredError(body?.error ?? 'Session expired');
+      throw new SessionExpiredError(body?.error ?? 'Sesión expirada');
     }
     if (res.status === 401) {
       sessionExpiredCallback?.('expired');
-      throw new SessionExpiredError(body?.error ?? 'Session expired');
+      throw new SessionExpiredError(body?.error ?? 'Sesión expirada');
     }
-    const errorMessage = body?.error ?? `Request failed (${res.status})`;
+    const errorMessage = body?.error ?? `La solicitud falló (${res.status})`;
     throw new ContentApiError(errorMessage, res.status, body?.errors);
   }
 

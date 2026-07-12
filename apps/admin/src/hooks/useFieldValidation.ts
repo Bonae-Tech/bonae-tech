@@ -38,13 +38,13 @@ function checkField(
 ): string | null {
   const v = (value ?? '').trim();
   if (rules.required && v.length === 0) {
-    return `${label} is required`;
+    return `${label} es obligatorio`;
   }
   if (rules.max !== undefined && (value ?? '').length > rules.max) {
-    return `${label} is too long (${(value ?? '').length}/${rules.max})`;
+    return `${label} es demasiado largo (${(value ?? '').length}/${rules.max})`;
   }
   if (rules.email && v.length > 0 && !v.includes('@')) {
-    return 'Enter a valid email';
+    return 'Ingresa un email válido';
   }
   return null;
 }
@@ -83,45 +83,45 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
 
   return {
     hero: {
-      badge: checkField(doc.hero.badge, { required: true, max: 60 }, 'Badge'),
-      headline: checkField(doc.hero.headline, { required: true, max: 90 }, 'Headline'),
-      subheadline: checkField(doc.hero.subheadline, { required: true, max: 240 }, 'Subheadline'),
-      cta: checkField(doc.hero.cta, { required: true }, 'Primary button'),
-      ctaSecondary: checkField(doc.hero.ctaSecondary, { required: true }, 'Secondary button'),
-      ctaSub: checkField(doc.hero.ctaSub, { required: true }, 'Trust note'),
+      badge: checkField(doc.hero.badge, { required: true, max: 60 }, 'Insignia'),
+      headline: checkField(doc.hero.headline, { required: true, max: 90 }, 'Titular'),
+      subheadline: checkField(doc.hero.subheadline, { required: true, max: 240 }, 'Subtítulo'),
+      cta: checkField(doc.hero.cta, { required: true }, 'Botón principal'),
+      ctaSecondary: checkField(doc.hero.ctaSecondary, { required: true }, 'Botón secundario'),
+      ctaSub: checkField(doc.hero.ctaSub, { required: true }, 'Nota de confianza'),
     },
     valueProp: {
-      sectionBadge: checkField(doc.valueProp.sectionBadge, { required: true }, 'Eyebrow label'),
-      title: checkField(doc.valueProp.title, { required: true, max: 90 }, 'Section title'),
+      sectionBadge: checkField(doc.valueProp.sectionBadge, { required: true }, 'Etiqueta superior'),
+      title: checkField(doc.valueProp.title, { required: true, max: 90 }, 'Título de sección'),
       items: doc.valueProp.items.map((item) => ({
-        title: checkField(item.title, { required: true, max: 60 }, 'Card title'),
-        description: checkField(item.description, { required: true, max: 180 }, 'Card description'),
+        title: checkField(item.title, { required: true, max: 60 }, 'Título de tarjeta'),
+        description: checkField(item.description, { required: true, max: 180 }, 'Descripción de tarjeta'),
       })),
     },
     keyFigures: {
-      years: checkField(doc.keyFigures.years, { required: true, max: 20 }, 'Years value'),
-      yearsLabel: checkField(doc.keyFigures.yearsLabel, { required: true, max: 80 }, 'Years label'),
-      clientsValue: checkField(doc.keyFigures.clientsValue, { required: true, max: 20 }, 'Clients value'),
-      clients: checkField(doc.keyFigures.clients, { required: true, max: 80 }, 'Clients label'),
-      projectsValue: checkField(doc.keyFigures.projectsValue, { required: true, max: 20 }, 'Projects value'),
-      projects: checkField(doc.keyFigures.projects, { required: true, max: 80 }, 'Projects label'),
-      presenceValue: checkField(doc.keyFigures.presenceValue, { required: true, max: 20 }, 'Presence value'),
-      presenceLabel: checkField(doc.keyFigures.presenceLabel, { required: true, max: 80 }, 'Presence label'),
-      presence: checkField(doc.keyFigures.presence, { required: true, max: 40 }, 'Presence short label'),
-      foundersCount: checkField(doc.keyFigures.foundersCount, { required: true, max: 20 }, 'Founders count'),
-      foundersLabel: checkField(doc.keyFigures.foundersLabel, { required: true, max: 40 }, 'Founders label'),
+      years: checkField(doc.keyFigures.years, { required: true, max: 20 }, 'Valor de años'),
+      yearsLabel: checkField(doc.keyFigures.yearsLabel, { required: true, max: 80 }, 'Etiqueta de años'),
+      clientsValue: checkField(doc.keyFigures.clientsValue, { required: true, max: 20 }, 'Valor de clientes'),
+      clients: checkField(doc.keyFigures.clients, { required: true, max: 80 }, 'Etiqueta de clientes'),
+      projectsValue: checkField(doc.keyFigures.projectsValue, { required: true, max: 20 }, 'Valor de proyectos'),
+      projects: checkField(doc.keyFigures.projects, { required: true, max: 80 }, 'Etiqueta de proyectos'),
+      presenceValue: checkField(doc.keyFigures.presenceValue, { required: true, max: 20 }, 'Valor de presencia'),
+      presenceLabel: checkField(doc.keyFigures.presenceLabel, { required: true, max: 80 }, 'Etiqueta de presencia'),
+      presence: checkField(doc.keyFigures.presence, { required: true, max: 40 }, 'Etiqueta corta de presencia'),
+      foundersCount: checkField(doc.keyFigures.foundersCount, { required: true, max: 20 }, 'Cantidad de fundadoras'),
+      foundersLabel: checkField(doc.keyFigures.foundersLabel, { required: true, max: 40 }, 'Etiqueta de fundadoras'),
     },
     about: {
-      title: checkField(doc.about.title, { required: true, max: 90 }, 'Title'),
-      foundersTitle: checkField(doc.about.foundersTitle, { required: true, max: 300 }, 'Description'),
+      title: checkField(doc.about.title, { required: true, max: 90 }, 'Título'),
+      foundersTitle: checkField(doc.about.foundersTitle, { required: true, max: 300 }, 'Descripción'),
       founders: doc.about.members.map((member) => ({
-        name: checkField(member.initials, { required: true, max: 40 }, 'Name'),
-        role: checkField(member.role, { required: true, max: 40 }, 'Role'),
+        name: checkField(member.initials, { required: true, max: 40 }, 'Nombre'),
+        role: checkField(member.role, { required: true, max: 40 }, 'Rol'),
       })),
     },
     contact: {
-      title: checkField(doc.contact.title, { required: true }, 'Title'),
-      subtitle: checkField(doc.contact.subtitle, { required: true, max: 240 }, 'Description'),
+      title: checkField(doc.contact.title, { required: true }, 'Título'),
+      subtitle: checkField(doc.contact.subtitle, { required: true, max: 240 }, 'Descripción'),
     },
   };
 }
@@ -136,12 +136,12 @@ export function useFieldValidation(
     const errorsEn = buildLocaleErrors(draftEn);
     const form = readSettingsForm(draftEs, draftSettings);
     const settingsErrors: FieldErrors = {
-      siteName: checkField(form.siteName, { required: true, max: 40 }, 'Site name'),
-      whatsapp: checkField(form.whatsapp, { required: true }, 'WhatsApp number'),
-      email: checkField(form.email, { required: true, email: true }, 'Contact email'),
-      address: checkField(form.address, { required: true }, 'Address'),
-      footerText: checkField(form.footerText, { required: true }, 'Footer text'),
-      siteUrl: checkField(form.siteUrl, { required: true }, 'Site URL'),
+      siteName: checkField(form.siteName, { required: true, max: 40 }, 'Nombre del sitio'),
+      whatsapp: checkField(form.whatsapp, { required: true }, 'Número de WhatsApp'),
+      email: checkField(form.email, { required: true, email: true }, 'Correo de contacto'),
+      address: checkField(form.address, { required: true }, 'Dirección'),
+      footerText: checkField(form.footerText, { required: true }, 'Texto del pie de página'),
+      siteUrl: checkField(form.siteUrl, { required: true }, 'URL del sitio'),
     };
 
     const hasGlobalErrors =

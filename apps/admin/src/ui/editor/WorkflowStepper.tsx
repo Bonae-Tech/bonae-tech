@@ -22,9 +22,9 @@ export function WorkflowStepper({
   const activeStep = isPublishing ? 2 : hasPendingChanges ? 1 : 0;
 
   const steps = [
-    { num: '1', label: 'Draft' },
-    { num: '2', label: 'Review' },
-    { num: '3', label: 'Publish' },
+    { num: '1', label: 'Borrador' },
+    { num: '2', label: 'Revisión' },
+    { num: '3', label: 'Publicar' },
   ];
 
   return (

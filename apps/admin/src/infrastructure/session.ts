@@ -1,5 +1,5 @@
 export class SessionExpiredError extends Error {
-  constructor(message = 'Session expired') {
+  constructor(message = 'Sesión expirada') {
     super(message);
     this.name = 'SessionExpiredError';
   }

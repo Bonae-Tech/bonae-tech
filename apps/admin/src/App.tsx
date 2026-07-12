@@ -20,9 +20,9 @@ import { Dashboard } from './ui/Dashboard.js';
 
 type AuthView = 'login' | 'forgot' | 'reset';
 
-const SESSION_EXPIRED_MESSAGE = 'Your session expired. Please sign in again.';
-const SESSION_REFRESHED_MESSAGE = 'Your session was extended automatically.';
-const PASSWORD_RESET_SUCCESS_MESSAGE = 'Password updated. Sign in with your new password.';
+const SESSION_EXPIRED_MESSAGE = 'Tu sesión expiró. Inicia sesión de nuevo.';
+const SESSION_REFRESHED_MESSAGE = 'Tu sesión se extendió automáticamente.';
+const PASSWORD_RESET_SUCCESS_MESSAGE = 'Contraseña actualizada. Inicia sesión con tu nueva contraseña.';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -140,7 +140,7 @@ export default function App() {
   }
 
   if (!ready) {
-    return <div className="p-8 text-center text-slate-600">Loading…</div>;
+    return <div className="p-8 text-center text-slate-600">Cargando…</div>;
   }
 
   if (newPasswordChallenge) {
@@ -236,7 +236,8 @@ export default function App() {
 function MockModeBanner() {
   return (
     <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-900">
-      Local mock mode — drafts are in-memory; publish writes to <code>apps/static/content/published/</code>. No AWS or GitHub.
+      Modo mock local — los borradores están en memoria; publicar escribe en{' '}
+      <code>apps/static/content/published/</code>. Sin AWS ni GitHub.
     </div>
   );
 }
@@ -250,7 +251,7 @@ function SetNewPasswordForm({ onSubmit }: { onSubmit: (newPassword: string) => P
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (password !== confirm) {
-      setError('Passwords do not match');
+      setError('Las contraseñas no coinciden');
       return;
     }
     const policyError = validatePassword(password);
@@ -263,7 +264,7 @@ function SetNewPasswordForm({ onSubmit }: { onSubmit: (newPassword: string) => P
     try {
       await onSubmit(password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to set password');
+      setError(err instanceof Error ? err.message : 'No se pudo establecer la contraseña');
     } finally {
       setLoading(false);
     }
@@ -272,19 +273,39 @@ function SetNewPasswordForm({ onSubmit }: { onSubmit: (newPassword: string) => P
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <form onSubmit={handleSubmit} className="card w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold text-slate-900">Set new password</h1>
-        <p className="text-sm text-slate-600">Choose a permanent password to finish setting up your account.</p>
+        <h1 className="text-2xl font-bold text-slate-900">Establecer nueva contraseña</h1>
+        <p className="text-sm text-slate-600">
+          Elige una contraseña permanente para terminar de configurar tu cuenta.
+        </p>
         {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
         <div>
-          <label className="field-label" htmlFor="new-password">New password</label>
-          <input id="new-password" type="password" className="field-input" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <label className="field-label" htmlFor="new-password">
+            Nueva contraseña
+          </label>
+          <input
+            id="new-password"
+            type="password"
+            className="field-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         <div>
-          <label className="field-label" htmlFor="confirm-password">Confirm password</label>
-          <input id="confirm-password" type="password" className="field-input" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
+          <label className="field-label" htmlFor="confirm-password">
+            Confirmar contraseña
+          </label>
+          <input
+            id="confirm-password"
+            type="password"
+            className="field-input"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            required
+          />
         </div>
         <button type="submit" className="btn-primary w-full" disabled={loading}>
-          {loading ? 'Saving…' : 'Set password'}
+          {loading ? 'Guardando…' : 'Establecer contraseña'}
         </button>
       </form>
     </div>

@@ -16,6 +16,14 @@ interface Props {
 
 const valuePropIconOptions: ValuePropIcon[] = ['accessible', 'simple', 'secure', 'close', 'education'];
 
+const ICON_LABELS: Record<ValuePropIcon, string> = {
+  accessible: 'Accesible',
+  simple: 'Simple',
+  secure: 'Seguro',
+  close: 'Cercano',
+  education: 'Educación',
+};
+
 type ValuePropFormValues = {
   sectionBadge: string;
   title: string;
@@ -61,14 +69,14 @@ export function ValuePropSectionForm({ doc, onEdit, errors }: Props) {
 
   return (
     <div className="space-y-4">
-      <SectionHeader title="Services" description="Grid of what you offer" />
+      <SectionHeader title="Servicios" description="Cuadrícula de lo que ofrecen" />
 
-      <FieldCard label="Eyebrow label" error={getLocaleFieldError(errors, 'valueProp', 'sectionBadge')}>
+      <FieldCard label="Etiqueta superior" error={getLocaleFieldError(errors, 'valueProp', 'sectionBadge')}>
         <input className="editor-input" {...register('sectionBadge')} />
       </FieldCard>
 
       <FieldCard
-        label="Section title"
+        label="Título de sección"
         counter={{ current: (values.title ?? '').length, max: 90 }}
         error={getLocaleFieldError(errors, 'valueProp', 'title')}
       >
@@ -76,25 +84,26 @@ export function ValuePropSectionForm({ doc, onEdit, errors }: Props) {
       </FieldCard>
 
       <InlineCallout tone="warning">
-        ES and EN must have the same number of cards. Add or remove cards in both locales before publishing.
+        ES y EN deben tener la misma cantidad de tarjetas. Agrega o quita tarjetas en ambos idiomas antes
+        de publicar.
       </InlineCallout>
 
       <div className="flex items-center justify-between">
-        <span className="editor-label">Service cards</span>
+        <span className="editor-label">Tarjetas de servicio</span>
         <button
           type="button"
           className="btn-editor-add"
           disabled={fields.length >= 8}
           onClick={() => append(defaultItem())}
         >
-          + Add card
+          + Agregar tarjeta
         </button>
       </div>
 
       {fields.map((field, index) => (
         <div key={field.id} className="editor-card space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase text-editor-faint">Card {index + 1}</span>
+            <span className="text-[11px] font-bold uppercase text-editor-faint">Tarjeta {index + 1}</span>
             <div className="flex gap-1.5">
               <button type="button" className="btn-editor-mini" disabled={index === 0} onClick={() => move(index, index - 1)}>
                 ↑
@@ -113,15 +122,19 @@ export function ValuePropSectionForm({ doc, onEdit, errors }: Props) {
                 disabled={fields.length <= 1}
                 onClick={() => remove(index)}
               >
-                Remove
+                Eliminar
               </button>
             </div>
           </div>
-          <input className="editor-input" placeholder="Title" {...register(`items.${index}.title` as const)} />
+          <input className="editor-input" placeholder="Título" {...register(`items.${index}.title` as const)} />
           {getLocaleFieldError(errors, 'valueProp', 'items', index, 'title') && (
             <p className="editor-error-text">{getLocaleFieldError(errors, 'valueProp', 'items', index, 'title')}</p>
           )}
-          <textarea className="editor-textarea-sm" placeholder="Description" {...register(`items.${index}.description` as const)} />
+          <textarea
+            className="editor-textarea-sm"
+            placeholder="Descripción"
+            {...register(`items.${index}.description` as const)}
+          />
           {getLocaleFieldError(errors, 'valueProp', 'items', index, 'description') && (
             <p className="editor-error-text">
               {getLocaleFieldError(errors, 'valueProp', 'items', index, 'description')}
@@ -132,21 +145,25 @@ export function ValuePropSectionForm({ doc, onEdit, errors }: Props) {
             className="text-xs font-semibold text-editor-muted underline"
             onClick={() => setExpandedCards((s) => ({ ...s, [field.id]: !s[field.id] }))}
           >
-            {expandedCards[field.id] ? 'Hide card details' : 'Card details (flip side)'}
+            {expandedCards[field.id] ? 'Ocultar detalles de tarjeta' : 'Detalles de tarjeta (reverso)'}
           </button>
           {expandedCards[field.id] && (
             <div className="space-y-2 border-t border-editor-track pt-2">
               <select className="editor-input" {...register(`items.${index}.icon` as const)}>
                 {valuePropIconOptions.map((icon) => (
                   <option key={icon} value={icon}>
-                    {icon}
+                    {ICON_LABELS[icon]}
                   </option>
                 ))}
               </select>
-              <input className="editor-input" placeholder="Back label" {...register(`items.${index}.backLabel` as const)} />
+              <input
+                className="editor-input"
+                placeholder="Etiqueta del reverso"
+                {...register(`items.${index}.backLabel` as const)}
+              />
               <textarea
                 className="editor-textarea-sm"
-                placeholder="Back description"
+                placeholder="Descripción del reverso"
                 {...register(`items.${index}.backDescription` as const)}
               />
             </div>
@@ -155,7 +172,9 @@ export function ValuePropSectionForm({ doc, onEdit, errors }: Props) {
       ))}
 
       <details className="editor-card">
-        <summary className="cursor-pointer text-xs font-semibold text-editor-muted">Advanced: section subheadline</summary>
+        <summary className="cursor-pointer text-xs font-semibold text-editor-muted">
+          Avanzado: subtítulo de sección
+        </summary>
         <textarea className="editor-textarea mt-2" {...register('subheadline')} />
       </details>
     </div>

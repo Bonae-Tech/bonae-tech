@@ -44,8 +44,8 @@ const HERO_FIELDS: Record<string, string> = {
   badge: 'Insignia',
   headline: 'Titular',
   subheadline: 'Subtítulo',
-  cta: 'CTA principal',
-  ctaSecondary: 'CTA secundario',
+  cta: 'Botón principal',
+  ctaSecondary: 'Botón secundario',
   ctaSub: 'Nota de confianza',
 };
 

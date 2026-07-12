@@ -42,7 +42,7 @@ export function EditorRail({
           className={`editor-rail-tab ${tab === 'changes' ? 'editor-rail-tab-active' : ''}`}
           onClick={() => setTab('changes')}
         >
-          Changes
+          Cambios
           {pendingCount > 0 && (
             <span className="ml-1.5 rounded-[9px] bg-editor-accent px-1.5 py-px text-[10px] font-extrabold text-white">
               {pendingCount}
@@ -54,7 +54,7 @@ export function EditorRail({
           className={`editor-rail-tab ${tab === 'history' ? 'editor-rail-tab-active' : ''}`}
           onClick={() => setTab('history')}
         >
-          History
+          Historial
         </button>
       </div>
       {tab === 'changes' && draft && published ? (
@@ -85,18 +85,18 @@ export function EditorRail({
           <button
             type="button"
             className="absolute inset-0 bg-black/30"
-            aria-label="Close review panel"
+            aria-label="Cerrar panel de revisión"
             onClick={onMobileClose}
           />
           <aside className="relative ml-auto flex h-full w-[min(320px,100%)] flex-col bg-white shadow-editor-shell">
             <div className="flex items-center justify-between border-b border-editor-border px-4 py-2">
-              <span className="text-sm font-bold text-editor-text">Review</span>
+              <span className="text-sm font-bold text-editor-text">Revisión</span>
               <button
                 type="button"
                 className="text-editor-faint hover:text-editor-text"
                 onClick={onMobileClose}
               >
-                Close
+                Cerrar
               </button>
             </div>
             {railContent}

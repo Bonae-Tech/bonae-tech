@@ -45,11 +45,11 @@ function statusLabelFor(
   switch (phase) {
     case 'committing':
     case 'building':
-      return 'Publishing…';
+      return 'Publicando…';
     case 'success':
-      return 'Published.';
+      return 'Publicado.';
     case 'failure':
-      return error ?? apiError ?? 'Publish failed.';
+      return error ?? apiError ?? 'Error al publicar.';
     default:
       return null;
   }
@@ -115,19 +115,21 @@ export function usePublishFlow(
       onTimeout: () => {
         setIsTracking(false);
         setPhase('failure');
-        setError('Publish status tracking timed out. The deploy may still be running on the server.');
+        setError('El seguimiento del estado de publicación expiró. El despliegue puede seguir ejecutándose en el servidor.');
       },
       onPollLimit: () => {
         setIsTracking(false);
         setPhase('failure');
         setError(
-          'Stopped checking publish status automatically. Open the deploy run link to see progress, or refresh the page.',
+          'Se detuvo la verificación automática del estado. Abre el enlace del despliegue para ver el progreso o actualiza la página.',
         );
       },
       onCircuitBreak: ({ count, windowMs }) => {
         setIsTracking(false);
         setPhase('failure');
-        setError('Publish status checks were happening too fast and were stopped automatically. Refresh the page to check the current status.');
+        setError(
+          'Las verificaciones de estado eran demasiado frecuentes y se detuvieron automáticamente. Actualiza la página para ver el estado actual.',
+        );
         console.error(
           JSON.stringify({ action: 'publish_status_circuit_break', count, windowMs }),
         );
@@ -210,7 +212,7 @@ export function usePublishFlow(
       } catch (err) {
         stopPolling();
         if (err instanceof ContentApiError && err.status === 409) {
-          setError('A publish is already in progress.');
+          setError('Ya hay una publicación en curso.');
           setPhase('failure');
           return;
         }
@@ -219,7 +221,7 @@ export function usePublishFlow(
           setPhase('failure');
           return;
         }
-        setError(err instanceof Error ? err.message : 'Publish failed');
+        setError(err instanceof Error ? err.message : 'Error al publicar');
         setPhase('failure');
       }
     },

@@ -55,9 +55,9 @@ export function EditorTopBar({
         />
         <div className="shrink-0 whitespace-nowrap">
           <div className="text-[14.5px] font-bold tracking-[-0.01em] text-editor-text">
-            Bonae Tech · Content
+            Bonae Tech · Contenido
           </div>
-          <div className="text-[11.5px] text-editor-faint">Marketing site editor</div>
+          <div className="text-[11.5px] text-editor-faint">Editor del sitio de marketing</div>
         </div>
       </div>
 
@@ -87,11 +87,11 @@ export function EditorTopBar({
           disabled={saveDraftDisabled || saving}
           onClick={onSaveDraft}
         >
-          Save draft
+          Guardar borrador
         </button>
         <div className="hidden h-[22px] w-px bg-editor-border sm:block" aria-hidden />
         <div className="hidden text-xs whitespace-nowrap text-editor-faint sm:block">
-          Last published <span className="font-semibold text-editor-muted">{lastPublishedLabel}</span>
+          Última publicación <span className="font-semibold text-editor-muted">{lastPublishedLabel}</span>
         </div>
         <div className="hidden h-[22px] w-px bg-editor-border sm:block" aria-hidden />
         <UserMenu initials={userInitials} onLogout={onLogout} />

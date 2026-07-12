@@ -34,10 +34,10 @@ export function SettingsSectionForm({ draftEs, settings, onApply, errors }: Prop
 
   return (
     <div className="space-y-4">
-      <SectionHeader title="Settings" description="Shared across languages" />
+      <SectionHeader title="Configuración" description="Compartido entre idiomas" />
 
       <FieldCard
-        label="Site name"
+        label="Nombre del sitio"
         counter={{ current: (values.siteName ?? '').length, max: 40 }}
         error={errors.siteName}
       >
@@ -45,19 +45,19 @@ export function SettingsSectionForm({ draftEs, settings, onApply, errors }: Prop
       </FieldCard>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FieldCard label="WhatsApp number" error={errors.whatsapp}>
+        <FieldCard label="Número de WhatsApp" error={errors.whatsapp}>
           <input className="editor-input" {...register('whatsapp')} />
         </FieldCard>
-        <FieldCard label="Contact email" error={errors.email}>
+        <FieldCard label="Correo de contacto" error={errors.email}>
           <input className="editor-input" type="email" {...register('email')} />
         </FieldCard>
       </div>
 
-      <FieldCard label="Address" error={errors.address}>
+      <FieldCard label="Dirección" error={errors.address}>
         <input className="editor-input" {...register('address')} />
       </FieldCard>
 
-      <FieldCard label="Footer text" error={errors.footerText}>
+      <FieldCard label="Texto del pie de página" error={errors.footerText}>
         <input className="editor-input" {...register('footerText')} />
       </FieldCard>
 
@@ -66,21 +66,21 @@ export function SettingsSectionForm({ draftEs, settings, onApply, errors }: Prop
         className="text-xs font-semibold text-editor-muted underline"
         onClick={() => setMoreOpen((v) => !v)}
       >
-        {moreOpen ? 'Hide more settings' : 'More settings (URL & social)'}
+        {moreOpen ? 'Ocultar más configuración' : 'Más configuración (URL y redes)'}
       </button>
 
       {moreOpen && (
         <div className="space-y-4">
-          <FieldCard label="Site URL" error={errors.siteUrl}>
+          <FieldCard label="URL del sitio" error={errors.siteUrl}>
             <input className="editor-input" {...register('siteUrl')} />
           </FieldCard>
-          <FieldCard label="Instagram URL">
+          <FieldCard label="URL de Instagram">
             <input className="editor-input" {...register('socialInstagram')} />
           </FieldCard>
-          <FieldCard label="Facebook URL">
+          <FieldCard label="URL de Facebook">
             <input className="editor-input" {...register('socialFacebook')} />
           </FieldCard>
-          <FieldCard label="LinkedIn URL">
+          <FieldCard label="URL de LinkedIn">
             <input className="editor-input" {...register('socialLinkedin')} />
           </FieldCard>
         </div>

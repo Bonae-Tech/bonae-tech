@@ -20,44 +20,44 @@ export function mapForgotPasswordError(err: unknown): string {
     messageIncludes(err, 'no registered/verified email')
   ) {
     return (
-      'Password reset is not available for this account because the email address is not verified. ' +
-      'Contact your administrator — they can verify your email in Cognito so you can reset your password.'
+      'El restablecimiento no está disponible porque el correo no está verificado. ' +
+      'Contacta a tu administrador — puede verificar tu correo en Cognito para que puedas restablecer la contraseña.'
     );
   }
 
   if (code === 'LimitExceededException' || code === 'TooManyRequestsException') {
-    return 'Too many reset attempts. Please wait a few minutes and try again.';
+    return 'Demasiados intentos de restablecimiento. Espera unos minutos e inténtalo de nuevo.';
   }
 
   if (code === 'InvalidParameterException') {
-    return 'Unable to send a reset code for that email. Check the address and try again.';
+    return 'No se pudo enviar un código para ese correo. Verifica la dirección e inténtalo de nuevo.';
   }
 
-  return 'Unable to send a reset code. Check the email address and try again, or contact your administrator.';
+  return 'No se pudo enviar el código. Verifica el correo e inténtalo de nuevo, o contacta a tu administrador.';
 }
 
 export function mapConfirmPasswordError(err: unknown): string {
   const code = cognitoCode(err);
 
   if (code === 'CodeMismatchException') {
-    return 'The verification code is incorrect. Check your email and try again.';
+    return 'El código de verificación es incorrecto. Revisa tu correo e inténtalo de nuevo.';
   }
 
   if (code === 'ExpiredCodeException') {
-    return 'This verification code has expired. Go back and request a new code.';
+    return 'Este código expiró. Vuelve atrás y solicita uno nuevo.';
   }
 
   if (code === 'InvalidPasswordException') {
-    return cognitoMessage(err) || 'Password does not meet the required policy.';
+    return cognitoMessage(err) || 'La contraseña no cumple la política requerida.';
   }
 
   if (code === 'NotAuthorizedException' && messageIncludes(err, 'code')) {
-    return 'This verification code is invalid or has expired.';
+    return 'Este código es inválido o expiró.';
   }
 
   if (code === 'LimitExceededException' || code === 'TooManyRequestsException') {
-    return 'Too many attempts. Please wait a few minutes and try again.';
+    return 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.';
   }
 
-  return 'Unable to reset password. Please try again or contact your administrator.';
+  return 'No se pudo restablecer la contraseña. Inténtalo de nuevo o contacta a tu administrador.';
 }

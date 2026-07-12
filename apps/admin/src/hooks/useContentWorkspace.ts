@@ -67,7 +67,7 @@ export function useContentWorkspace(): ContentWorkspace {
       setDraftSettings(next.draft.settings as SiteSettings);
       setContentEpoch((n) => n + 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load content');
+      setError(err instanceof Error ? err.message : 'No se pudo cargar el contenido');
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ export function useContentWorkspace(): ContentWorkspace {
       setSaveStatus(pendingRef.current.size > 0 ? 'pending' : 'saved');
     } catch (err) {
       setSaveStatus('error');
-      setSaveError(err instanceof Error ? err.message : 'Save failed');
+      setSaveError(err instanceof Error ? err.message : 'Error al guardar');
       throw err;
     }
   }, []);

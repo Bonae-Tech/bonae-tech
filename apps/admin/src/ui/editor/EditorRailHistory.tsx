@@ -8,9 +8,9 @@ export function EditorRailHistory({ lastPublishedAt, lastCommitSha }: Props) {
 
   if (lastPublishedAt) {
     entries.push({
-      summary: 'Last successful publish',
+      summary: 'Última publicación exitosa',
       time: new Date(lastPublishedAt).toLocaleString(),
-      user: 'System',
+      user: 'Sistema',
     });
   }
   if (lastCommitSha) {
@@ -24,7 +24,9 @@ export function EditorRailHistory({ lastPublishedAt, lastCommitSha }: Props) {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3.5">
       {entries.length === 0 ? (
-        <p className="py-8 text-center text-[12.5px] text-editor-faint">No publish history yet.</p>
+        <p className="py-8 text-center text-[12.5px] text-editor-faint">
+          Aún no hay historial de publicaciones.
+        </p>
       ) : (
         entries.map((log) => (
           <div key={log.summary} className="border-b border-editor-track py-2.5 last:border-b-0">
@@ -36,7 +38,8 @@ export function EditorRailHistory({ lastPublishedAt, lastCommitSha }: Props) {
         ))
       )}
       <p className="mt-4 text-[11px] text-editor-faint">
-        Full activity log with user identities requires a future server audit API.
+        El registro de actividad completo con identidades de usuario requiere una futura API de
+        auditoría en el servidor.
       </p>
     </div>
   );

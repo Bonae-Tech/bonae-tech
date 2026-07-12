@@ -20,7 +20,7 @@ export function ForgotPasswordForm({ onSubmit, onBack, onContinue }: Props) {
       await onSubmit(email);
       setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send reset code');
+      setError(err instanceof Error ? err.message : 'No se pudo enviar el código');
     } finally {
       setLoading(false);
     }
@@ -29,24 +29,28 @@ export function ForgotPasswordForm({ onSubmit, onBack, onContinue }: Props) {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <form onSubmit={handleSubmit} className="card w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold text-slate-900">Reset password</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Restablecer contraseña</h1>
         {sent ? (
           <>
             <p className="text-sm text-slate-600">
-              If an account exists for that email, a verification code has been sent. Check your inbox and enter the code on the next screen.
+              Si existe una cuenta con ese correo, se envió un código de verificación. Revisa tu
+              bandeja de entrada e ingrésalo en la siguiente pantalla.
             </p>
             <button type="button" className="btn-primary w-full" onClick={() => onContinue(email)}>
-              Enter verification code
+              Ingresar código de verificación
             </button>
           </>
         ) : (
           <>
             <p className="text-sm text-slate-600">
-              Enter your administrator email. We will send a verification code if an account exists.
+              Ingresa tu correo de administrador. Enviaremos un código de verificación si existe una
+              cuenta.
             </p>
             {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
             <div>
-              <label className="field-label" htmlFor="reset-email">Email</label>
+              <label className="field-label" htmlFor="reset-email">
+                Correo electrónico
+              </label>
               <input
                 id="reset-email"
                 type="email"
@@ -57,10 +61,10 @@ export function ForgotPasswordForm({ onSubmit, onBack, onContinue }: Props) {
               />
             </div>
             <button type="submit" className="btn-primary w-full" disabled={loading}>
-              {loading ? 'Sending…' : 'Send code'}
+              {loading ? 'Enviando…' : 'Enviar código'}
             </button>
             <button type="button" className="btn-secondary w-full" onClick={onBack}>
-              Back to sign in
+              Volver al inicio de sesión
             </button>
           </>
         )}

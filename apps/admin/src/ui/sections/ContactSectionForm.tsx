@@ -39,14 +39,14 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
 
   return (
     <div className="space-y-4">
-      <SectionHeader title="Contact" />
+      <SectionHeader title="Contacto" />
 
-      <FieldCard label="Title" error={getLocaleFieldError(errors, 'contact', 'title')}>
+      <FieldCard label="Título" error={getLocaleFieldError(errors, 'contact', 'title')}>
         <input className="editor-input" {...register('title')} />
       </FieldCard>
 
       <FieldCard
-        label="Description"
+        label="Descripción"
         counter={{ current: (values.subtitle ?? '').length, max: 240 }}
         error={getLocaleFieldError(errors, 'contact', 'subtitle')}
       >
@@ -54,7 +54,7 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
       </FieldCard>
 
       <InlineCallout>
-        Channels live under <strong className="text-editor-brand">Site settings</strong>.
+        Los canales están en <strong className="text-editor-brand">Configuración del sitio</strong>.
       </InlineCallout>
     </div>
   );

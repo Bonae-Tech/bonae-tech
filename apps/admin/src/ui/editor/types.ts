@@ -11,10 +11,10 @@ export type RailTab = 'changes' | 'history';
 
 export const NAV_ITEMS: [SectionId, string][] = [
   ['hero', 'Hero'],
-  ['valueProp', 'Services / value prop'],
-  ['keyFigures', 'DatosClave'],
-  ['about', 'About / team'],
-  ['contact', 'Contact'],
-  ['settings', 'Site settings'],
-  ['advanced', 'Advanced JSON'],
+  ['valueProp', 'Servicios'],
+  ['keyFigures', 'Datos Clave'],
+  ['about', 'Sobre nosotras'],
+  ['contact', 'Contacto'],
+  ['settings', 'Configuración del sitio'],
+  ['advanced', 'JSON avanzado'],
 ];
