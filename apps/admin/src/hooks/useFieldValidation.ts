@@ -14,6 +14,7 @@ export interface LocaleSectionErrors {
     title?: string | null;
     items: ItemErrors;
   };
+  keyFigures: FieldErrors;
   about: {
     title?: string | null;
     foundersTitle?: string | null;
@@ -70,6 +71,7 @@ function countErrors(obj: unknown): number {
 const EMPTY_LOCALE_ERRORS: LocaleSectionErrors = {
   hero: {},
   valueProp: { items: [] },
+  keyFigures: {},
   about: { founders: [] },
   contact: {},
 };
@@ -95,6 +97,19 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
         title: checkField(item.title, { required: true, max: 60 }, 'Card title'),
         description: checkField(item.description, { required: true, max: 180 }, 'Card description'),
       })),
+    },
+    keyFigures: {
+      years: checkField(doc.keyFigures.years, { required: true, max: 20 }, 'Years value'),
+      yearsLabel: checkField(doc.keyFigures.yearsLabel, { required: true, max: 80 }, 'Years label'),
+      clientsValue: checkField(doc.keyFigures.clientsValue, { required: true, max: 20 }, 'Clients value'),
+      clients: checkField(doc.keyFigures.clients, { required: true, max: 80 }, 'Clients label'),
+      projectsValue: checkField(doc.keyFigures.projectsValue, { required: true, max: 20 }, 'Projects value'),
+      projects: checkField(doc.keyFigures.projects, { required: true, max: 80 }, 'Projects label'),
+      presenceValue: checkField(doc.keyFigures.presenceValue, { required: true, max: 20 }, 'Presence value'),
+      presenceLabel: checkField(doc.keyFigures.presenceLabel, { required: true, max: 80 }, 'Presence label'),
+      presence: checkField(doc.keyFigures.presence, { required: true, max: 40 }, 'Presence short label'),
+      foundersCount: checkField(doc.keyFigures.foundersCount, { required: true, max: 20 }, 'Founders count'),
+      foundersLabel: checkField(doc.keyFigures.foundersLabel, { required: true, max: 40 }, 'Founders label'),
     },
     about: {
       title: checkField(doc.about.title, { required: true, max: 90 }, 'Title'),
@@ -138,6 +153,8 @@ export function useFieldValidation(
           return countErrors(errorsEs.hero) + countErrors(errorsEn.hero);
         case 'valueProp':
           return countErrors(errorsEs.valueProp) + countErrors(errorsEn.valueProp);
+        case 'keyFigures':
+          return countErrors(errorsEs.keyFigures) + countErrors(errorsEn.keyFigures);
         case 'about':
           return countErrors(errorsEs.about) + countErrors(errorsEn.about);
         case 'contact':
@@ -178,7 +195,7 @@ export function getLocaleFieldError(
     }
     return errors.about[field as 'title' | 'foundersTitle'] ?? null;
   }
-  if (section === 'hero' || section === 'contact') {
+  if (section === 'hero' || section === 'keyFigures' || section === 'contact') {
     return errors[section][field] ?? null;
   }
   return null;

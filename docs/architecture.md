@@ -9,6 +9,7 @@ Diseño de la plataforma, infraestructura, flujos de datos y operaciones del dí
 1. [Vista general del sistema](#1-vista-general-del-sistema)
 2. [Workspaces](#2-workspaces)
 3. [Infraestructura en la nube](#3-infraestructura-en-la-nube)
+   - [Caché del sitio de marketing](#caché-del-sitio-de-marketing)
 4. [Flujos de datos](#4-flujos-de-datos)
    - [Niveles de contenido](#niveles-de-contenido-draft-vs-publicado)
    - [Mapa admin ↔ API](./admin-content-api-map.md)
@@ -61,6 +62,7 @@ flowchart TD
 
 - **Publicado en git; borradores en el DO.** Solo `published/**` se confirma en GitHub. Los borradores no disparan rebuilds del sitio.
 - **Sin servidor en runtime para marketing.** El sitio es HTML estático en Cloudflare Pages.
+- **Caché HTTP alineada al fingerprinting.** HTML con TTL corto; `/_astro/*` immutable; `sw.js` sin store. Ver [§ Caché del sitio de marketing](#caché-del-sitio-de-marketing).
 - **Nube híbrida.** Cognito en AWS para identidad; Cloudflare Pages + Worker + Durable Objects para admin y API.
 - **Admin solo por invitación.** Sin auto-registro. Los usuarios se crean vía CLI y se agregan al grupo Cognito `Administrators`.
 - **Publicación atómica.** Un solo commit (Git Trees API) para ES, EN y settings. El overlay del admin espera el resultado real del deploy vía callback de CI.
@@ -127,6 +129,7 @@ Rutas HTTP y niveles de almacenamiento: [§ Niveles de contenido](#niveles-de-co
 Documentación detallada de autenticación (secuencias, diagramas de componentes, AWS): [admin-authentication.md](./admin-authentication.md).
 
 READMEs por app: 
+* [apps/static/README.md](../apps/static/README.md) — sitio de marketing, caché HTTP y service worker
 * [apps/admin/README.md](../apps/admin/README.md)
 * [workers/content-api/README.md](../workers/content-api/README.md)
 
@@ -166,6 +169,21 @@ Solo por invitación (`allow_admin_create_user_only = true`). ID tokens expiran 
 | Worker `bonae-content-api` | API de contenido |
 
 Secretos del Worker sincronizados desde GitHub vía **Setup worker**. IDs de Cognito pasados como vars del Worker en tiempo de deploy.
+
+#### Caché del sitio de marketing
+
+El sitio Astro (`apps/static`) es SSG: Vite/Astro emite assets hasheados bajo `/_astro/*`. La política de caché HTTP vive en el repo (`apps/static/public/_headers`, copiado a `dist/` en build) y se aplica en Cloudflare Pages:
+
+| Ruta | `Cache-Control` | Motivo |
+|------|-----------------|--------|
+| `/*` (HTML y resto) | `public, max-age=60, must-revalidate` | Copy y markup deben refrescarse pronto tras un publish |
+| `/_astro/*` | `public, max-age=31536000, immutable` | Fingerprint de contenido; seguro cachear un año |
+| `/sw.js` | `no-store` | El service worker debe actualizarse en cada deploy |
+| `/manifest.webmanifest` | `public, max-age=60, must-revalidate` | Alineado con HTML |
+
+El service worker (`apps/static/public/sw.js`) usa navegaciones **network-first** y assets estáticos **cache-first**. El nombre de caché es `bonae-tech-<shortSha>`: el placeholder `__BUILD_HASH__` se sustituye antes del deploy (`apps/static/scripts/inject-sw-build-hash.mjs`, también en **Deploy site**).
+
+**Panel Cloudflare (zona `bonaetech.com`):** reglas y ajustes de Caching a nivel de dominio se gestionan en [Caching → Configuration](https://dash.cloudflare.com/cd081958c621d4f8a9c7481da23e07f0/bonaetech.com/caching/configuration). Los headers por ruta del sitio siguen siendo la fuente de verdad en git (`_headers`); el dashboard complementa la configuración de zona (TTL por defecto, Browser Cache TTL, etc.). Detalle operativo: [apps/static/README.md](../apps/static/README.md#caché-y-headers).
 
 ### 3.3 Configuración de GitHub
 

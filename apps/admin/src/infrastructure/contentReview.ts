@@ -29,44 +29,71 @@ export interface PublishReview {
 }
 
 const SECTION_TITLES: Record<string, string> = {
-  nav: 'Navigation',
+  nav: 'Navegación',
   hero: 'Hero',
-  valueProp: 'Services',
-  keyFigures: 'Key figures',
-  about: 'About',
-  plans: 'Plans',
-  contact: 'Contact',
-  footer: 'Footer',
-  cookieBanner: 'Cookie banner',
+  valueProp: 'Servicios',
+  keyFigures: 'DatosClave',
+  about: 'Sobre nosotras',
+  plans: 'Planes',
+  contact: 'Contacto',
+  footer: 'Pie de página',
+  cookieBanner: 'Banner de cookies',
 };
 
 const HERO_FIELDS: Record<string, string> = {
-  badge: 'Badge',
-  headline: 'Headline',
-  subheadline: 'Subtitle',
-  cta: 'Primary CTA',
-  ctaSecondary: 'Secondary CTA',
-  ctaSub: 'Reassurance note',
+  badge: 'Insignia',
+  headline: 'Titular',
+  subheadline: 'Subtítulo',
+  cta: 'CTA principal',
+  ctaSecondary: 'CTA secundario',
+  ctaSub: 'Nota de confianza',
 };
 
 const VALUE_PROP_FIELDS: Record<string, string> = {
-  sectionBadge: 'Section badge',
-  title: 'Title',
-  subheadline: 'Subheadline',
+  sectionBadge: 'Etiqueta de sección',
+  title: 'Título',
+  subheadline: 'Subtítulo',
 };
 
 const VALUE_PROP_ITEM_FIELDS: Record<string, string> = {
-  icon: 'Icon',
-  title: 'Title',
-  description: 'Description',
-  backLabel: 'Back label',
-  backDescription: 'Back description',
+  icon: 'Icono',
+  title: 'Título',
+  description: 'Descripción',
+  backLabel: 'Etiqueta reverso',
+  backDescription: 'Descripción reverso',
+};
+
+const KEY_FIGURES_FIELDS: Record<string, string> = {
+  years: 'Valor de años',
+  yearsLabel: 'Etiqueta de años',
+  clientsValue: 'Valor de clientes',
+  clients: 'Etiqueta de clientes',
+  projectsValue: 'Valor de proyectos',
+  projects: 'Etiqueta de proyectos',
+  presenceValue: 'Valor de presencia',
+  presenceLabel: 'Etiqueta de presencia',
+  presence: 'Etiqueta corta de presencia',
+  foundersCount: 'Cantidad de fundadoras',
+  foundersLabel: 'Etiqueta de fundadoras',
 };
 
 const TOP_LEVEL_STRING_FIELDS: Record<string, string> = {
-  siteName: 'Site name',
-  siteTagline: 'Site tagline',
-  metaDescription: 'Meta description',
+  siteName: 'Nombre del sitio',
+  siteTagline: 'Eslogan del sitio',
+  metaDescription: 'Meta descripción',
+};
+
+const SETTINGS_FIELD_LABELS: Record<string, string> = {
+  siteUrl: 'URL del sitio',
+  whatsappNumber: 'Número de WhatsApp',
+  socialLinks: 'Redes sociales',
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  linkedin: 'LinkedIn',
+  legalLinks: 'Enlaces legales',
+  privacy: 'Privacidad',
+  terms: 'Términos',
+  cookies: 'Cookies',
 };
 
 function truncate(value: string, max = 140): string {
@@ -78,11 +105,14 @@ function truncate(value: string, max = 140): string {
 }
 
 function humanizeSegment(segment: string): string {
-  return segment.charAt(0).toUpperCase() + segment.slice(1).replace(/([A-Z])/g, ' $1');
+  return (
+    SETTINGS_FIELD_LABELS[segment] ??
+    segment.charAt(0).toUpperCase() + segment.slice(1).replace(/([A-Z])/g, ' $1')
+  );
 }
 
 function formatChangeLabel(locale: ReviewFieldChange['locale'], ...segments: string[]): string {
-  const prefix = locale === 'settings' ? 'Settings' : locale.toUpperCase();
+  const prefix = locale === 'settings' ? 'Configuración' : locale.toUpperCase();
   return [prefix, ...segments].join(' › ');
 }
 
@@ -144,7 +174,7 @@ function diffValuePropItems(
         }
         changes.push({
           locale,
-          label: formatChangeLabel(locale, 'Services', `Item ${i + 1}`, fieldLabel),
+          label: formatChangeLabel(locale, SECTION_TITLES.valueProp, `Ítem ${i + 1}`, fieldLabel),
           kind: 'added',
           after: truncate(value),
         });
@@ -161,7 +191,7 @@ function diffValuePropItems(
       pushStringChange(
         changes,
         locale,
-        formatChangeLabel(locale, 'Services', `Item ${i + 1}`, fieldLabel),
+        formatChangeLabel(locale, SECTION_TITLES.valueProp, `Ítem ${i + 1}`, fieldLabel),
         before,
         after,
       );
@@ -178,9 +208,9 @@ function diffValuePropItems(
       .filter(Boolean);
     changes.push({
       locale,
-      label: formatChangeLabel(locale, 'Services', `Item ${i + 1}`),
+      label: formatChangeLabel(locale, SECTION_TITLES.valueProp, `Ítem ${i + 1}`),
       kind: 'removed',
-      before: labelParts.join(' · ') || 'Removed item',
+      before: labelParts.join(' · ') || 'Elemento eliminado',
     });
   }
 }
@@ -192,7 +222,7 @@ function diffLocaleDocument(
 ): ReviewFieldChange[] {
   const changes: ReviewFieldChange[] = [];
 
-  diffRecordStrings(changes, locale, 'Document', TOP_LEVEL_STRING_FIELDS, draft, published);
+  diffRecordStrings(changes, locale, 'Documento', TOP_LEVEL_STRING_FIELDS, draft, published);
 
   for (const [sectionKey, sectionTitle] of Object.entries(SECTION_TITLES)) {
     const draftSection = draft[sectionKey as keyof ContentDocument];
@@ -228,6 +258,18 @@ function diffLocaleDocument(
         publishedSection as Record<string, unknown>,
       );
       diffValuePropItems(changes, locale, draft, published);
+      continue;
+    }
+
+    if (sectionKey === 'keyFigures') {
+      diffRecordStrings(
+        changes,
+        locale,
+        sectionTitle,
+        KEY_FIGURES_FIELDS,
+        draftSection as Record<string, unknown>,
+        publishedSection as Record<string, unknown>,
+      );
       continue;
     }
 
@@ -293,7 +335,7 @@ function missingEnTranslationWarnings(
       continue;
     }
 
-    const heroMatch = change.label.match(/^ES › Hero › (.+)$/);
+    const heroMatch = change.label.match(new RegExp(`^ES › ${SECTION_TITLES.hero} › (.+)$`));
     if (heroMatch) {
       const fieldLabel = heroMatch[1];
       const fieldKey = Object.entries(HERO_FIELDS).find(([, label]) => label === fieldLabel)?.[0];
@@ -301,7 +343,22 @@ function missingEnTranslationWarnings(
         const enBefore = enPublished.hero[fieldKey as keyof typeof enPublished.hero];
         const enAfter = enDraft.hero[fieldKey as keyof typeof enDraft.hero];
         if (typeof enBefore === 'string' && typeof enAfter === 'string' && enBefore === enAfter) {
-          warnings.push({ label: change.label, message: 'Missing EN translation' });
+          warnings.push({ label: change.label, message: 'Falta traducción EN' });
+        }
+      }
+    }
+
+    const keyFiguresMatch = change.label.match(
+      new RegExp(`^ES › ${SECTION_TITLES.keyFigures} › (.+)$`),
+    );
+    if (keyFiguresMatch) {
+      const fieldLabel = keyFiguresMatch[1];
+      const fieldKey = Object.entries(KEY_FIGURES_FIELDS).find(([, label]) => label === fieldLabel)?.[0];
+      if (fieldKey) {
+        const enBefore = enPublished.keyFigures[fieldKey as keyof typeof enPublished.keyFigures];
+        const enAfter = enDraft.keyFigures[fieldKey as keyof typeof enDraft.keyFigures];
+        if (typeof enBefore === 'string' && typeof enAfter === 'string' && enBefore === enAfter) {
+          warnings.push({ label: change.label, message: 'Falta traducción EN' });
         }
       }
     }
@@ -315,7 +372,7 @@ function validationErrorsForLocale(draft: unknown, label: string): string[] {
     parseContentDocument(draft);
     return [];
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Invalid document';
+    const message = err instanceof Error ? err.message : 'Documento inválido';
     return [`${label}: ${message}`];
   }
 }
@@ -325,8 +382,8 @@ function validationErrorsForSettings(draft: unknown): string[] {
     parseSiteSettings(draft);
     return [];
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Invalid settings';
-    return [`Settings: ${message}`];
+    const message = err instanceof Error ? err.message : 'Configuración inválida';
+    return [`Configuración: ${message}`];
   }
 }
 
