@@ -30,4 +30,46 @@ describe('buildPublishReview', () => {
     expect(review.validationErrors.some((e) => e.startsWith('ES:'))).toBe(true);
     expect(reviewBlocksPublish(review)).toBe(true);
   });
+
+  it('lists plans CTA field changes and warns when EN translations are unchanged', () => {
+    const published = loadPublished();
+    const draft = structuredClone(published);
+    draft.es.plans.title = 'Nuevo título para el CTA';
+    draft.es.plans.subtitle = 'Nuevo subtítulo para explicar la oferta';
+    draft.es.plans.cta = 'Agendar llamada';
+
+    const review = buildPublishReview({ draft, published });
+
+    expect(review.validationErrors).toEqual([]);
+    expect(reviewBlocksPublish(review)).toBe(false);
+    expect(review.changeCount).toBe(3);
+    expect(review.changes).toEqual([
+      {
+        locale: 'es',
+        label: 'ES › CTA › Título',
+        kind: 'changed',
+        before: published.es.plans.title,
+        after: draft.es.plans.title,
+      },
+      {
+        locale: 'es',
+        label: 'ES › CTA › Subtítulo',
+        kind: 'changed',
+        before: published.es.plans.subtitle,
+        after: draft.es.plans.subtitle,
+      },
+      {
+        locale: 'es',
+        label: 'ES › CTA › Texto del botón',
+        kind: 'changed',
+        before: published.es.plans.cta,
+        after: draft.es.plans.cta,
+      },
+    ]);
+    expect(review.warnings).toEqual([
+      { label: 'ES › CTA › Título', message: 'Falta traducción EN' },
+      { label: 'ES › CTA › Subtítulo', message: 'Falta traducción EN' },
+      { label: 'ES › CTA › Texto del botón', message: 'Falta traducción EN' },
+    ]);
+  });
 });
