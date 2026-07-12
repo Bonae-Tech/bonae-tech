@@ -20,7 +20,7 @@ El contenido publicado vive en `apps/static/content/published/` (`es.json`, `en.
 
 ### Requisitos previos
 
-- Node.js ≥ 20
+- Node.js ≥ 24 (Active LTS; see `.nvmrc`)
 - npm 10.9.2 (`packageManager` en el root; con Corepack: `corepack enable`)
 - Turbo — incluido en devDependencies; CLI global opcional (`npm install -g turbo` o `npx turbo`)
 - Terraform ≥ 1.6 y AWS CLI — solo para infraestructura y usuarios Cognito (AWS)
