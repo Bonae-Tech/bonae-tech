@@ -34,7 +34,7 @@ const SECTION_TITLES: Record<string, string> = {
   valueProp: 'Servicios',
   keyFigures: 'DatosClave',
   about: 'Sobre nosotras',
-  plans: 'Planes',
+  plans: 'CTA',
   contact: 'Contacto',
   footer: 'Pie de página',
   cookieBanner: 'Banner de cookies',
@@ -75,6 +75,12 @@ const KEY_FIGURES_FIELDS: Record<string, string> = {
   presence: 'Etiqueta corta de presencia',
   foundersCount: 'Cantidad de fundadoras',
   foundersLabel: 'Etiqueta de fundadoras',
+};
+
+const PLANS_FIELDS: Record<string, string> = {
+  title: 'Título',
+  subtitle: 'Subtítulo',
+  cta: 'Texto del botón',
 };
 
 const TOP_LEVEL_STRING_FIELDS: Record<string, string> = {
@@ -273,6 +279,18 @@ function diffLocaleDocument(
       continue;
     }
 
+    if (sectionKey === 'plans') {
+      diffRecordStrings(
+        changes,
+        locale,
+        sectionTitle,
+        PLANS_FIELDS,
+        draftSection as Record<string, unknown>,
+        publishedSection as Record<string, unknown>,
+      );
+      continue;
+    }
+
     if (JSON.stringify(draftSection) !== JSON.stringify(publishedSection)) {
       changes.push({
         locale,
@@ -357,6 +375,19 @@ function missingEnTranslationWarnings(
       if (fieldKey) {
         const enBefore = enPublished.keyFigures[fieldKey as keyof typeof enPublished.keyFigures];
         const enAfter = enDraft.keyFigures[fieldKey as keyof typeof enDraft.keyFigures];
+        if (typeof enBefore === 'string' && typeof enAfter === 'string' && enBefore === enAfter) {
+          warnings.push({ label: change.label, message: 'Falta traducción EN' });
+        }
+      }
+    }
+
+    const plansMatch = change.label.match(new RegExp(`^ES › ${SECTION_TITLES.plans} › (.+)$`));
+    if (plansMatch) {
+      const fieldLabel = plansMatch[1];
+      const fieldKey = Object.entries(PLANS_FIELDS).find(([, label]) => label === fieldLabel)?.[0];
+      if (fieldKey) {
+        const enBefore = enPublished.plans[fieldKey as keyof typeof enPublished.plans];
+        const enAfter = enDraft.plans[fieldKey as keyof typeof enDraft.plans];
         if (typeof enBefore === 'string' && typeof enAfter === 'string' && enBefore === enAfter) {
           warnings.push({ label: change.label, message: 'Falta traducción EN' });
         }

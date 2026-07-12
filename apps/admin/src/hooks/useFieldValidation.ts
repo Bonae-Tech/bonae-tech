@@ -20,6 +20,7 @@ export interface LocaleSectionErrors {
     foundersTitle?: string | null;
     founders: FounderErrors;
   };
+  plans: FieldErrors;
   contact: FieldErrors;
 }
 
@@ -73,6 +74,7 @@ const EMPTY_LOCALE_ERRORS: LocaleSectionErrors = {
   valueProp: { items: [] },
   keyFigures: {},
   about: { founders: [] },
+  plans: {},
   contact: {},
 };
 
@@ -119,6 +121,11 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
         role: checkField(member.role, { required: true, max: 40 }, 'Rol'),
       })),
     },
+    plans: {
+      title: checkField(doc.plans.title, { required: true, max: 90 }, 'Título'),
+      subtitle: checkField(doc.plans.subtitle, { required: true, max: 240 }, 'Subtítulo'),
+      cta: checkField(doc.plans.cta, { required: true, max: 40 }, 'Texto del botón'),
+    },
     contact: {
       title: checkField(doc.contact.title, { required: true }, 'Título'),
       subtitle: checkField(doc.contact.subtitle, { required: true, max: 240 }, 'Descripción'),
@@ -157,6 +164,8 @@ export function useFieldValidation(
           return countErrors(errorsEs.keyFigures) + countErrors(errorsEn.keyFigures);
         case 'about':
           return countErrors(errorsEs.about) + countErrors(errorsEn.about);
+        case 'plans':
+          return countErrors(errorsEs.plans) + countErrors(errorsEn.plans);
         case 'contact':
           return countErrors(errorsEs.contact) + countErrors(errorsEn.contact);
         case 'settings':
@@ -195,7 +204,7 @@ export function getLocaleFieldError(
     }
     return errors.about[field as 'title' | 'foundersTitle'] ?? null;
   }
-  if (section === 'hero' || section === 'keyFigures' || section === 'contact') {
+  if (section === 'hero' || section === 'keyFigures' || section === 'plans' || section === 'contact') {
     return errors[section][field] ?? null;
   }
   return null;
