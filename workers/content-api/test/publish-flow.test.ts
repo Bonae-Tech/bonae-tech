@@ -2,20 +2,28 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  handlePublishAbort,
-  handlePublishAlarm,
-  handlePublishCallback,
-  handlePublishRequest,
-} from '../src/content-store/publish.js';
-import { createFakeSqlStorage } from './fakeSql.js';
 import type { Env } from '../src/types.js';
+import { createFakeSqlStorage } from './fakeSql.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const contentDir = path.resolve(here, '../../../apps/static/content/published');
 const esDoc = JSON.parse(readFileSync(path.join(contentDir, 'es.json'), 'utf-8'));
 const enDoc = JSON.parse(readFileSync(path.join(contentDir, 'en.json'), 'utf-8'));
 const settingsDoc = JSON.parse(readFileSync(path.join(contentDir, 'settings.json'), 'utf-8'));
+
+const rehydrateFromGit = vi.fn();
+
+vi.mock('../src/content-store/bootstrap.js', () => ({
+  rehydrateFromGit: (...args: unknown[]) => rehydrateFromGit(...args),
+  bootstrapFromGitIfNeeded: vi.fn(),
+}));
+
+const {
+  handlePublishAbort,
+  handlePublishAlarm,
+  handlePublishCallback,
+  handlePublishRequest,
+} = await import('../src/content-store/publish.js');
 
 /** Env with no GitHub secrets configured — forces handlePublishRequest into its failure path
  * deterministically, without any network access, once past the validation guard. */
@@ -59,8 +67,6 @@ describe('handlePublishRequest guards', () => {
       seedPublishedAndDraft: (locale: string, content: unknown, commitSha?: string | null) => void;
       getPublishState: () => Record<string, unknown>;
     };
-    // Drafts present but structurally invalid — validation must fail cleanly
-    // with a 422 rather than writing any publish state.
     sql.seedPublishedAndDraft('es', { not: 'a valid document' });
     sql.seedPublishedAndDraft('en', { not: 'a valid document' });
     sql.seedPublishedAndDraft('settings', { not: 'valid settings' });
@@ -80,11 +86,8 @@ describe('handlePublishRequest guards', () => {
 
     const result = await handlePublishRequest(sql, noSecretsEnv, 'actor-1', scheduleAlarm, clearAlarm);
 
-    // No GitHub secrets configured -> commit fails -> state settles to 'failure'.
     expect(result.status).toBe(500);
     expect(sql.getPublishState().state).toBe('failure');
-    // The alarm must have been scheduled (safety net) even though the commit
-    // ultimately failed, and cleared once the failure was recorded.
     expect(scheduleAlarm).toHaveBeenCalledTimes(1);
     expect(clearAlarm).toHaveBeenCalledTimes(1);
   });
@@ -96,56 +99,78 @@ describe('handlePublishCallback', () => {
   beforeEach(() => {
     sql = makeSql();
     sql.setPublishState({ state: 'building', commit_sha: 'sha-123' });
+    rehydrateFromGit.mockReset();
+    rehydrateFromGit.mockResolvedValue({ ok: true });
   });
 
-  it('applies a matching success callback and clears the alarm', async () => {
+  it('applies a matching success callback, rehydrates from git, and clears the alarm', async () => {
     const clearAlarm = vi.fn(async () => {});
     const result = await handlePublishCallback(
       sql,
+      noSecretsEnv,
       JSON.stringify({ commitSha: 'sha-123', status: 'success', runUrl: 'https://ci/run/1' }),
       clearAlarm,
     );
     expect(result.status).toBe(204);
+    expect(rehydrateFromGit).toHaveBeenCalledWith(sql, noSecretsEnv, { commitSha: 'sha-123' });
     expect(clearAlarm).toHaveBeenCalledTimes(1);
     expect(sql.getPublishState().state).toBe('success');
   });
 
-  it('applies a matching failure callback', async () => {
+  it('applies a matching failure callback without rehydrate', async () => {
     const clearAlarm = vi.fn(async () => {});
     await handlePublishCallback(
       sql,
+      noSecretsEnv,
       JSON.stringify({ commitSha: 'sha-123', status: 'failure', runUrl: 'https://ci/run/1' }),
       clearAlarm,
     );
+    expect(rehydrateFromGit).not.toHaveBeenCalled();
     expect(sql.getPublishState().state).toBe('failure');
     expect(clearAlarm).toHaveBeenCalledTimes(1);
   });
 
-  it('ignores a callback for a commitSha that does not match (stale/duplicate CI run)', async () => {
+  it('rehydrates on success even when commitSha does not match in-flight publish', async () => {
     const clearAlarm = vi.fn(async () => {});
     const result = await handlePublishCallback(
       sql,
+      noSecretsEnv,
       JSON.stringify({ commitSha: 'sha-999', status: 'success', runUrl: 'https://ci/run/1' }),
       clearAlarm,
     );
     expect(result.status).toBe(204);
+    expect(rehydrateFromGit).toHaveBeenCalledWith(sql, noSecretsEnv, { commitSha: 'sha-999' });
     expect(clearAlarm).not.toHaveBeenCalled();
-    // State must remain untouched — a stray/duplicate callback can never
-    // resurrect or corrupt an unrelated publish.
     expect(sql.getPublishState().state).toBe('building');
   });
 
-  it('ignores a callback when no publish is in flight (state is idle)', async () => {
+  it('rehydrates on success when no publish is in flight (git-ahead direct deploy)', async () => {
     sql.setPublishState({ state: 'idle', commit_sha: null });
     const clearAlarm = vi.fn(async () => {});
     const result = await handlePublishCallback(
       sql,
-      JSON.stringify({ commitSha: 'sha-123', status: 'success', runUrl: 'https://ci/run/1' }),
+      noSecretsEnv,
+      JSON.stringify({ commitSha: 'sha-direct', status: 'success', runUrl: 'https://ci/run/2' }),
       clearAlarm,
     );
     expect(result.status).toBe(204);
+    expect(rehydrateFromGit).toHaveBeenCalledWith(sql, noSecretsEnv, { commitSha: 'sha-direct' });
     expect(clearAlarm).not.toHaveBeenCalled();
     expect(sql.getPublishState().state).toBe('idle');
+  });
+
+  it('returns 500 and does not settle publish state when rehydrate fails', async () => {
+    rehydrateFromGit.mockResolvedValue({ ok: false, error: 'invalid published content' });
+    const clearAlarm = vi.fn(async () => {});
+    const result = await handlePublishCallback(
+      sql,
+      noSecretsEnv,
+      JSON.stringify({ commitSha: 'sha-123', status: 'success', runUrl: 'https://ci/run/1' }),
+      clearAlarm,
+    );
+    expect(result.status).toBe(500);
+    expect(clearAlarm).not.toHaveBeenCalled();
+    expect(sql.getPublishState().state).toBe('building');
   });
 });
 

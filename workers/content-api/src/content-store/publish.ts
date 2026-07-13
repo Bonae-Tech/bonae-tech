@@ -2,6 +2,7 @@ import { publishCallbackBodySchema, isPublishInFlight } from '@bonae/content';
 import type { Env } from '../types.js';
 import { createOctokit, parseGitHubConfig, publishDraftsAtomic } from '../github.js';
 import { loadGitHubSecrets } from '../secrets.js';
+import { rehydrateFromGit } from './bootstrap.js';
 import { PUBLISH_ALARM_MS } from './constants.js';
 import {
   callbackFailureMessage,
@@ -11,7 +12,6 @@ import { validateDraftsForPublish } from './publish-validation.js';
 import {
   readDraftBundle,
   readPublishState,
-  syncPublishedCacheFromDrafts,
   writePublishState,
 } from './queries.js';
 
@@ -74,6 +74,7 @@ export async function handlePublishRequest(
 
 export async function handlePublishCallback(
   sql: SqlStorage,
+  env: Env,
   bodyText: string,
   clearAlarm: () => Promise<void>,
 ): Promise<{ status: number; body: unknown }> {
@@ -86,6 +87,38 @@ export async function handlePublishCallback(
   const publishState = readPublishState(sql);
   const outcome = evaluatePublishCallback(publishState, callback);
 
+  // Successful deploy: always rehydrate DO from git (git wins completely).
+  // Covers admin publish completion and direct pushes to published/.
+  if (callback.status === 'success') {
+    const rehydrate = await rehydrateFromGit(sql, env, { commitSha: callback.commitSha });
+    if (!rehydrate.ok) {
+      return { status: 500, body: { error: rehydrate.error } };
+    }
+
+    if (outcome.kind === 'applied' && outcome.success) {
+      await clearAlarm();
+      writePublishState(sql, 'success', {
+        commitSha: callback.commitSha,
+        runUrl: callback.runUrl,
+        finishedAt: Date.now(),
+        error: null,
+      });
+      console.log(JSON.stringify({ action: 'publish_success', commitSha: callback.commitSha }));
+    } else if (outcome.kind === 'ignored') {
+      console.log(
+        JSON.stringify({
+          action: 'publish_callback_rehydrated',
+          reason: outcome.reason,
+          commitSha: callback.commitSha,
+          state: publishState.state,
+        }),
+      );
+    }
+
+    return { status: 204, body: null };
+  }
+
+  // Failure / cancelled: only settle a matching in-flight publish.
   if (outcome.kind === 'ignored') {
     console.warn(
       JSON.stringify({
@@ -99,33 +132,20 @@ export async function handlePublishCallback(
   }
 
   await clearAlarm();
-  const finishedAt = Date.now();
-
-  if (outcome.success) {
-    syncPublishedCacheFromDrafts(sql, callback.commitSha);
-    writePublishState(sql, 'success', {
+  writePublishState(sql, 'failure', {
+    commitSha: callback.commitSha,
+    runUrl: callback.runUrl,
+    finishedAt: Date.now(),
+    error: callbackFailureMessage(callback),
+  });
+  console.error(
+    JSON.stringify({
+      action: 'publish_failure',
       commitSha: callback.commitSha,
+      status: callback.status,
       runUrl: callback.runUrl,
-      finishedAt,
-      error: null,
-    });
-    console.log(JSON.stringify({ action: 'publish_success', commitSha: callback.commitSha }));
-  } else {
-    writePublishState(sql, 'failure', {
-      commitSha: callback.commitSha,
-      runUrl: callback.runUrl,
-      finishedAt,
-      error: callbackFailureMessage(callback),
-    });
-    console.error(
-      JSON.stringify({
-        action: 'publish_failure',
-        commitSha: callback.commitSha,
-        status: callback.status,
-        runUrl: callback.runUrl,
-      }),
-    );
-  }
+    }),
+  );
 
   return { status: 204, body: null };
 }

@@ -56,6 +56,7 @@ export async function readPublishedJson(
   octokit: Octokit,
   config: GitHubConfig,
   fileName: string,
+  ref?: string,
 ): Promise<{ data: unknown; sha?: string }> {
   const path = publishedFilePath(config, fileName);
   try {
@@ -63,7 +64,7 @@ export async function readPublishedJson(
       owner: config.owner,
       repo: config.repo,
       path,
-      ref: config.branch,
+      ref: ref ?? config.branch,
     });
     if (Array.isArray(res.data) || res.data.type !== 'file') {
       throw new Error(`Expected file at ${path}`);

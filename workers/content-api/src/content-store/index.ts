@@ -74,6 +74,7 @@ export class ContentStore implements DurableObject {
         const bodyText = await request.text();
         const result = await handlePublishCallback(
           this.sql,
+          this.env,
           bodyText,
           () => this.ctx.storage.deleteAlarm(),
         );

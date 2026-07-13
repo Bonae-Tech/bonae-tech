@@ -160,14 +160,14 @@ Job de plan → aprobación en `infra-production` → job de apply → almacenar
 
 ### Deploy site
 
-Compila `@bonae/content`, valida JSON publicado, compila Astro, inyecta el hash del service worker (`scripts/inject-sw-build-hash.mjs`), asegura que el proyecto Pages `bonae-tech` existe, despliega vía Wrangler. Al finalizar (éxito o fallo), envía el resultado a `POST /content/publish/callback` en el Worker de contenido para cerrar el overlay de publicación en el admin.
+Compila `@bonae/content`, valida JSON publicado, compila Astro, inyecta el hash del service worker (`scripts/inject-sw-build-hash.mjs`), asegura que el proyecto Pages `bonae-tech` existe, despliega vía Wrangler. Al finalizar (éxito o fallo), envía el resultado a `POST /content/publish/callback` en el Worker de contenido. En **éxito**, el Worker rehidrata `published_cache` y `drafts` desde git (git wins completely) y, si hay un publish admin en curso con el mismo SHA, cierra el overlay (`success`).
 
 Caché HTTP / SW: [caching-pages.md](./caching-pages.md).
 
 **Rutas (push a `main`):** `apps/static/content/published/**`, `packages/content/**`  
 **Secretos:** `CLOUDFLARE_*`, `CONTENT_API_URL`, `PUBLISH_CALLBACK_SECRET` (entorno prod)
 
-El callback se omite con un mensaje informativo si faltan `CONTENT_API_URL` o `PUBLISH_CALLBACK_SECRET` (útil antes de configurar el par de secretos). Si están configurados pero el callback falla, el paso emite un warning (`continue-on-error`) sin enmascarar el resultado del deploy.
+El callback se omite con un mensaje informativo si faltan `CONTENT_API_URL` o `PUBLISH_CALLBACK_SECRET` (útil antes de configurar el par de secretos). Si están configurados pero el callback falla, el paso emite un warning (`continue-on-error`) sin enmascarar el resultado del deploy — sin callback exitoso el DO puede quedar desincronizado respecto a git.
 
 ### Deploy admin
 

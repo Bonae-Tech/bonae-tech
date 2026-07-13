@@ -224,11 +224,13 @@ Referencia canónica del modelo draft/publish. No hay carpeta `content/drafts/` 
 | **Borrador** | Tabla `drafts` del ContentStore Durable Object (SQLite) en producción; en memoria en admin mock (`mockContentStore.ts`) | No | Admin SPA vía Worker |
 | **Publicado** | `apps/static/content/published/{es,en,settings}.json` | Sí (`main`) | Astro en build; Worker (bootstrap + diff) |
 
-El DO también mantiene `published_cache` (copia de lo último publicado, sembrada desde git al arranque) y `publish_state` (máquina de estados committing → building → success/failure).
+El DO también mantiene `published_cache` (copia de lo último publicado) y `publish_state` (máquina de estados committing → building → success/failure).
+
+**Semilla y resync desde git (git wins completely)** — Si `published_cache` está vacío, el DO se siembra desde `published/` en GitHub al arrancar. Además, cada **Deploy site** exitoso llama `POST /content/publish/callback` con `status: success`: el Worker **rehidrata** `published_cache` **y** la tabla `drafts` desde los JSON de ese `commitSha` (validación de esquema + paridad primero; sin escritura parcial). Así, un push directo a `apps/static/content/published/` que deje git por delante del DO corrige ambos lados; cualquier borrador local en el DO se descarta. Los borradores **no** viven en git — “corregir drafts” = sobrescribir la tabla SQLite `drafts` del Durable Object.
 
 **Guardado de borrador** — autosave (~2.5s) y **Save draft** llaman `PUT /content/drafts/{es|en|settings}`. Last-write-wins; el borrador puede estar incompleto. No dispara CI.
 
-**Publicación** — `POST /content/publish` valida esquema + paridad ES/EN, bloquea si hay otro publish en curso (409), hace un commit atómico (Git Trees API) solo bajo `published/`, y devuelve `{ accepted: true }`. El admin hace poll de `GET /content/publish/status` hasta que CI llama `POST /content/publish/callback`.
+**Publicación** — `POST /content/publish` valida esquema + paridad ES/EN, bloquea si hay otro publish en curso (409), hace un commit atómico (Git Trees API) solo bajo `published/`, y devuelve `{ accepted: true }`. El admin hace poll de `GET /content/publish/status` hasta que CI llama `POST /content/publish/callback`. En éxito, el callback rehidrata desde git (misma ruta que un deploy por push directo) y marca `publish_state` → `success` si el SHA coincide con el publish en curso.
 
 | Método | Ruta | Rol |
 |--------|------|-----|
@@ -290,9 +292,11 @@ sequenceDiagram
 
     Actions->>CF: wrangler pages deploy
     Actions->>Worker: POST /content/publish/callback
-    Worker->>DO: success → actualizar published_cache
+    Worker->>DO: success → rehydrate published_cache + drafts from git
     SPA-->>Editor: Overlay "Published!"
 ```
+
+Un push directo a `published/**` (sin admin) sigue el mismo callback de **Deploy site**: rehidrata el DO aunque no haya publish en curso (`publish_state` puede quedar `idle`).
 
 ### Primer inicio de sesión (flujo de invitación)
 

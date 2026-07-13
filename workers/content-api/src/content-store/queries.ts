@@ -184,3 +184,34 @@ export function syncPublishedCacheFromDrafts(sql: SqlStorage, commitSha: string)
     );
   }
 }
+
+/** Git wins: replace published_cache and drafts for every locale from a validated bundle. */
+export function writePublishedAndDraftsFromBundle(
+  sql: SqlStorage,
+  bundle: { es: unknown; en: unknown; settings: unknown },
+  commitSha: string | null,
+): void {
+  const now = Date.now();
+  for (const locale of CONTENT_LOCALES) {
+    const content = JSON.stringify(bundle[locale]);
+    sql.exec(
+      `INSERT INTO published_cache (locale, content, commit_sha, updated_at)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(locale) DO UPDATE SET
+         content = excluded.content,
+         commit_sha = excluded.commit_sha,
+         updated_at = excluded.updated_at`,
+      locale,
+      content,
+      commitSha,
+      now,
+    );
+    sql.exec(
+      `INSERT INTO drafts (locale, content, updated_at) VALUES (?, ?, ?)
+       ON CONFLICT(locale) DO UPDATE SET content = excluded.content, updated_at = excluded.updated_at`,
+      locale,
+      content,
+      now,
+    );
+  }
+}

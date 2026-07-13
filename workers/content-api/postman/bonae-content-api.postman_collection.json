@@ -291,7 +291,7 @@
               "raw": "{\n  \"commitSha\": \"<git-commit-sha>\",\n  \"status\": \"success\",\n  \"runUrl\": \"https://github.com/Bonae-Tech/bonae-tech/actions/runs/<run-id>\"\n}"
             },
             "url": "{{baseUrl}}/content/publish/callback",
-            "description": "Called by `deploy-site.yml` when the Cloudflare Pages deploy finishes (`if: always()`).\n\n**Auth:** `PUBLISH_CALLBACK_SECRET` bearer token (not Cognito).\n\n**Body:** `{ commitSha, status: \"success\" | \"failure\" | \"cancelled\", runUrl }`\n\n**Response:** `204` empty body (applied or ignored if SHA/state mismatch).\n\n**Errors:** `401` bad secret, `400` invalid payload."
+            "description": "Called by `deploy-site.yml` when the Cloudflare Pages deploy finishes (`if: always()`).\n\n**Auth:** `PUBLISH_CALLBACK_SECRET` bearer token (not Cognito).\n\n**Body:** `{ commitSha, status: \"success\" | \"failure\" | \"cancelled\", runUrl }`\n\n**Success:** rehydrates `published_cache` and `drafts` from git at `commitSha` (git wins completely). If an in-flight publish matches the SHA, also sets `publish_state` to `success`.\n\n**Failure/cancelled:** settles a matching in-flight publish only (no rehydrate).\n\n**Response:** `204` empty body; `500` if rehydrate validation/GitHub fails.\n\n**Errors:** `401` bad secret, `400` invalid payload."
           },
           "response": []
         }

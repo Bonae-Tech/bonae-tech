@@ -248,7 +248,7 @@ Autosave (~2.5s) y **Save draft** (top bar) usan la misma ruta `PUT` vía `useCo
 
 | Operación Postman | Método | Ruta | Descripción | Auth |
 |-------------------|--------|------|-------------|------|
-| Publish callback (deploy-site) | `POST` | `/content/publish/callback` | Llamado por `deploy-site.yml` al terminar deploy (`if: always()`). **Body:** `{ commitSha, status: "success" \| "failure" \| "cancelled", runUrl }`. **Response:** `204` (aplicado o ignorado si SHA/estado no coinciden). **Errors:** `401` secreto inválido, `400` payload inválido. | `PUBLISH_CALLBACK_SECRET` |
+| Publish callback (deploy-site) | `POST` | `/content/publish/callback` | Llamado por `deploy-site.yml` al terminar deploy (`if: always()`). **Body:** `{ commitSha, status: "success" \| "failure" \| "cancelled", runUrl }`. **Success:** rehidrata `published_cache` **y** `drafts` desde git en ese SHA (git wins completely; valida antes de escribir). Si además hay publish en curso con el mismo SHA, marca `publish_state` → `success`. **Failure/cancelled:** solo asienta publish en curso coincidente; sin rehydrate. **Response:** `204` habitual; `500` si la rehidratación falla (contenido inválido / GitHub). **Errors:** `401` secreto inválido, `400` payload inválido. | `PUBLISH_CALLBACK_SECRET` |
 
 **Admin:** no llama esta ruta (solo CI).
 
