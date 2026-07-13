@@ -142,22 +142,57 @@
     "whatsappText": "WhatsApp us",
     "whatsappMessage": "Hello BONAE TECH, I would like to learn more about your services.",
     "emailText": "Or email us at",
-    "email": "hola@bonaetech.com",
+    "email": "bonaetech@gmail.com",
     "phone": "+58 414 000 0000",
     "hours": {
       "title": "Business hours",
       "days": [
-        { "day": "monday", "closed": false, "open": "09:00", "close": "18:00" },
-        { "day": "tuesday", "closed": false, "open": "09:00", "close": "18:00" },
-        { "day": "wednesday", "closed": false, "open": "09:00", "close": "18:00" },
-        { "day": "thursday", "closed": false, "open": "09:00", "close": "18:00" },
-        { "day": "friday", "closed": false, "open": "09:00", "close": "18:00" },
-        { "day": "saturday", "closed": false, "open": "09:00", "close": "13:00" },
-        { "day": "sunday", "closed": true, "open": "", "close": "" }
+        {
+          "day": "monday",
+          "closed": false,
+          "open": "09:00",
+          "close": "18:00"
+        },
+        {
+          "day": "tuesday",
+          "closed": false,
+          "open": "09:00",
+          "close": "18:00"
+        },
+        {
+          "day": "wednesday",
+          "closed": false,
+          "open": "09:00",
+          "close": "18:00"
+        },
+        {
+          "day": "thursday",
+          "closed": false,
+          "open": "09:00",
+          "close": "18:00"
+        },
+        {
+          "day": "friday",
+          "closed": false,
+          "open": "09:00",
+          "close": "18:00"
+        },
+        {
+          "day": "saturday",
+          "closed": true,
+          "open": "",
+          "close": ""
+        },
+        {
+          "day": "sunday",
+          "closed": true,
+          "open": "",
+          "close": ""
+        }
       ]
     },
     "location": "Venezuela · Latin America · World",
-    "locationNote": "We serve clients remotely throughout Venezuela, Latin America, and the world."
+    "locationNote": "Atendemos clientes de forma remota en toda Venezuela, Latinoamérica y el mundo."
   },
   "footer": {
     "tagline": "We transform your company into a digital powerhouse.",
@@ -181,7 +216,7 @@
       "terms": "Terms and Conditions",
       "cookies": "Cookie Policy"
     },
-    "copyright": "© 2025 BONAE TECH. All rights reserved."
+    "copyright": "© 2025 BONAE TECH. Todos los derechos reservados."
   },
   "cookieBanner": {
     "message": "We use cookies to improve your experience. By continuing, you accept our use of cookies.",
