@@ -16,7 +16,7 @@ function loadServiceWorker(relativePath, { origin = 'https://admin.bonae.test' }
 
   const cacheStore = {
     addAll: async (assets) => {
-      openedCaches.at(-1).assets = assets;
+      openedCaches.at(-1).assets = Array.from(assets);
     },
     put: async (request, response) => {
       cachePuts.push({ request, response });
