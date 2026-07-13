@@ -141,11 +141,11 @@
     @apply relative overflow-hidden text-white;
     background: linear-gradient(
       90deg,
-      #ff6f61 0%,
-      #ff6f61 58%,
-      #ff8276 78%,
-      #ff8a7e 90%,
-      #ff9185 100%
+      #FD7062 0%,
+      #FD7062 58%,
+      #FE8579 78%,
+      #FE9186 90%,
+      #FE9C92 100%
     );
   }
 
@@ -239,9 +239,9 @@
     white-space: nowrap;
     background: linear-gradient(
       90deg,
-      #ff6f61 0%,
-      #ff6f61 32%,
-      rgba(255, 111, 97, 0.72) 58%,
+      #FD7062 0%,
+      #FD7062 32%,
+      rgba(253, 112, 98, 0.72) 58%,
       rgba(255, 255, 255, 0.22) 100%
     );
     box-shadow: 0 8px 24px rgba(180, 50, 40, 0.28);

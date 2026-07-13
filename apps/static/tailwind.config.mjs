@@ -10,18 +10,17 @@ export default {
     extend: {
       colors: {
         terracotta: {
-          DEFAULT: '#FF6B35',
-          dark: '#e85a28',
+          DEFAULT: '#FD7062',
+          dark: '#E85A4F',
         },
-        brown: '#9C8172',
-        'mid-blue': '#458b9c',
-        'light-blue': '#6bb0dd', 
+        'mid-blue': '#5A7A82',
+        'light-blue': '#8AA3AB',
         'dark-blue': {
           DEFAULT: '#40575D',
           dark: '#3A4E53',
         },
-        pacificblue: '#0b4d5e',
-        cream: '#d4d4b9',
+        pacificblue: '#2C454C',
+        cream: '#F2F5F5',
       },
       fontFamily: {
         sans: ['Inter Variable', 'Inter', 'system-ui', 'sans-serif'],
