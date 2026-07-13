@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
-import { asBusinessHours } from '@bonae/content/schema';
+import { asBusinessHours, defaultBusinessHoursDays } from '@bonae/content/schema';
 import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
 import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
 import { useFormEditSync } from '../../hooks/useFormEditSync.js';
@@ -31,15 +31,31 @@ type ContactFormValues = {
   };
 };
 
+function readHoursTitle(hours: unknown): string {
+  if (hours && typeof hours === 'object' && typeof (hours as { title?: unknown }).title === 'string') {
+    return (hours as { title: string }).title;
+  }
+  if (typeof hours === 'string') {
+    return hours;
+  }
+  return '';
+}
+
 export function ContactSectionForm({ doc, onEdit, errors }: Props) {
   const docRef = useRef(doc);
   docRef.current = doc;
+  const parsedHours = asBusinessHours(doc.contact.hours);
+  const hoursTitleDefault = parsedHours?.title ?? readHoursTitle(doc.contact.hours);
+
+  // #region agent log
+  fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'634e86'},body:JSON.stringify({sessionId:'634e86',runId:'rehydrate-debug',hypothesisId:'H2',location:'ContactSectionForm.tsx:mount',message:'contact form hours parse',data:{asBusinessHoursOk:Boolean(parsedHours),hoursTitleDefault,rawHoursType:typeof doc.contact.hours,rawDaysLen:doc.contact.hours&&typeof doc.contact.hours==='object'&&Array.isArray((doc.contact.hours as {days?:unknown}).days)?(doc.contact.hours as {days:unknown[]}).days.length:null},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   const { register, control, watch } = useForm<ContactFormValues>({
     defaultValues: {
       title: doc.contact.title,
       subtitle: doc.contact.subtitle,
-      hoursTitle: asBusinessHours(doc.contact.hours)?.title ?? '',
+      hoursTitle: hoursTitleDefault,
       form: {
         name: doc.contact.form.name,
         email: doc.contact.form.email,
@@ -62,6 +78,10 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
   useFormEditSync(watch, (formValues) => {
     const current = docRef.current;
     const existingHours = asBusinessHours(current.contact.hours);
+    const nextDays = existingHours?.days ?? defaultBusinessHoursDays();
+    // #region agent log
+    fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'634e86'},body:JSON.stringify({sessionId:'634e86',runId:'rehydrate-debug',hypothesisId:'H3',location:'ContactSectionForm.tsx:sync',message:'contact form sync write hours',data:{formHoursTitle:formValues.hoursTitle??null,existingHoursOk:Boolean(existingHours),nextDaysLen:nextDays.length},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     onEdit?.({
       ...current,
       contact: {
@@ -70,7 +90,7 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
         subtitle: formValues.subtitle ?? '',
         hours: {
           title: formValues.hoursTitle ?? '',
-          days: existingHours?.days ?? [],
+          days: nextDays,
         },
         form: {
           ...current.contact.form,
