@@ -6,6 +6,10 @@ import type { BusinessHoursDay, ContentDocument, SiteSettings } from '@bonae/con
 import { defaultBusinessHoursDays } from '@bonae/content/schema';
 import { applySettingsForm, readSettingsForm, type SettingsFormValues } from './settingsEditorAdapter.js';
 
+type ContentDocumentWithUnknownHours = Omit<ContentDocument, 'contact'> & {
+  contact: Omit<ContentDocument['contact'], 'hours'> & { hours: unknown };
+};
+
 const publishedRoot = path.resolve(
   fileURLToPath(new URL('.', import.meta.url)),
   '../../../static/content/published',
@@ -22,9 +26,7 @@ function loadPublished() {
 describe('settingsEditorAdapter', () => {
   it('falls back to the default weekly schedule when draft hours is legacy data', () => {
     const { es, settings } = loadPublished();
-    const draftEs = structuredClone(es) as ContentDocument & {
-      contact: { hours: unknown };
-    };
+    const draftEs = structuredClone(es) as ContentDocumentWithUnknownHours;
     draftEs.contact.hours = 'Lun-Vie 9:00-18:00';
 
     const form = readSettingsForm(draftEs as ContentDocument, settings);
@@ -48,9 +50,7 @@ describe('settingsEditorAdapter', () => {
       socialFacebook: '',
       socialLinkedin: '',
     };
-    const draftEs = structuredClone(es) as ContentDocument & {
-      contact: { hours: unknown };
-    };
+    const draftEs = structuredClone(es) as ContentDocumentWithUnknownHours;
     const draftEn = structuredClone(en);
     draftEs.contact.hours = { title: 'Horario sin días' };
 
