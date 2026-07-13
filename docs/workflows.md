@@ -160,7 +160,9 @@ Job de plan → aprobación en `infra-production` → job de apply → almacenar
 
 ### Deploy site
 
-Compila `@bonae/content`, valida JSON publicado, compila Astro, asegura que el proyecto Pages `bonae-tech` existe, despliega vía Wrangler. Al finalizar (éxito o fallo), envía el resultado a `POST /content/publish/callback` en el Worker de contenido para cerrar el overlay de publicación en el admin.
+Compila `@bonae/content`, valida JSON publicado, compila Astro, inyecta el hash del service worker (`scripts/inject-sw-build-hash.mjs`), asegura que el proyecto Pages `bonae-tech` existe, despliega vía Wrangler. Al finalizar (éxito o fallo), envía el resultado a `POST /content/publish/callback` en el Worker de contenido para cerrar el overlay de publicación en el admin.
+
+Caché HTTP / SW: [caching-pages.md](./caching-pages.md).
 
 **Rutas (push a `main`):** `apps/static/content/published/**`, `packages/content/**`  
 **Secretos:** `CLOUDFLARE_*`, `CONTENT_API_URL`, `PUBLISH_CALLBACK_SECRET` (entorno prod)
@@ -169,7 +171,9 @@ El callback se omite con un mensaje informativo si faltan `CONTENT_API_URL` o `P
 
 ### Deploy admin
 
-Compila admin SPA con IDs de Cognito incluidos (`VITE_*`), asegura que el proyecto Pages `bonae-admin` existe, despliega vía Wrangler.
+Compila admin SPA con IDs de Cognito incluidos (`VITE_*`), inyecta el hash del service worker, asegura que el proyecto Pages `bonae-admin` existe, despliega vía Wrangler.
+
+Caché HTTP / SW (misma receta; assets Vite en `/assets/*`): [caching-pages.md](./caching-pages.md).
 
 **Rutas:** `apps/admin/**`, `packages/content/**`  
 **Secretos:** `CLOUDFLARE_*` (entorno prod)  

@@ -12,7 +12,7 @@
     "build": "tsc --noEmit && vite build",
     "test": "vitest run",
     "preview": "vite preview",
-    "deploy": "wrangler pages deploy dist --project-name bonae-admin"
+    "deploy": "node ../../scripts/inject-sw-build-hash.mjs dist && wrangler pages deploy dist --project-name bonae-admin"
   },
   "dependencies": {
     "@bonae/content": "*",

@@ -43,6 +43,12 @@ jobs:
           VITE_COGNITO_CLIENT_ID: ${{ vars.COGNITO_CLIENT_ID }}
           VITE_AWS_REGION: ${{ secrets.AWS_REGION }}
 
+      - name: Inject SW build hash
+        working-directory: apps/admin
+        env:
+          BUILD_HASH: ${{ github.sha }}
+        run: node ../../scripts/inject-sw-build-hash.mjs dist
+
       - id: cloudflare
         uses: ./.github/actions/cloudflare-account
         with:

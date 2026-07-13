@@ -49,6 +49,16 @@ npm run build
 
 Ejecuta `tsc --noEmit` y luego `vite build`. La salida va a `dist/`.
 
+## Caché y headers
+
+Misma política que el sitio de marketing: **[docs/caching-pages.md](../../docs/caching-pages.md)**.
+
+Este app (Vite SPA):
+
+- Hashed assets: `/assets/*`
+- SW prefix: `bonae-admin` (no cachea `/content/*`)
+- Inject pre-deploy: `node ../../scripts/inject-sw-build-hash.mjs dist` (también en **Deploy admin**)
+
 ## Arquitectura
 
 Almacenamiento draft/publish: [docs/architecture.md § Niveles de contenido](../../docs/architecture.md#niveles-de-contenido-draft-vs-publicado). Mapa secciones ↔ API: [admin-content-api-map.md](../../docs/admin-content-api-map.md).

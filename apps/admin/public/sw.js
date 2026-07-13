@@ -1,17 +1,16 @@
-// BONAE TECH Service Worker — see docs/caching-pages.md
-const CACHE_NAME = 'bonae-tech-__BUILD_HASH__';
+// BONAE admin Service Worker — see docs/caching-pages.md
+const CACHE_NAME = 'bonae-admin-__BUILD_HASH__';
 
-// Assets to cache on install
-const PRECACHE_ASSETS = [
-  '/',
-  '/en/',
-  '/manifest.webmanifest',
-  '/favicon.svg',
-];
+const PRECACHE_ASSETS = ['/'];
+
+/** Same-origin API proxied to the content Worker — never cache. */
+function isApiRequest(url) {
+  return url.pathname.startsWith('/content/');
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS)),
   );
   self.skipWaiting();
 });
@@ -19,8 +18,8 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))),
+    ),
   );
   self.clients.claim();
 });
@@ -28,10 +27,13 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+  if (url.origin === self.location.origin && isApiRequest(url)) {
+    return;
+  }
+
   if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match('/'))
-    );
+    event.respondWith(fetch(event.request).catch(() => caches.match('/')));
     return;
   }
 
@@ -48,6 +50,6 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => caches.match('/'));
-    })
+    }),
   );
 });

@@ -39,7 +39,7 @@ jobs:
         working-directory: apps/static
         env:
           BUILD_HASH: ${{ github.sha }}
-        run: node ./scripts/inject-sw-build-hash.mjs
+        run: node ../../scripts/inject-sw-build-hash.mjs dist
 
       - id: cloudflare
         uses: ./.github/actions/cloudflare-account

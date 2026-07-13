@@ -9,7 +9,7 @@
     "prebuild": "npm run content:validate",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "node ./scripts/inject-sw-build-hash.mjs && wrangler pages deploy dist --project-name bonae-tech"
+    "deploy": "node ../../scripts/inject-sw-build-hash.mjs dist && wrangler pages deploy dist --project-name bonae-tech"
   },
   "license": "Apache-2.0",
   "engines": {
