@@ -1,5 +1,6 @@
 import { checkLocaleParity } from '@bonae/content/validate';
 import {
+  asBusinessHours,
   parseContentDocument,
   parseSiteSettings,
   type ContentDocument,
@@ -294,11 +295,29 @@ function diffContactForm(
   }
 }
 
-function formatHoursDay(day: ContentDocument['contact']['hours']['days'][number]): string {
+function formatHoursDay(day: { closed: boolean; open: string; close: string }): string {
   if (day.closed) {
     return 'Cerrado';
   }
   return `${day.open}–${day.close}`;
+}
+
+function summarizeHoursValue(value: unknown): string {
+  const hours = asBusinessHours(value);
+  if (hours) {
+    return `${hours.title}: ${hours.days.map(formatHoursDay).join(', ')}`;
+  }
+  if (typeof value === 'string' && value.trim()) {
+    return value;
+  }
+  if (value == null) {
+    return '(ausente)';
+  }
+  try {
+    return truncate(JSON.stringify(value));
+  } catch {
+    return '(inválido)';
+  }
 }
 
 function diffContactHours(
@@ -308,12 +327,27 @@ function diffContactHours(
   published: ContentDocument,
 ): void {
   const sectionTitle = SECTION_TITLES.contact;
+  const draftHours = asBusinessHours(draft.contact?.hours);
+  const publishedHours = asBusinessHours(published.contact?.hours);
+
+  // Legacy string hours / missing days / partial DO cache — never throw; show one opaque diff.
+  if (!draftHours || !publishedHours) {
+    pushStringChange(
+      changes,
+      locale,
+      formatChangeLabel(locale, sectionTitle, 'Horario'),
+      summarizeHoursValue(published.contact?.hours),
+      summarizeHoursValue(draft.contact?.hours),
+    );
+    return;
+  }
+
   pushStringChange(
     changes,
     locale,
     formatChangeLabel(locale, sectionTitle, 'Horario', 'Título'),
-    published.contact.hours.title,
-    draft.contact.hours.title,
+    publishedHours.title,
+    draftHours.title,
   );
 
   const dayLabels: Record<string, string> = {
@@ -326,8 +360,8 @@ function diffContactHours(
     sunday: 'Domingo',
   };
 
-  draft.contact.hours.days.forEach((draftDay, index) => {
-    const publishedDay = published.contact.hours.days[index];
+  draftHours.days.forEach((draftDay, index) => {
+    const publishedDay = publishedHours.days[index];
     if (!publishedDay) {
       return;
     }
@@ -558,45 +592,56 @@ export function buildPublishReview(input: {
   draft: { es: unknown; en: unknown; settings: unknown };
   published: { es: unknown; en: unknown; settings: unknown };
 }): PublishReview {
-  const esDraft = input.draft.es as ContentDocument;
-  const enDraft = input.draft.en as ContentDocument;
-  const esPublished = input.published.es as ContentDocument;
-  const enPublished = input.published.en as ContentDocument;
-  const settingsDraft = input.draft.settings as SiteSettings;
-  const settingsPublished = input.published.settings as SiteSettings;
-
-  const esChanges = diffLocaleDocument('es', esDraft, esPublished);
-  const enChanges = diffLocaleDocument('en', enDraft, enPublished);
-  const settingsChanges = diffSettings(settingsDraft, settingsPublished);
-
-  const changes = [...esChanges, ...enChanges, ...settingsChanges];
-
-  const parityWarnings = (() => {
-    try {
-      return checkLocaleParity(
-        parseContentDocument(input.draft.es),
-        parseContentDocument(input.draft.en),
-      ).map((issue) => ({
-        label: issue.path,
-        message: issue.message,
-      }));
-    } catch {
-      // Invalid draft — schema issues are reported in validationErrors below.
-      return [];
-    }
-  })();
-
-  const translationWarnings = missingEnTranslationWarnings(enDraft, enPublished, esChanges);
-
   const validationErrors = [
     ...validationErrorsForLocale(input.draft.es, 'ES'),
     ...validationErrorsForLocale(input.draft.en, 'EN'),
     ...validationErrorsForSettings(input.draft.settings),
   ];
 
+  let changes: ReviewFieldChange[] = [];
+  let warnings: ReviewWarning[] = [];
+
+  try {
+    const esDraft = input.draft.es as ContentDocument;
+    const enDraft = input.draft.en as ContentDocument;
+    const esPublished = input.published.es as ContentDocument;
+    const enPublished = input.published.en as ContentDocument;
+    const settingsDraft = input.draft.settings as SiteSettings;
+    const settingsPublished = input.published.settings as SiteSettings;
+
+    const esChanges = diffLocaleDocument('es', esDraft, esPublished);
+    const enChanges = diffLocaleDocument('en', enDraft, enPublished);
+    const settingsChanges = diffSettings(settingsDraft, settingsPublished);
+
+    changes = [...esChanges, ...enChanges, ...settingsChanges];
+
+    const parityWarnings = (() => {
+      try {
+        return checkLocaleParity(
+          parseContentDocument(input.draft.es),
+          parseContentDocument(input.draft.en),
+        ).map((issue) => ({
+          label: issue.path,
+          message: issue.message,
+        }));
+      } catch {
+        // Invalid draft — schema issues are reported in validationErrors below.
+        return [];
+      }
+    })();
+
+    const translationWarnings = missingEnTranslationWarnings(enDraft, enPublished, esChanges);
+    warnings = [...translationWarnings, ...parityWarnings];
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : 'Error inesperado';
+    validationErrors.push(
+      `No se pudo comparar el borrador con lo publicado (${detail}). Es posible que el contenido publicado esté desactualizado respecto al esquema actual — guarda el borrador o descarta y vuelve a cargar.`,
+    );
+  }
+
   return {
     changes,
-    warnings: [...translationWarnings, ...parityWarnings],
+    warnings,
     validationErrors,
     changeCount: changes.length,
   };

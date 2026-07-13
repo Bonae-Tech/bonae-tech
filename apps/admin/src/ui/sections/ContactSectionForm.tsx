@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
+import { asBusinessHours } from '@bonae/content/schema';
 import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
 import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
 import { useFormEditSync } from '../../hooks/useFormEditSync.js';
@@ -38,7 +39,7 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
     defaultValues: {
       title: doc.contact.title,
       subtitle: doc.contact.subtitle,
-      hoursTitle: doc.contact.hours.title,
+      hoursTitle: asBusinessHours(doc.contact.hours)?.title ?? '',
       form: {
         name: doc.contact.form.name,
         email: doc.contact.form.email,
@@ -60,6 +61,7 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
 
   useFormEditSync(watch, (formValues) => {
     const current = docRef.current;
+    const existingHours = asBusinessHours(current.contact.hours);
     onEdit?.({
       ...current,
       contact: {
@@ -67,8 +69,8 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
         title: formValues.title ?? '',
         subtitle: formValues.subtitle ?? '',
         hours: {
-          ...current.contact.hours,
           title: formValues.hoursTitle ?? '',
+          days: existingHours?.days ?? [],
         },
         form: {
           ...current.contact.form,

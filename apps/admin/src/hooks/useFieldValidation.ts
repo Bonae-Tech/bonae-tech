@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { ContentDocument, SiteSettings } from '@bonae/content';
+import { asBusinessHours } from '@bonae/content/schema';
 import { readSettingsForm } from '../infrastructure/settingsEditorAdapter.js';
 import type { SectionId } from '../ui/editor/types.js';
 
@@ -129,7 +130,11 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
     contact: {
       title: checkField(doc.contact.title, { required: true }, 'Título'),
       subtitle: checkField(doc.contact.subtitle, { required: true, max: 240 }, 'Descripción'),
-      hoursTitle: checkField(doc.contact.hours.title, { required: true }, 'Título del horario'),
+      hoursTitle: checkField(
+        asBusinessHours(doc.contact.hours)?.title ?? '',
+        { required: true },
+        'Título del horario',
+      ),
       formName: checkField(doc.contact.form.name, { required: true }, 'Nombre completo'),
       formEmail: checkField(doc.contact.form.email, { required: true }, 'Correo electrónico'),
       formPhone: checkField(doc.contact.form.phone, { required: true }, 'Teléfono / WhatsApp'),

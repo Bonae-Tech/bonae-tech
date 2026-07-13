@@ -237,6 +237,15 @@ export function defaultBusinessHoursDays(): BusinessHoursDay[] {
   });
 }
 
+/**
+ * Narrow unknown contact.hours (e.g. legacy string or partial DO cache)
+ * to the structured schedule shape. Returns null when out of sync.
+ */
+export function asBusinessHours(value: unknown): BusinessHours | null {
+  const parsed = businessHoursSchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
+
 export const WEEKDAY_LABELS: Record<Locale, Record<Weekday, string>> = {
   es: {
     monday: 'Lunes',

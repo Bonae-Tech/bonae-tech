@@ -8,6 +8,7 @@ export {
   WEEKDAYS,
   WEEKDAY_LABELS,
   defaultBusinessHoursDays,
+  asBusinessHours,
   parseContentDocument,
   parseSiteSettings,
   type ContentDocument,

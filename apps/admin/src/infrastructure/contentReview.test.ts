@@ -30,4 +30,30 @@ describe('buildPublishReview', () => {
     expect(review.validationErrors.some((e) => e.startsWith('ES:'))).toBe(true);
     expect(reviewBlocksPublish(review)).toBe(true);
   });
+
+  it('does not throw when published hours is a legacy string out of sync with draft schedule', () => {
+    const published = loadPublished();
+    const draft = structuredClone(published);
+    (published.en as { contact: { hours: unknown } }).contact.hours = 'Mon–Fri 9am–6pm';
+    (published.es as { contact: { hours: unknown } }).contact.hours = 'Lun–Vie 9:00–18:00';
+
+    draft.es.contact.hours.days[0].open = '10:00';
+
+    expect(() => buildPublishReview({ draft, published })).not.toThrow();
+    const review = buildPublishReview({ draft, published });
+
+    expect(review.changes.some((c) => c.label.includes('Horario'))).toBe(true);
+    expect(reviewBlocksPublish(review)).toBe(false);
+  });
+
+  it('does not throw when published hours.days is missing', () => {
+    const published = loadPublished();
+    const draft = structuredClone(published);
+    (published.en as { contact: { hours: unknown } }).contact.hours = { title: 'Business hours' };
+    (published.es as { contact: { hours: unknown } }).contact.hours = { title: 'Horario' };
+
+    expect(() => buildPublishReview({ draft, published })).not.toThrow();
+    const review = buildPublishReview({ draft, published });
+    expect(review.changes.some((c) => c.label.includes('Horario'))).toBe(true);
+  });
 });
