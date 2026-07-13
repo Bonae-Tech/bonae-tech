@@ -1,5 +1,6 @@
 ---
 import type { Translations, SiteSettings } from '@bonae/content';
+import { WEEKDAY_LABELS } from '@bonae/content';
 
 interface Props {
   t: Translations;
@@ -12,6 +13,8 @@ const { t, whatsappHref, settings } = Astro.props;
 function socialHref(url: string): string {
   return url.trim() || '#';
 }
+
+const closedLabel = t.lang === 'es' ? 'Cerrado' : 'Closed';
 ---
 
 <section id="contacto" class="py-20 bg-white">
@@ -94,7 +97,19 @@ function socialHref(url: string): string {
               {t.contact.phone}
             </a>
           </p>
-          <p class="text-sm text-pacificblue mt-2">{t.contact.hours}</p>
+          <div class="mt-4">
+            <h4 class="text-sm font-bold text-dark-blue mb-2">{t.contact.hours.title}</h4>
+            <dl class="space-y-1.5">
+              {t.contact.hours.days.map((day) => (
+                <div class="flex justify-between gap-4 text-sm text-pacificblue">
+                  <dt class="font-medium">{WEEKDAY_LABELS[t.lang][day.day]}</dt>
+                  <dd class="text-right tabular-nums">
+                    {day.closed ? closedLabel : `${day.open} – ${day.close}`}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
 
         <div class="card">

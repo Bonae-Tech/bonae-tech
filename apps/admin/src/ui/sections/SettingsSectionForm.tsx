@@ -7,6 +7,7 @@ import {
 } from '../../infrastructure/settingsEditorAdapter.js';
 import type { FieldErrors } from '../../hooks/useFieldValidation.js';
 import { useFormEditSync } from '../../hooks/useFormEditSync.js';
+import { BusinessHoursEditor } from '../components/BusinessHoursEditor.js';
 import { FieldCard } from '../components/FieldCard.js';
 import { SectionHeader } from '../components/SectionHeader.js';
 
@@ -22,7 +23,7 @@ export function SettingsSectionForm({ draftEs, settings, onApply, errors }: Prop
   const onApplyRef = useRef(onApply);
   onApplyRef.current = onApply;
 
-  const { register, watch } = useForm<SettingsFormValues>({
+  const { register, watch, setValue } = useForm<SettingsFormValues>({
     defaultValues: readSettingsForm(draftEs, settings),
   });
   const values = watch();
@@ -56,6 +57,15 @@ export function SettingsSectionForm({ draftEs, settings, onApply, errors }: Prop
       <FieldCard label="Dirección" error={errors.address}>
         <input className="editor-input" {...register('address')} />
       </FieldCard>
+
+      <BusinessHoursEditor
+        days={values.hoursDays ?? []}
+        error={errors.hours}
+        onChange={(days) => {
+          setValue('hoursDays', days, { shouldDirty: true, shouldTouch: true });
+          onApplyRef.current({ ...watch(), hoursDays: days });
+        }}
+      />
 
       <FieldCard label="Texto del pie de página" error={errors.footerText}>
         <input className="editor-input" {...register('footerText')} />

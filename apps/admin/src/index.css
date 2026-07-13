@@ -128,6 +128,30 @@ body {
     @apply text-[11px] text-editor-faint;
   }
 
+  .editor-hours-table {
+    @apply w-full min-w-[360px] border-collapse text-left text-[12.5px];
+  }
+
+  .editor-hours-table th {
+    @apply border-b border-editor-border bg-editor-track px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-editor-faint;
+  }
+
+  .editor-hours-table td {
+    @apply border-b border-editor-border px-3 py-2 align-middle;
+  }
+
+  .editor-hours-table tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .editor-hours-checkbox {
+    @apply h-4 w-4 rounded border-editor-input text-editor-brand focus:ring-editor-brand;
+  }
+
+  .editor-hours-time {
+    @apply w-full min-w-[7.5rem] rounded-md border border-editor-input bg-white px-2 py-1.5 text-[13px] text-editor-text outline-none focus:border-editor-brand focus:ring-1 focus:ring-editor-brand disabled:cursor-not-allowed disabled:bg-editor-track disabled:text-editor-faint;
+  }
+
   .editor-info-callout {
     @apply rounded-[10px] border border-editor-border bg-editor-accentSoft px-3.5 py-3 text-xs text-editor-muted;
   }

@@ -144,7 +144,18 @@
     "emailText": "O escríbenos a",
     "email": "bonaetech@gmail.com",
     "phone": "+58 4246793082",
-    "hours": "Horario de atención",
+    "hours": {
+      "title": "Horario de atención",
+      "days": [
+        { "day": "monday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "tuesday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "wednesday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "thursday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "friday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "saturday", "closed": false, "open": "09:00", "close": "13:00" },
+        { "day": "sunday", "closed": true, "open": "", "close": "" }
+      ]
+    },
     "location": "Venezuela · Latinoamérica · Mundo",
     "locationNote": "Atendemos clientes de forma remota en toda Venezuela, Latinoamérica y el mundo."
   },

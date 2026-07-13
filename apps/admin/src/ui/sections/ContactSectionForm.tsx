@@ -17,6 +17,7 @@ interface Props {
 type ContactFormValues = {
   title: string;
   subtitle: string;
+  hoursTitle: string;
   form: {
     name: string;
     email: string;
@@ -37,6 +38,7 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
     defaultValues: {
       title: doc.contact.title,
       subtitle: doc.contact.subtitle,
+      hoursTitle: doc.contact.hours.title,
       form: {
         name: doc.contact.form.name,
         email: doc.contact.form.email,
@@ -64,6 +66,10 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
         ...current.contact,
         title: formValues.title ?? '',
         subtitle: formValues.subtitle ?? '',
+        hours: {
+          ...current.contact.hours,
+          title: formValues.hoursTitle ?? '',
+        },
         form: {
           ...current.contact.form,
           name: formValues.form?.name ?? '',
@@ -93,6 +99,13 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
         error={getLocaleFieldError(errors, 'contact', 'subtitle')}
       >
         <textarea className="editor-textarea" {...register('subtitle')} />
+      </FieldCard>
+
+      <FieldCard
+        label="Título del horario"
+        error={getLocaleFieldError(errors, 'contact', 'hoursTitle')}
+      >
+        <input className="editor-input" {...register('hoursTitle')} />
       </FieldCard>
 
       <div className="pt-2">

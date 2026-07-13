@@ -3,6 +3,67 @@ import { valuePropIcons } from './icons.js';
 
 export const localeSchema = z.enum(['es', 'en']);
 
+export const WEEKDAYS = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+] as const;
+
+export const weekdaySchema = z.enum(WEEKDAYS);
+
+export type Weekday = z.infer<typeof weekdaySchema>;
+
+export const businessHoursDaySchema = z
+  .object({
+    day: weekdaySchema,
+    closed: z.boolean(),
+    open: z.string(),
+    close: z.string(),
+  })
+  .superRefine((day, ctx) => {
+    if (day.closed) {
+      return;
+    }
+    if (!day.open.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Open time is required when the day is open',
+        path: ['open'],
+      });
+    }
+    if (!day.close.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Close time is required when the day is open',
+        path: ['close'],
+      });
+    }
+  });
+
+export const businessHoursSchema = z
+  .object({
+    title: z.string().min(1),
+    days: z.array(businessHoursDaySchema).length(7),
+  })
+  .superRefine((hours, ctx) => {
+    hours.days.forEach((day, index) => {
+      if (day.day !== WEEKDAYS[index]) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Day at index ${index} must be ${WEEKDAYS[index]}`,
+          path: ['days', index, 'day'],
+        });
+      }
+    });
+  });
+
+export type BusinessHours = z.infer<typeof businessHoursSchema>;
+export type BusinessHoursDay = z.infer<typeof businessHoursDaySchema>;
+
 const iconItemSchema = z.object({
   icon: z.enum(valuePropIcons),
   title: z.string().min(1),
@@ -98,7 +159,7 @@ export const contentDocumentSchema = z.object({
     emailText: z.string().min(1),
     email: z.string().email(),
     phone: z.string().min(1),
-    hours: z.string().min(1),
+    hours: businessHoursSchema,
     location: z.string().min(1),
     locationNote: z.string().min(1),
   }),
@@ -162,3 +223,37 @@ export function parseContentDocument(data: unknown): ContentDocument {
 export function parseSiteSettings(data: unknown): SiteSettings {
   return siteSettingsSchema.parse(data);
 }
+
+/** Default Mon–Fri 09:00–18:00, Sat 09:00–13:00, Sun closed. */
+export function defaultBusinessHoursDays(): BusinessHoursDay[] {
+  return WEEKDAYS.map((day) => {
+    if (day === 'sunday') {
+      return { day, closed: true, open: '', close: '' };
+    }
+    if (day === 'saturday') {
+      return { day, closed: false, open: '09:00', close: '13:00' };
+    }
+    return { day, closed: false, open: '09:00', close: '18:00' };
+  });
+}
+
+export const WEEKDAY_LABELS: Record<Locale, Record<Weekday, string>> = {
+  es: {
+    monday: 'Lunes',
+    tuesday: 'Martes',
+    wednesday: 'Miércoles',
+    thursday: 'Jueves',
+    friday: 'Viernes',
+    saturday: 'Sábado',
+    sunday: 'Domingo',
+  },
+  en: {
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday',
+    sunday: 'Sunday',
+  },
+};

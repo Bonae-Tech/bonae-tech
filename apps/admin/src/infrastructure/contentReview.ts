@@ -92,7 +92,6 @@ const CONTACT_FIELDS: Record<string, string> = {
   emailText: 'Texto de correo',
   email: 'Correo',
   phone: 'Teléfono',
-  hours: 'Horario',
   location: 'Ubicación',
   locationNote: 'Nota de ubicación',
 };
@@ -295,6 +294,55 @@ function diffContactForm(
   }
 }
 
+function formatHoursDay(day: ContentDocument['contact']['hours']['days'][number]): string {
+  if (day.closed) {
+    return 'Cerrado';
+  }
+  return `${day.open}–${day.close}`;
+}
+
+function diffContactHours(
+  changes: ReviewFieldChange[],
+  locale: 'es' | 'en',
+  draft: ContentDocument,
+  published: ContentDocument,
+): void {
+  const sectionTitle = SECTION_TITLES.contact;
+  pushStringChange(
+    changes,
+    locale,
+    formatChangeLabel(locale, sectionTitle, 'Horario', 'Título'),
+    published.contact.hours.title,
+    draft.contact.hours.title,
+  );
+
+  const dayLabels: Record<string, string> = {
+    monday: 'Lunes',
+    tuesday: 'Martes',
+    wednesday: 'Miércoles',
+    thursday: 'Jueves',
+    friday: 'Viernes',
+    saturday: 'Sábado',
+    sunday: 'Domingo',
+  };
+
+  draft.contact.hours.days.forEach((draftDay, index) => {
+    const publishedDay = published.contact.hours.days[index];
+    if (!publishedDay) {
+      return;
+    }
+    const before = formatHoursDay(publishedDay);
+    const after = formatHoursDay(draftDay);
+    pushStringChange(
+      changes,
+      locale,
+      formatChangeLabel(locale, sectionTitle, 'Horario', dayLabels[draftDay.day] ?? draftDay.day),
+      before,
+      after,
+    );
+  });
+}
+
 function diffLocaleDocument(
   locale: 'es' | 'en',
   draft: ContentDocument,
@@ -375,6 +423,7 @@ function diffLocaleDocument(
         publishedSection as Record<string, unknown>,
       );
       diffContactForm(changes, locale, draft, published);
+      diffContactHours(changes, locale, draft, published);
       continue;
     }
 

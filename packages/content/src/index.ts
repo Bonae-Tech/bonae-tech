@@ -2,11 +2,20 @@ export {
   contentDocumentSchema,
   siteSettingsSchema,
   localeSchema,
+  weekdaySchema,
+  businessHoursDaySchema,
+  businessHoursSchema,
+  WEEKDAYS,
+  WEEKDAY_LABELS,
+  defaultBusinessHoursDays,
   parseContentDocument,
   parseSiteSettings,
   type ContentDocument,
   type SiteSettings,
   type Locale,
+  type Weekday,
+  type BusinessHours,
+  type BusinessHoursDay,
 } from './schema.js';
 export { valuePropIcons, type ValuePropIcon } from './icons.js';
 export { checkLocaleParity, assertLocaleParity } from './validate.js';

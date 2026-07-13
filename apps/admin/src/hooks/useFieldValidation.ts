@@ -129,6 +129,7 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
     contact: {
       title: checkField(doc.contact.title, { required: true }, 'Título'),
       subtitle: checkField(doc.contact.subtitle, { required: true, max: 240 }, 'Descripción'),
+      hoursTitle: checkField(doc.contact.hours.title, { required: true }, 'Título del horario'),
       formName: checkField(doc.contact.form.name, { required: true }, 'Nombre completo'),
       formEmail: checkField(doc.contact.form.email, { required: true }, 'Correo electrónico'),
       formPhone: checkField(doc.contact.form.phone, { required: true }, 'Teléfono / WhatsApp'),
@@ -155,11 +156,15 @@ export function useFieldValidation(
     const errorsEs = buildLocaleErrors(draftEs);
     const errorsEn = buildLocaleErrors(draftEn);
     const form = readSettingsForm(draftEs, draftSettings);
+    const hoursDayError = form.hoursDays.some((day) => !day.closed && (!day.open.trim() || !day.close.trim()))
+      ? 'Completa apertura y cierre en los días abiertos'
+      : null;
     const settingsErrors: FieldErrors = {
       siteName: checkField(form.siteName, { required: true, max: 40 }, 'Nombre del sitio'),
       whatsapp: checkField(form.whatsapp, { required: true }, 'Número de WhatsApp'),
       email: checkField(form.email, { required: true, email: true }, 'Correo de contacto'),
       address: checkField(form.address, { required: true }, 'Dirección'),
+      hours: hoursDayError,
       footerText: checkField(form.footerText, { required: true }, 'Texto del pie de página'),
       siteUrl: checkField(form.siteUrl, { required: true }, 'URL del sitio'),
     };

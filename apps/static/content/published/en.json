@@ -144,7 +144,18 @@
     "emailText": "Or email us at",
     "email": "hola@bonaetech.com",
     "phone": "+58 414 000 0000",
-    "hours": "Business hours",
+    "hours": {
+      "title": "Business hours",
+      "days": [
+        { "day": "monday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "tuesday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "wednesday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "thursday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "friday", "closed": false, "open": "09:00", "close": "18:00" },
+        { "day": "saturday", "closed": false, "open": "09:00", "close": "13:00" },
+        { "day": "sunday", "closed": true, "open": "", "close": "" }
+      ]
+    },
     "location": "Venezuela · Latin America · World",
     "locationNote": "We serve clients remotely throughout Venezuela, Latin America, and the world."
   },

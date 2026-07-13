@@ -1,10 +1,12 @@
-import type { ContentDocument, SiteSettings } from '@bonae/content';
+import type { BusinessHoursDay, ContentDocument, SiteSettings } from '@bonae/content/schema';
+import { defaultBusinessHoursDays } from '@bonae/content/schema';
 
 export interface SettingsFormValues {
   siteName: string;
   whatsapp: string;
   email: string;
   address: string;
+  hoursDays: BusinessHoursDay[];
   footerText: string;
   siteUrl: string;
   socialInstagram: string;
@@ -21,6 +23,7 @@ export function readSettingsForm(
     whatsapp: draftSettings?.whatsappNumber ?? '',
     email: draftEs?.contact.email ?? '',
     address: draftEs?.contact.locationNote ?? '',
+    hoursDays: draftEs?.contact.hours.days ?? defaultBusinessHoursDays(),
     footerText: draftEs?.footer.copyright ?? '',
     siteUrl: draftSettings?.siteUrl ?? '',
     socialInstagram: draftSettings?.socialLinks.instagram ?? '',
@@ -42,6 +45,11 @@ export function applySettingsForm(
       ...doc.contact,
       email: values.email,
       locationNote: values.address,
+      hours: {
+        ...doc.contact.hours,
+        // Schedule times are shared; locale-specific title is preserved per document.
+        days: values.hoursDays,
+      },
     },
     footer: {
       ...doc.footer,
