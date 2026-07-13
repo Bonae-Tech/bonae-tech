@@ -7,6 +7,7 @@ import {
   readContentState,
   writePublishedAndDraftsFromBundle,
 } from '../src/content-store/queries.js';
+import type { Env } from '../src/types.js';
 import { createFakeSqlStorage } from './fakeSql.js';
 
 const githubMocks = vi.hoisted(() => ({
@@ -37,7 +38,7 @@ const env = {
   GITHUB_PRIVATE_KEY: '-----BEGIN PRIVATE KEY-----\\nfake\\n-----END PRIVATE KEY-----',
   GITHUB_REPO: 'Bonae-Tech/bonae-tech',
   GITHUB_BRANCH: 'main',
-};
+} as Env;
 
 function makeSql() {
   const sql = createFakeSqlStorage() as ReturnType<typeof createFakeSqlStorage> & {
