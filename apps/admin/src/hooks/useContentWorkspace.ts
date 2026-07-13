@@ -61,13 +61,6 @@ export function useContentWorkspace(): ContentWorkspace {
     setError(null);
     try {
       const next = await fetchContentState();
-      // #region agent log
-      {
-        const dHours = (next.draft.es as { contact?: { hours?: unknown } })?.contact?.hours;
-        const pHours = (next.published.es as { contact?: { hours?: unknown } })?.contact?.hours;
-        fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'634e86'},body:JSON.stringify({sessionId:'634e86',runId:'rehydrate-debug',hypothesisId:'H1',location:'useContentWorkspace.ts:load',message:'content state loaded',data:{lastCommitSha:next.lastCommitSha,publishState:next.publishState?.state,draftHoursType:typeof dHours,draftHoursIsArrayDays:Boolean(dHours&&typeof dHours==='object'&&Array.isArray((dHours as {days?:unknown}).days)),draftHoursDaysLen:dHours&&typeof dHours==='object'&&Array.isArray((dHours as {days?:unknown}).days)?(dHours as {days:unknown[]}).days.length:null,draftHoursTitle:dHours&&typeof dHours==='object'?(dHours as {title?:string}).title??null:typeof dHours==='string'?dHours:null,publishedHoursType:typeof pHours,publishedHoursDaysLen:pHours&&typeof pHours==='object'&&Array.isArray((pHours as {days?:unknown}).days)?(pHours as {days:unknown[]}).days.length:null,publishedHoursTitle:pHours&&typeof pHours==='object'?(pHours as {title?:string}).title??null:typeof pHours==='string'?pHours:null},timestamp:Date.now()})}).catch(()=>{});
-      }
-      // #endregion
       setState(next);
       setDraftEs(next.draft.es as ContentDocument);
       setDraftEn(next.draft.en as ContentDocument);
