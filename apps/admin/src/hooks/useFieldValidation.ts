@@ -129,6 +129,19 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
     contact: {
       title: checkField(doc.contact.title, { required: true }, 'Título'),
       subtitle: checkField(doc.contact.subtitle, { required: true, max: 240 }, 'Descripción'),
+      formName: checkField(doc.contact.form.name, { required: true }, 'Nombre completo'),
+      formEmail: checkField(doc.contact.form.email, { required: true }, 'Correo electrónico'),
+      formPhone: checkField(doc.contact.form.phone, { required: true }, 'Teléfono / WhatsApp'),
+      formBusiness: checkField(doc.contact.form.business, { required: true }, 'Nombre del negocio'),
+      formServiceType: checkField(doc.contact.form.serviceType, { required: true }, 'Tipo de servicio'),
+      formMessage: checkField(doc.contact.form.message, { required: true }, 'Mensaje'),
+      formSubmit: checkField(doc.contact.form.submit, { required: true }, 'Texto del botón'),
+      ...Object.fromEntries(
+        doc.contact.form.serviceOptions.map((option, index) => [
+          `serviceOption.${index}`,
+          checkField(option, { required: true }, `Opción de servicio ${index + 1}`),
+        ]),
+      ),
     },
   };
 }

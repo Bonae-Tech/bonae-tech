@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import type { ContentDocument } from '@bonae/content';
 import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
 import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
@@ -14,32 +14,74 @@ interface Props {
   errors: LocaleSectionErrors;
 }
 
+type ContactFormValues = {
+  title: string;
+  subtitle: string;
+  form: {
+    name: string;
+    email: string;
+    phone: string;
+    business: string;
+    serviceType: string;
+    message: string;
+    submit: string;
+    serviceOptions: Array<{ value: string }>;
+  };
+};
+
 export function ContactSectionForm({ doc, onEdit, errors }: Props) {
   const docRef = useRef(doc);
   docRef.current = doc;
 
-  const { register, watch } = useForm({
+  const { register, control, watch } = useForm<ContactFormValues>({
     defaultValues: {
       title: doc.contact.title,
       subtitle: doc.contact.subtitle,
+      form: {
+        name: doc.contact.form.name,
+        email: doc.contact.form.email,
+        phone: doc.contact.form.phone,
+        business: doc.contact.form.business,
+        serviceType: doc.contact.form.serviceType,
+        message: doc.contact.form.message,
+        submit: doc.contact.form.submit,
+        serviceOptions: doc.contact.form.serviceOptions.map((value) => ({ value })),
+      },
     },
+  });
+
+  const { fields, append, remove, move } = useFieldArray({
+    control,
+    name: 'form.serviceOptions',
   });
   const values = watch();
 
   useFormEditSync(watch, (formValues) => {
+    const current = docRef.current;
     onEdit?.({
-      ...docRef.current,
+      ...current,
       contact: {
-        ...docRef.current.contact,
+        ...current.contact,
         title: formValues.title ?? '',
         subtitle: formValues.subtitle ?? '',
+        form: {
+          ...current.contact.form,
+          name: formValues.form?.name ?? '',
+          email: formValues.form?.email ?? '',
+          phone: formValues.form?.phone ?? '',
+          business: formValues.form?.business ?? '',
+          serviceType: formValues.form?.serviceType ?? '',
+          message: formValues.form?.message ?? '',
+          submit: formValues.form?.submit ?? '',
+          serviceOptions: (formValues.form?.serviceOptions ?? []).map((opt) => opt?.value ?? ''),
+        },
       },
     });
   });
 
   return (
     <div className="space-y-4">
-      <SectionHeader title="Contacto" />
+      <SectionHeader title="Contacto" description="Sección y etiquetas del formulario" />
 
       <FieldCard label="Título" error={getLocaleFieldError(errors, 'contact', 'title')}>
         <input className="editor-input" {...register('title')} />
@@ -52,6 +94,119 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
       >
         <textarea className="editor-textarea" {...register('subtitle')} />
       </FieldCard>
+
+      <div className="pt-2">
+        <span className="editor-label">Etiquetas del formulario</span>
+      </div>
+
+      <FieldCard
+        label="Nombre completo"
+        error={getLocaleFieldError(errors, 'contact', 'formName')}
+      >
+        <input className="editor-input" {...register('form.name')} />
+      </FieldCard>
+
+      <FieldCard
+        label="Correo electrónico"
+        error={getLocaleFieldError(errors, 'contact', 'formEmail')}
+      >
+        <input className="editor-input" {...register('form.email')} />
+      </FieldCard>
+
+      <FieldCard
+        label="Teléfono / WhatsApp"
+        error={getLocaleFieldError(errors, 'contact', 'formPhone')}
+      >
+        <input className="editor-input" {...register('form.phone')} />
+      </FieldCard>
+
+      <FieldCard
+        label="Nombre del negocio"
+        error={getLocaleFieldError(errors, 'contact', 'formBusiness')}
+      >
+        <input className="editor-input" {...register('form.business')} />
+      </FieldCard>
+
+      <FieldCard
+        label="Tipo de servicio"
+        error={getLocaleFieldError(errors, 'contact', 'formServiceType')}
+      >
+        <input className="editor-input" {...register('form.serviceType')} />
+      </FieldCard>
+
+      <FieldCard label="Mensaje" error={getLocaleFieldError(errors, 'contact', 'formMessage')}>
+        <input className="editor-input" {...register('form.message')} />
+      </FieldCard>
+
+      <FieldCard
+        label="Texto del botón"
+        error={getLocaleFieldError(errors, 'contact', 'formSubmit')}
+      >
+        <input className="editor-input" {...register('form.submit')} />
+      </FieldCard>
+
+      <InlineCallout tone="warning">
+        ES y EN deben tener la misma cantidad de opciones de servicio. Agrega o quita opciones en
+        ambos idiomas antes de publicar.
+      </InlineCallout>
+
+      <div className="flex items-center justify-between">
+        <span className="editor-label">Opciones de tipo de servicio</span>
+        <button
+          type="button"
+          className="btn-editor-add"
+          disabled={fields.length >= 12}
+          onClick={() => append({ value: '' })}
+        >
+          + Agregar opción
+        </button>
+      </div>
+
+      {fields.map((field, index) => (
+        <div key={field.id} className="editor-card space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase text-editor-faint">
+              Opción {index + 1}
+            </span>
+            <div className="flex gap-1.5">
+              <button
+                type="button"
+                className="btn-editor-mini"
+                disabled={index === 0}
+                onClick={() => move(index, index - 1)}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                className="btn-editor-mini"
+                disabled={index === fields.length - 1}
+                onClick={() => move(index, index + 1)}
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                className="btn-editor-mini-danger"
+                disabled={fields.length <= 1}
+                onClick={() => remove(index)}
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+          <input
+            className="editor-input"
+            placeholder="Etiqueta de la opción"
+            {...register(`form.serviceOptions.${index}.value` as const)}
+          />
+          {getLocaleFieldError(errors, 'contact', `serviceOption.${index}`) && (
+            <p className="editor-error-text">
+              {getLocaleFieldError(errors, 'contact', `serviceOption.${index}`)}
+            </p>
+          )}
+        </div>
+      ))}
 
       <InlineCallout>
         Los canales están en <strong className="text-editor-brand">Configuración del sitio</strong>.

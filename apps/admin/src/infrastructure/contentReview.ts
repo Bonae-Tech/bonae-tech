@@ -83,6 +83,30 @@ const PLANS_FIELDS: Record<string, string> = {
   cta: 'Texto del botón',
 };
 
+const CONTACT_FIELDS: Record<string, string> = {
+  sectionBadge: 'Etiqueta de sección',
+  title: 'Título',
+  subtitle: 'Descripción',
+  whatsappText: 'Texto de WhatsApp',
+  whatsappMessage: 'Mensaje de WhatsApp',
+  emailText: 'Texto de correo',
+  email: 'Correo',
+  phone: 'Teléfono',
+  hours: 'Horario',
+  location: 'Ubicación',
+  locationNote: 'Nota de ubicación',
+};
+
+const CONTACT_FORM_FIELDS: Record<string, string> = {
+  name: 'Nombre completo',
+  email: 'Correo electrónico',
+  phone: 'Teléfono / WhatsApp',
+  business: 'Nombre del negocio',
+  serviceType: 'Tipo de servicio',
+  message: 'Mensaje',
+  submit: 'Texto del botón',
+};
+
 const TOP_LEVEL_STRING_FIELDS: Record<string, string> = {
   siteName: 'Nombre del sitio',
   siteTagline: 'Eslogan del sitio',
@@ -221,6 +245,56 @@ function diffValuePropItems(
   }
 }
 
+function diffContactForm(
+  changes: ReviewFieldChange[],
+  locale: 'es' | 'en',
+  draft: ContentDocument,
+  published: ContentDocument,
+): void {
+  const sectionTitle = SECTION_TITLES.contact;
+  diffRecordStrings(
+    changes,
+    locale,
+    `${sectionTitle} › Formulario`,
+    CONTACT_FORM_FIELDS,
+    draft.contact.form as unknown as Record<string, unknown>,
+    published.contact.form as unknown as Record<string, unknown>,
+  );
+
+  const draftOptions = draft.contact.form.serviceOptions;
+  const publishedOptions = published.contact.form.serviceOptions;
+
+  for (let i = 0; i < draftOptions.length; i++) {
+    const after = draftOptions[i];
+    const before = publishedOptions[i];
+    if (before === undefined) {
+      changes.push({
+        locale,
+        label: formatChangeLabel(locale, sectionTitle, 'Opción de servicio', `${i + 1}`),
+        kind: 'added',
+        after: truncate(after),
+      });
+      continue;
+    }
+    pushStringChange(
+      changes,
+      locale,
+      formatChangeLabel(locale, sectionTitle, 'Opción de servicio', `${i + 1}`),
+      before,
+      after,
+    );
+  }
+
+  for (let i = draftOptions.length; i < publishedOptions.length; i++) {
+    changes.push({
+      locale,
+      label: formatChangeLabel(locale, sectionTitle, 'Opción de servicio', `${i + 1}`),
+      kind: 'removed',
+      before: truncate(publishedOptions[i]),
+    });
+  }
+}
+
 function diffLocaleDocument(
   locale: 'es' | 'en',
   draft: ContentDocument,
@@ -288,6 +362,19 @@ function diffLocaleDocument(
         draftSection as Record<string, unknown>,
         publishedSection as Record<string, unknown>,
       );
+      continue;
+    }
+
+    if (sectionKey === 'contact') {
+      diffRecordStrings(
+        changes,
+        locale,
+        sectionTitle,
+        CONTACT_FIELDS,
+        draftSection as Record<string, unknown>,
+        publishedSection as Record<string, unknown>,
+      );
+      diffContactForm(changes, locale, draft, published);
       continue;
     }
 
