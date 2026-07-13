@@ -5,6 +5,7 @@ import { asBusinessHours, defaultBusinessHoursDays } from '@bonae/content/schema
 import type { LocaleSectionErrors } from '../../hooks/useFieldValidation.js';
 import { getLocaleFieldError } from '../../hooks/useFieldValidation.js';
 import { useFormEditSync } from '../../hooks/useFormEditSync.js';
+import { buildEditedContactHours, getContactHoursTitleDefault } from './contactSectionFormAdapter.js';
 import { FieldCard } from '../components/FieldCard.js';
 import { SectionHeader } from '../components/SectionHeader.js';
 import { InlineCallout } from '../components/InlineCallout.js';
@@ -31,21 +32,11 @@ type ContactFormValues = {
   };
 };
 
-function readHoursTitle(hours: unknown): string {
-  if (hours && typeof hours === 'object' && typeof (hours as { title?: unknown }).title === 'string') {
-    return (hours as { title: string }).title;
-  }
-  if (typeof hours === 'string') {
-    return hours;
-  }
-  return '';
-}
-
 export function ContactSectionForm({ doc, onEdit, errors }: Props) {
   const docRef = useRef(doc);
   docRef.current = doc;
   const parsedHours = asBusinessHours(doc.contact.hours);
-  const hoursTitleDefault = parsedHours?.title ?? readHoursTitle(doc.contact.hours);
+  const hoursTitleDefault = getContactHoursTitleDefault(doc.contact.hours);
 
   // #region agent log
   fetch('http://127.0.0.1:7768/ingest/36033ee5-db8c-4429-bd42-cc7f53ef3b11',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'634e86'},body:JSON.stringify({sessionId:'634e86',runId:'rehydrate-debug',hypothesisId:'H2',location:'ContactSectionForm.tsx:mount',message:'contact form hours parse',data:{asBusinessHoursOk:Boolean(parsedHours),hoursTitleDefault,rawHoursType:typeof doc.contact.hours,rawDaysLen:doc.contact.hours&&typeof doc.contact.hours==='object'&&Array.isArray((doc.contact.hours as {days?:unknown}).days)?(doc.contact.hours as {days:unknown[]}).days.length:null},timestamp:Date.now()})}).catch(()=>{});
@@ -88,10 +79,7 @@ export function ContactSectionForm({ doc, onEdit, errors }: Props) {
         ...current.contact,
         title: formValues.title ?? '',
         subtitle: formValues.subtitle ?? '',
-        hours: {
-          title: formValues.hoursTitle ?? '',
-          days: nextDays,
-        },
+        hours: buildEditedContactHours(current.contact.hours, formValues.hoursTitle ?? ''),
         form: {
           ...current.contact.form,
           name: formValues.form?.name ?? '',
