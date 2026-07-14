@@ -4,9 +4,10 @@
   "description": "BONAE TECH marketing site (Astro)",
   "scripts": {
     "content:validate": "npm run validate:published -w @bonae/content",
-    "predev": "npm run content:validate",
+    "manifest:generate": "node scripts/generate-manifest.mjs",
+    "predev": "npm run content:validate && npm run manifest:generate",
     "dev": "astro dev",
-    "prebuild": "npm run content:validate",
+    "prebuild": "npm run content:validate && npm run manifest:generate",
     "build": "astro build",
     "preview": "astro preview",
     "deploy": "node ../../scripts/inject-sw-build-hash.mjs dist && wrangler pages deploy dist --project-name bonae-tech"

@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import type { Translations, SiteSettings } from '@bonae/content';
+import { themeColor } from '../styles/colors.mjs';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 
@@ -23,7 +24,7 @@ const canonicalEN = Astro.site ? new URL('/en/', Astro.site).href : '/en/';
     <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={t.metaDescription} />
-    <meta name="theme-color" content="#40575D" />
+    <meta name="theme-color" content={themeColor} />
 
     <link rel="alternate" hreflang="es" href={canonicalES} />
     <link rel="alternate" hreflang="en" href={canonicalEN} />
