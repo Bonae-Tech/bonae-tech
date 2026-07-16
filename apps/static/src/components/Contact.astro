@@ -1,6 +1,7 @@
 ---
 import type { Translations, SiteSettings } from '@bonae/content';
 import { WEEKDAY_LABELS } from '@bonae/content';
+import { normalizeSocialLinks } from '../lib/socialLinks.mjs';
 
 interface Props {
   t: Translations;
@@ -10,9 +11,11 @@ interface Props {
 
 const { t, whatsappHref, settings } = Astro.props;
 
-const instagramUrl = settings.socialLinks.instagram.trim();
-const facebookUrl = settings.socialLinks.facebook.trim();
-const linkedinUrl = settings.socialLinks.linkedin.trim();
+const {
+  instagram: instagramUrl,
+  facebook: facebookUrl,
+  linkedin: linkedinUrl,
+} = normalizeSocialLinks(settings.socialLinks);
 
 const closedLabel = t.lang === 'es' ? 'Cerrado' : 'Closed';
 ---
