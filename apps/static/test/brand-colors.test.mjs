@@ -3,7 +3,6 @@ import { dirname, join } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
-import tailwindConfig from '../tailwind.config.mjs';
 import {
   backgroundColor,
   colors,
@@ -35,7 +34,11 @@ describe('static brand color tokens', () => {
   });
 
   it('exposes the same palette to Tailwind and CSS variables', () => {
-    assert.equal(tailwindConfig.theme.extend.colors, colors);
+    const tailwindSource = readText('tailwind.config.mjs');
+
+    assert.match(tailwindSource, /import \{ colors, cssVariables \} from '\.\/src\/styles\/colors\.mjs';/);
+    assert.match(tailwindSource, /colors,/);
+    assert.match(tailwindSource, /':root': cssVariables,/);
     assert.deepEqual(cssVariables, {
       '--color-terracotta': colors.terracotta.DEFAULT,
       '--color-terracotta-dark': colors.terracotta.dark,
