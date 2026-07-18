@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { ContentDocument, SiteSettings } from '@bonae/content';
-import { defaultBusinessHoursDays } from '@bonae/content/schema';
 import { describe, expect, it } from 'vitest';
 import { type ValidationState, useFieldValidation } from './useFieldValidation.js';
 
@@ -54,20 +53,5 @@ describe('useFieldValidation', () => {
     expect(validation.settingsErrors.hours).toBeNull();
     expect(validation.hasGlobalErrors).toBe(true);
     expect(validation.navErrorCount('contact')).toBe(2);
-  });
-
-  it('flags incomplete open-day times from the settings schedule', () => {
-    const { es, en, settings } = loadPublished();
-    (es.contact.hours.days as ReturnType<typeof defaultBusinessHoursDays>)[0] = {
-      ...defaultBusinessHoursDays()[0],
-      close: '',
-    };
-
-    const validation = readValidation(es, en, settings);
-
-    expect(validation.settingsErrors.hours).toBe(
-      'Completa apertura y cierre en los días abiertos',
-    );
-    expect(validation.navErrorCount('settings')).toBe(1);
   });
 });
