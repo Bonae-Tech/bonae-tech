@@ -1,5 +1,6 @@
 ---
 import type { Translations, SiteSettings } from '@bonae/content';
+import { getVisibleSocialLinks, hasVisibleSocialLinks } from '../utils/socialLinks.mjs';
 
 interface Props {
   t: Translations;
@@ -10,10 +11,12 @@ interface Props {
 const { t, settings, whatsappHref } = Astro.props;
 const base = t.lang === 'en' ? '/en/' : '/';
 
-const instagramUrl = settings.socialLinks.instagram.trim();
-const facebookUrl = settings.socialLinks.facebook.trim();
-const linkedinUrl = settings.socialLinks.linkedin.trim();
-const hasSocialLinks = Boolean(instagramUrl || facebookUrl || linkedinUrl);
+const {
+  instagram: instagramUrl,
+  facebook: facebookUrl,
+  linkedin: linkedinUrl,
+} = getVisibleSocialLinks(settings.socialLinks);
+const hasSocialLinks = hasVisibleSocialLinks(settings.socialLinks);
 ---
 
 <footer class="bg-dark-blue-dark text-white">
