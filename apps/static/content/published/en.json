@@ -7,6 +7,7 @@
     "home": "Home",
     "about": "About Us",
     "valueProp": "Services",
+    "templates": "Templates",
     "contact": "Contact",
     "cta": "Contact Us",
     "clients": "Clients",
@@ -111,6 +112,39 @@
           "Customer focus",
           "Local entrepreneurship"
         ]
+      }
+    ]
+  },
+  "templates": {
+    "sectionBadge": "Templates",
+    "title": "Launch your digital presence today",
+    "subheadline": "Ready-to-use templates designed for businesses in the region. Pick a design, customize it with your brand, and publish in days—not months.",
+    "viewAllLabel": "See all templates",
+    "viewAllHref": "#plantillas",
+    "items": [
+      {
+        "category": "Corporate site",
+        "title": "Business Model",
+        "description": "A lightweight, modern landing for businesses looking to win more customers.",
+        "imageSrc": "/images/templates/empresarial.png",
+        "href": "",
+        "comingSoon": false
+      },
+      {
+        "category": "Management dashboard",
+        "title": "model-3 Dashboard",
+        "description": "A panel to track contracts, balances, and vendor payments in one place.",
+        "imageSrc": "/images/templates/model-3.png",
+        "href": "",
+        "comingSoon": false
+      },
+      {
+        "category": "Coming soon",
+        "title": "More templates coming soon",
+        "description": "The full template portfolio will keep growing here.",
+        "imageSrc": "",
+        "href": "",
+        "comingSoon": true
       }
     ]
   },

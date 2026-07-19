@@ -79,6 +79,15 @@ const memberSchema = z.object({
   highlights: z.array(z.string().min(1)).min(1),
 });
 
+const templateItemSchema = z.object({
+  category: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1).max(220),
+  imageSrc: z.string(),
+  href: z.string(),
+  comingSoon: z.boolean(),
+});
+
 export const contentDocumentSchema = z.object({
   lang: localeSchema,
   siteName: z.string().min(1),
@@ -89,6 +98,7 @@ export const contentDocumentSchema = z.object({
     home: z.string().min(1),
     about: z.string().min(1),
     valueProp: z.string().min(1),
+    templates: z.string().min(1),
     contact: z.string().min(1),
     cta: z.string().min(1),
     clients: z.string().min(1),
@@ -132,6 +142,15 @@ export const contentDocumentSchema = z.object({
     title: z.string().min(1),
     foundersTitle: z.string().min(1),
     members: z.array(memberSchema).length(3),
+  }),
+
+  templates: z.object({
+    sectionBadge: z.string().min(1),
+    title: z.string().min(1),
+    subheadline: z.string().min(1),
+    viewAllLabel: z.string().min(1),
+    viewAllHref: z.string().min(1),
+    items: z.array(templateItemSchema).min(2).max(6),
   }),
 
   plans: z.object({

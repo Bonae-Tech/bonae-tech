@@ -3,6 +3,7 @@ export type SectionId =
   | 'valueProp'
   | 'keyFigures'
   | 'about'
+  | 'templates'
   | 'plans'
   | 'contact'
   | 'settings'
@@ -15,6 +16,7 @@ export const NAV_ITEMS: [SectionId, string][] = [
   ['valueProp', 'Servicios'],
   ['keyFigures', 'DatosClave'],
   ['about', 'Sobre nosotras'],
+  ['templates', 'Plantillas'],
   ['plans', 'CTA'],
   ['contact', 'Contacto'],
   ['settings', 'Configuración del sitio'],

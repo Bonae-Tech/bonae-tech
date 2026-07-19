@@ -1,0 +1,76 @@
+---
+import type { Translations } from '@bonae/content';
+
+interface Props {
+  t: Translations;
+}
+
+const { t } = Astro.props;
+const section = t.templates;
+---
+
+<section id="plantillas" class="py-20 bg-cream">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-14">
+      <span class="inline-block px-3 py-1 rounded-full bg-white text-dark-blue text-xs font-semibold uppercase tracking-wider mb-4 border border-light-blue/20">
+        {section.sectionBadge}
+      </span>
+      <h2 class="section-title">{section.title}</h2>
+      <p class="section-subtitle">{section.subheadline}</p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-3">
+      {section.items.map((item) => (
+        item.comingSoon ? (
+          <article class="flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed border-light-blue/40 bg-white/60 px-6 py-12 min-h-[320px]">
+            <div class="w-12 h-12 rounded-full bg-cream border border-light-blue/30 flex items-center justify-center mb-5 text-dark-blue text-2xl font-light" aria-hidden="true">
+              +
+            </div>
+            <h3 class="text-lg font-bold text-dark-blue mb-2">{item.title}</h3>
+            <p class="text-sm text-body leading-relaxed max-w-xs">{item.description}</p>
+          </article>
+        ) : (
+          <article class="bg-white rounded-2xl shadow-sm border border-light-blue/15 overflow-hidden flex flex-col">
+            {item.href ? (
+              <a href={item.href} class="block aspect-[16/10] overflow-hidden bg-cream" target="_blank" rel="noopener noreferrer">
+                <img
+                  src={item.imageSrc}
+                  alt=""
+                  class="w-full h-full object-cover object-top"
+                  width="640"
+                  height="400"
+                  loading="lazy"
+                />
+              </a>
+            ) : (
+              <div class="aspect-[16/10] overflow-hidden bg-cream">
+                <img
+                  src={item.imageSrc}
+                  alt=""
+                  class="w-full h-full object-cover object-top"
+                  width="640"
+                  height="400"
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <div class="p-5 text-left flex-1 flex flex-col">
+              <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-2">{item.category}</p>
+              <h3 class="text-lg font-bold text-dark-blue mb-2">{item.title}</h3>
+              <p class="text-sm text-body leading-relaxed">{item.description}</p>
+            </div>
+          </article>
+        )
+      ))}
+    </div>
+
+    <div class="mt-12 text-center">
+      <a
+        href={section.viewAllHref}
+        class="inline-flex items-center justify-center px-6 py-3 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
+      >
+        {section.viewAllLabel}
+      </a>
+    </div>
+  </div>
+</section>

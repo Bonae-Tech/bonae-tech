@@ -5,6 +5,7 @@ import Hero from '../../components/Hero.astro';
 import ValueProp from '../../components/ValueProp.astro';
 import KeyFigures from '../../components/KeyFigures.astro';
 import About from '../../components/About.astro';
+import Templates from '../../components/Templates.astro';
 import Plans from '../../components/Plans.astro';
 import Contact from '../../components/Contact.astro';
 import Footer from '../../components/Footer.astro';
@@ -21,6 +22,7 @@ const whatsappHref = whatsappHrefFor(t);
     <ValueProp t={t} />
     <KeyFigures t={t} />
     <About t={t} />
+    <Templates t={t} />
     <Plans t={t} whatsappHref={whatsappHref} />
     <Contact t={t} whatsappHref={whatsappHref} settings={siteSettings} />
   </main>

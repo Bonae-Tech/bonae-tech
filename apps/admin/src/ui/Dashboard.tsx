@@ -15,6 +15,7 @@ import { HeroSectionForm } from './sections/HeroSectionForm.js';
 import { ValuePropSectionForm } from './sections/ValuePropSectionForm.js';
 import { KeyFiguresSectionForm } from './sections/KeyFiguresSectionForm.js';
 import { AboutSectionForm } from './sections/AboutSectionForm.js';
+import { TemplatesSectionForm } from './sections/TemplatesSectionForm.js';
 import { PlansSectionForm } from './sections/PlansSectionForm.js';
 import { ContactSectionForm } from './sections/ContactSectionForm.js';
 import { SettingsSectionForm } from './sections/SettingsSectionForm.js';
@@ -222,6 +223,14 @@ export function Dashboard({ onLogout, sessionMessage, onDismissSessionMessage }:
           )}
           {doc && section === 'about' && (
             <AboutSectionForm
+              key={`${locale}-${workspace.contentEpoch}`}
+              doc={doc}
+              onEdit={updateDoc}
+              errors={localeErrors}
+            />
+          )}
+          {doc && section === 'templates' && (
+            <TemplatesSectionForm
               key={`${locale}-${workspace.contentEpoch}`}
               doc={doc}
               onEdit={updateDoc}

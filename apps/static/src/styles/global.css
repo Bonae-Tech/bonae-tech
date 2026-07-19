@@ -143,19 +143,11 @@
   }
 
   .plans-cta {
-    @apply relative overflow-hidden text-white;
-    background: linear-gradient(
-      90deg,
-      var(--color-terracotta) 0%,
-      var(--color-terracotta) 58%,
-      var(--color-terracotta-light-1) 78%,
-      var(--color-terracotta-light-2) 90%,
-      var(--color-terracotta-light-3) 100%
-    );
+    @apply relative overflow-hidden text-white bg-terracotta;
   }
 
   .plans-cta-inner {
-    @apply mx-auto grid min-h-[280px] max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.35fr_0.65fr] lg:gap-12 lg:py-14;
+    @apply mx-auto grid min-h-[240px] max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.35fr_0.65fr] lg:gap-12 lg:py-14;
   }
 
   .plans-cta-left {
@@ -171,14 +163,8 @@
   }
 
   .plans-cta-title {
-    @apply font-bold text-white mb-6 leading-tight tracking-tight;
+    @apply font-bold text-white mb-4 leading-tight tracking-tight;
     font-size: clamp(1.35rem, 2.2vw, 2.25rem);
-  }
-
-  @media (min-width: 1024px) {
-    .plans-cta-title {
-      white-space: nowrap;
-    }
   }
 
   .plans-cta-subtitle {
@@ -188,73 +174,23 @@
     max-width: none;
   }
 
-  .plans-cta-glass {
-    @apply relative inline-block rounded-3xl;
-    padding: 3.19rem 2.7rem;
-    overflow: visible;
-    background: rgba(255, 255, 255, 0.48);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 2.5px solid rgba(255, 255, 255, 0.58);
-    box-shadow:
-      inset 4px 4px 7px rgba(255, 255, 255, 0.78),
-      inset -4px -4px 7px rgba(140, 48, 38, 0.1),
-      inset 2px 2px 0 rgba(255, 255, 255, 0.72),
-      inset -2px -2px 0 rgba(100, 35, 28, 0.08),
-      0 16px 40px rgba(0, 0, 0, 0.07);
-  }
-
-  .plans-cta-glass::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 2.5px;
-    background: linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.92) 0%,
-      rgba(255, 255, 255, 0.35) 42%,
-      rgba(110, 38, 30, 0.12) 58%,
-      rgba(255, 255, 255, 0.55) 100%
-    );
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  @media (min-width: 640px) {
-    .plans-cta-glass {
-      padding: 3.64rem 3.3rem;
-    }
-  }
-
   .plans-cta-button {
-    @apply relative inline-flex items-center gap-3 font-semibold text-white no-underline;
+    @apply relative inline-flex items-center gap-3 font-semibold no-underline;
     min-width: min(100%, 16rem);
     padding: 1rem 2rem;
     border-radius: 9999px;
     font-size: 1.125rem;
     line-height: 1.25;
     white-space: nowrap;
-    background: linear-gradient(
-      90deg,
-      var(--color-terracotta) 0%,
-      var(--color-terracotta) 32%,
-      color-mix(in srgb, var(--color-terracotta) 72%, transparent) 58%,
-      rgba(255, 255, 255, 0.22) 100%
-    );
-    box-shadow: 0 8px 24px rgba(180, 50, 40, 0.28);
+    color: var(--color-terracotta);
+    background: #ffffff;
+    box-shadow: 0 8px 28px rgba(255, 111, 97, 0.45);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .plans-cta-whatsapp-icon {
+  .plans-cta-phone-icon {
     @apply w-5 h-5 shrink-0;
+    color: #1a1a1a;
   }
 
   .plans-cta-button-label {
@@ -263,7 +199,7 @@
 
   .plans-cta-button:hover {
     transform: scale(1.03);
-    box-shadow: 0 12px 28px rgba(180, 50, 40, 0.34);
+    box-shadow: 0 12px 32px rgba(255, 111, 97, 0.55);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -273,7 +209,7 @@
 
     .plans-cta-button:hover {
       transform: none;
-      box-shadow: 0 8px 24px rgba(180, 50, 40, 0.28);
+      box-shadow: 0 8px 28px rgba(255, 111, 97, 0.45);
     }
   }
 }

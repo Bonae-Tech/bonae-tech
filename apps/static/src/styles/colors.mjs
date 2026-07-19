@@ -21,13 +21,6 @@ export const colors = {
   cream: '#FBFDFF', // Blanco Hielo — page background
 };
 
-/** Lighter coral stops for Plans CTA gradients (derived from terracotta) */
-export const terracottaGradientStops = {
-  light1: '#FF8478',
-  light2: '#FF9186',
-  light3: '#FF9C92',
-};
-
 /** Browser chrome / PWA theme */
 export const themeColor = colors['dark-blue'].DEFAULT;
 
@@ -41,9 +34,6 @@ export const backgroundColor = colors.cream;
 export const cssVariables = {
   '--color-terracotta': colors.terracotta.DEFAULT,
   '--color-terracotta-dark': colors.terracotta.dark,
-  '--color-terracotta-light-1': terracottaGradientStops.light1,
-  '--color-terracotta-light-2': terracottaGradientStops.light2,
-  '--color-terracotta-light-3': terracottaGradientStops.light3,
   '--color-cyan': colors.cyan,
   '--color-amber': colors.amber,
   '--color-body': colors.body,

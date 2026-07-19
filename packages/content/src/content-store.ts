@@ -47,6 +47,7 @@ export const contentSectionSchema = z.enum([
   'hero',
   'valueProp',
   'about',
+  'templates',
   'contact',
   'plans',
   'footer',

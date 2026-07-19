@@ -35,6 +35,7 @@ const SECTION_TITLES: Record<string, string> = {
   valueProp: 'Servicios',
   keyFigures: 'DatosClave',
   about: 'Sobre nosotras',
+  templates: 'Plantillas',
   plans: 'CTA',
   contact: 'Contacto',
   footer: 'Pie de página',
@@ -76,6 +77,22 @@ const KEY_FIGURES_FIELDS: Record<string, string> = {
   presence: 'Etiqueta corta de presencia',
   foundersCount: 'Cantidad de fundadoras',
   foundersLabel: 'Etiqueta de fundadoras',
+};
+
+const TEMPLATES_FIELDS: Record<string, string> = {
+  sectionBadge: 'Etiqueta de sección',
+  title: 'Título',
+  subheadline: 'Subtítulo',
+  viewAllLabel: 'Texto del botón',
+  viewAllHref: 'Enlace del botón',
+};
+
+const TEMPLATES_ITEM_FIELDS: Record<string, string> = {
+  category: 'Categoría',
+  title: 'Título',
+  description: 'Descripción',
+  imageSrc: 'Imagen',
+  href: 'Enlace',
 };
 
 const PLANS_FIELDS: Record<string, string> = {
@@ -180,6 +197,79 @@ function diffRecordStrings(
       continue;
     }
     pushStringChange(changes, locale, formatChangeLabel(locale, sectionTitle, fieldLabel), before, after);
+  }
+}
+
+function diffTemplatesItems(
+  changes: ReviewFieldChange[],
+  locale: 'es' | 'en',
+  draft: ContentDocument,
+  published: ContentDocument,
+): void {
+  const draftItems = draft.templates.items;
+  const publishedItems = published.templates.items;
+
+  for (let i = 0; i < draftItems.length; i++) {
+    const draftItem = draftItems[i];
+    const publishedItem = publishedItems[i];
+
+    if (!publishedItem) {
+      for (const [field, fieldLabel] of Object.entries(TEMPLATES_ITEM_FIELDS)) {
+        const value = draftItem[field as keyof typeof draftItem];
+        if (typeof value !== 'string') {
+          continue;
+        }
+        changes.push({
+          locale,
+          label: formatChangeLabel(locale, SECTION_TITLES.templates, `Ítem ${i + 1}`, fieldLabel),
+          kind: 'added',
+          after: truncate(value),
+        });
+      }
+      if (draftItem.comingSoon) {
+        changes.push({
+          locale,
+          label: formatChangeLabel(locale, SECTION_TITLES.templates, `Ítem ${i + 1}`, 'Próximamente'),
+          kind: 'added',
+          after: 'sí',
+        });
+      }
+      continue;
+    }
+
+    for (const [field, fieldLabel] of Object.entries(TEMPLATES_ITEM_FIELDS)) {
+      const before = publishedItem[field as keyof typeof publishedItem];
+      const after = draftItem[field as keyof typeof draftItem];
+      if (typeof before !== 'string' || typeof after !== 'string') {
+        continue;
+      }
+      pushStringChange(
+        changes,
+        locale,
+        formatChangeLabel(locale, SECTION_TITLES.templates, `Ítem ${i + 1}`, fieldLabel),
+        before,
+        after,
+      );
+    }
+    if (draftItem.comingSoon !== publishedItem.comingSoon) {
+      changes.push({
+        locale,
+        label: formatChangeLabel(locale, SECTION_TITLES.templates, `Ítem ${i + 1}`, 'Próximamente'),
+        kind: 'changed',
+        before: publishedItem.comingSoon ? 'sí' : 'no',
+        after: draftItem.comingSoon ? 'sí' : 'no',
+      });
+    }
+  }
+
+  for (let i = draftItems.length; i < publishedItems.length; i++) {
+    const publishedItem = publishedItems[i];
+    changes.push({
+      locale,
+      label: formatChangeLabel(locale, SECTION_TITLES.templates, `Ítem ${i + 1}`),
+      kind: 'removed',
+      before: truncate(publishedItem.title),
+    });
   }
 }
 
@@ -432,6 +522,19 @@ function diffLocaleDocument(
         draftSection as Record<string, unknown>,
         publishedSection as Record<string, unknown>,
       );
+      continue;
+    }
+
+    if (sectionKey === 'templates') {
+      diffRecordStrings(
+        changes,
+        locale,
+        sectionTitle,
+        TEMPLATES_FIELDS,
+        draftSection as Record<string, unknown>,
+        publishedSection as Record<string, unknown>,
+      );
+      diffTemplatesItems(changes, locale, draft, published);
       continue;
     }
 

@@ -7,6 +7,7 @@
     "home": "Inicio",
     "about": "Nosotras",
     "valueProp": "Servicios",
+    "templates": "Plantillas",
     "contact": "Contacto",
     "cta": "Contáctanos",
     "clients": "Clientes",
@@ -111,6 +112,39 @@
           "Orientación al cliente",
           "Emprendimiento local"
         ]
+      }
+    ]
+  },
+  "templates": {
+    "sectionBadge": "Plantillas",
+    "title": "Lanza tu presencia digital hoy mismo",
+    "subheadline": "Plantillas listas para usar, pensadas para negocios de la región. Elige un diseño, personalízalo con tu marca y publícalo en días, no meses.",
+    "viewAllLabel": "Ver todas las plantillas",
+    "viewAllHref": "#plantillas",
+    "items": [
+      {
+        "category": "Sitio corporativo",
+        "title": "Modelo Empresarial",
+        "description": "Landing liviana y novedosa para negocios que buscan captar más clientes.",
+        "imageSrc": "/images/templates/empresarial.png",
+        "href": "",
+        "comingSoon": false
+      },
+      {
+        "category": "Panel de gestión",
+        "title": "model-3 Dashboard",
+        "description": "Panel para controlar contratos, saldos y pagos de vendedores en un solo lugar.",
+        "imageSrc": "/images/templates/model-3.png",
+        "href": "",
+        "comingSoon": false
+      },
+      {
+        "category": "Próximamente",
+        "title": "Más plantillas próximamente",
+        "description": "El portafolio completo de plantillas se irá sumando aquí.",
+        "imageSrc": "",
+        "href": "",
+        "comingSoon": true
       }
     ]
   },

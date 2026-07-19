@@ -6,6 +6,11 @@ import type { SectionId } from '../ui/editor/types.js';
 
 export type FieldErrors = Record<string, string | null | undefined>;
 type ItemErrors = Array<{ title?: string | null; description?: string | null }>;
+type TemplateItemErrors = Array<{
+  category?: string | null;
+  title?: string | null;
+  description?: string | null;
+}>;
 type FounderErrors = Array<{ name?: string | null; role?: string | null }>;
 
 export interface LocaleSectionErrors {
@@ -20,6 +25,14 @@ export interface LocaleSectionErrors {
     title?: string | null;
     foundersTitle?: string | null;
     founders: FounderErrors;
+  };
+  templates: {
+    sectionBadge?: string | null;
+    title?: string | null;
+    subheadline?: string | null;
+    viewAllLabel?: string | null;
+    viewAllHref?: string | null;
+    items: TemplateItemErrors;
   };
   plans: FieldErrors;
   contact: FieldErrors;
@@ -75,6 +88,7 @@ const EMPTY_LOCALE_ERRORS: LocaleSectionErrors = {
   valueProp: { items: [] },
   keyFigures: {},
   about: { founders: [] },
+  templates: { items: [] },
   plans: {},
   contact: {},
 };
@@ -120,6 +134,18 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
       founders: doc.about.members.map((member) => ({
         name: checkField(member.initials, { required: true, max: 40 }, 'Nombre'),
         role: checkField(member.role, { required: true, max: 40 }, 'Rol'),
+      })),
+    },
+    templates: {
+      sectionBadge: checkField(doc.templates.sectionBadge, { required: true }, 'Etiqueta superior'),
+      title: checkField(doc.templates.title, { required: true, max: 90 }, 'Título de sección'),
+      subheadline: checkField(doc.templates.subheadline, { required: true, max: 280 }, 'Subtítulo'),
+      viewAllLabel: checkField(doc.templates.viewAllLabel, { required: true, max: 60 }, 'Texto del botón'),
+      viewAllHref: checkField(doc.templates.viewAllHref, { required: true }, 'Enlace del botón'),
+      items: doc.templates.items.map((item) => ({
+        category: checkField(item.category, { required: true, max: 60 }, 'Categoría'),
+        title: checkField(item.title, { required: true, max: 80 }, 'Título de plantilla'),
+        description: checkField(item.description, { required: true, max: 220 }, 'Descripción'),
       })),
     },
     plans: {
@@ -187,6 +213,8 @@ export function useFieldValidation(
           return countErrors(errorsEs.keyFigures) + countErrors(errorsEn.keyFigures);
         case 'about':
           return countErrors(errorsEs.about) + countErrors(errorsEn.about);
+        case 'templates':
+          return countErrors(errorsEs.templates) + countErrors(errorsEn.templates);
         case 'plans':
           return countErrors(errorsEs.plans) + countErrors(errorsEn.plans);
         case 'contact':
@@ -220,6 +248,18 @@ export function getLocaleFieldError(
       return errors.valueProp.items[index]?.[subField as 'title' | 'description'] ?? null;
     }
     return errors.valueProp[field as 'sectionBadge' | 'title'] ?? null;
+  }
+  if (section === 'templates') {
+    if (field === 'items' && index !== undefined && subField) {
+      return (
+        errors.templates.items[index]?.[subField as 'category' | 'title' | 'description'] ?? null
+      );
+    }
+    return (
+      errors.templates[
+        field as 'sectionBadge' | 'title' | 'subheadline' | 'viewAllLabel' | 'viewAllHref'
+      ] ?? null
+    );
   }
   if (section === 'about') {
     if (field === 'founders' && index !== undefined && subField) {
