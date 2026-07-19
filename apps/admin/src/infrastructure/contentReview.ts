@@ -83,16 +83,27 @@ const TEMPLATES_FIELDS: Record<string, string> = {
   sectionBadge: 'Etiqueta de sección',
   title: 'Título',
   subheadline: 'Subtítulo',
-  viewAllLabel: 'Texto del botón',
-  viewAllHref: 'Enlace del botón',
+  viewAllLabel: 'Texto Ver todas',
+  viewAllHref: 'Enlace Ver todas',
+  viewDetailsLabel: 'Ver detalles',
+  backLabel: 'Volver',
+  desktopTabLabel: 'Pestaña escritorio',
+  mobileTabLabel: 'Pestaña móvil',
+  useTemplateLabel: 'Usar plantilla',
+  demoLabel: 'Ver demo',
+  comingSoonModalBody: 'Modal próximamente',
+  comingSoonModalDismiss: 'Cerrar modal',
 };
 
 const TEMPLATES_ITEM_FIELDS: Record<string, string> = {
   category: 'Categoría',
   title: 'Título',
   description: 'Descripción',
-  imageSrc: 'Imagen',
-  href: 'Enlace',
+  detailDescription: 'Descripción larga',
+  imageSrc: 'Imagen escritorio',
+  mobileImageSrc: 'Imagen móvil',
+  slug: 'Slug',
+  demoUrl: 'URL demo',
 };
 
 const PLANS_FIELDS: Record<string, string> = {
@@ -260,6 +271,16 @@ function diffTemplatesItems(
         after: draftItem.comingSoon ? 'sí' : 'no',
       });
     }
+
+    const draftFeatures = draftItem.features.join(' · ');
+    const publishedFeatures = publishedItem.features.join(' · ');
+    pushStringChange(
+      changes,
+      locale,
+      formatChangeLabel(locale, SECTION_TITLES.templates, `Ítem ${i + 1}`, 'Características'),
+      publishedFeatures,
+      draftFeatures,
+    );
   }
 
   for (let i = draftItems.length; i < publishedItems.length; i++) {

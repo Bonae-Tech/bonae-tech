@@ -79,14 +79,52 @@ const memberSchema = z.object({
   highlights: z.array(z.string().min(1)).min(1),
 });
 
-const templateItemSchema = z.object({
-  category: z.string().min(1),
-  title: z.string().min(1),
-  description: z.string().min(1).max(220),
-  imageSrc: z.string(),
-  href: z.string(),
-  comingSoon: z.boolean(),
-});
+const templateItemSchema = z
+  .object({
+    category: z.string().min(1),
+    title: z.string().min(1),
+    description: z.string().min(1).max(220),
+    detailDescription: z.string(),
+    imageSrc: z.string(),
+    mobileImageSrc: z.string(),
+    slug: z.string(),
+    demoUrl: z.string(),
+    features: z.array(z.string().min(1)).max(8),
+    comingSoon: z.boolean(),
+  })
+  .superRefine((item, ctx) => {
+    if (item.comingSoon) {
+      return;
+    }
+    if (!item.slug.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Slug is required for live templates',
+        path: ['slug'],
+      });
+    }
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug.trim())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Slug must be lowercase kebab-case',
+        path: ['slug'],
+      });
+    }
+    if (!item.imageSrc.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Image is required for live templates',
+        path: ['imageSrc'],
+      });
+    }
+    if (!item.detailDescription.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Detail description is required for live templates',
+        path: ['detailDescription'],
+      });
+    }
+  });
 
 export const contentDocumentSchema = z.object({
   lang: localeSchema,
@@ -150,6 +188,14 @@ export const contentDocumentSchema = z.object({
     subheadline: z.string().min(1),
     viewAllLabel: z.string().min(1),
     viewAllHref: z.string().min(1),
+    viewDetailsLabel: z.string().min(1),
+    backLabel: z.string().min(1),
+    desktopTabLabel: z.string().min(1),
+    mobileTabLabel: z.string().min(1),
+    useTemplateLabel: z.string().min(1),
+    demoLabel: z.string().min(1),
+    comingSoonModalBody: z.string().min(1),
+    comingSoonModalDismiss: z.string().min(1),
     items: z.array(templateItemSchema).min(2).max(6),
   }),
 

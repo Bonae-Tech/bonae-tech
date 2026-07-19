@@ -44,6 +44,25 @@ export function checkLocaleParity(es: ContentDocument, en: ContentDocument): Par
     }
   }
 
+  for (let i = 0; i < es.templates.items.length; i++) {
+    const esFeatures = es.templates.items[i]?.features.length ?? 0;
+    const enFeatures = en.templates.items[i]?.features.length ?? 0;
+    if (esFeatures !== enFeatures) {
+      issues.push({
+        path: `templates.items[${i}].features`,
+        message: `Feature count mismatch: es=${esFeatures}, en=${enFeatures}`,
+      });
+    }
+    const esSlug = es.templates.items[i]?.slug ?? '';
+    const enSlug = en.templates.items[i]?.slug ?? '';
+    if (esSlug !== enSlug) {
+      issues.push({
+        path: `templates.items[${i}].slug`,
+        message: `Slug mismatch: es=${esSlug}, en=${enSlug}`,
+      });
+    }
+  }
+
   if (es.lang !== 'es') {
     issues.push({ path: 'lang', message: 'Spanish document must have lang=es' });
   }

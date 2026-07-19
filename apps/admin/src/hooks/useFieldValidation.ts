@@ -10,6 +10,8 @@ type TemplateItemErrors = Array<{
   category?: string | null;
   title?: string | null;
   description?: string | null;
+  slug?: string | null;
+  detailDescription?: string | null;
 }>;
 type FounderErrors = Array<{ name?: string | null; role?: string | null }>;
 
@@ -32,6 +34,14 @@ export interface LocaleSectionErrors {
     subheadline?: string | null;
     viewAllLabel?: string | null;
     viewAllHref?: string | null;
+    viewDetailsLabel?: string | null;
+    backLabel?: string | null;
+    desktopTabLabel?: string | null;
+    mobileTabLabel?: string | null;
+    useTemplateLabel?: string | null;
+    demoLabel?: string | null;
+    comingSoonModalBody?: string | null;
+    comingSoonModalDismiss?: string | null;
     items: TemplateItemErrors;
   };
   plans: FieldErrors;
@@ -140,12 +150,34 @@ function buildLocaleErrors(doc: ContentDocument | null): LocaleSectionErrors {
       sectionBadge: checkField(doc.templates.sectionBadge, { required: true }, 'Etiqueta superior'),
       title: checkField(doc.templates.title, { required: true, max: 90 }, 'Título de sección'),
       subheadline: checkField(doc.templates.subheadline, { required: true, max: 280 }, 'Subtítulo'),
-      viewAllLabel: checkField(doc.templates.viewAllLabel, { required: true, max: 60 }, 'Texto del botón'),
-      viewAllHref: checkField(doc.templates.viewAllHref, { required: true }, 'Enlace del botón'),
+      viewAllLabel: checkField(doc.templates.viewAllLabel, { required: true, max: 60 }, 'Texto Ver todas'),
+      viewAllHref: checkField(doc.templates.viewAllHref, { required: true }, 'Enlace Ver todas'),
+      viewDetailsLabel: checkField(doc.templates.viewDetailsLabel, { required: true }, 'Ver detalles'),
+      backLabel: checkField(doc.templates.backLabel, { required: true }, 'Volver'),
+      desktopTabLabel: checkField(doc.templates.desktopTabLabel, { required: true }, 'Pestaña escritorio'),
+      mobileTabLabel: checkField(doc.templates.mobileTabLabel, { required: true }, 'Pestaña móvil'),
+      useTemplateLabel: checkField(doc.templates.useTemplateLabel, { required: true }, 'Usar plantilla'),
+      demoLabel: checkField(doc.templates.demoLabel, { required: true }, 'Ver demo'),
+      comingSoonModalBody: checkField(
+        doc.templates.comingSoonModalBody,
+        { required: true, max: 280 },
+        'Modal próximamente',
+      ),
+      comingSoonModalDismiss: checkField(
+        doc.templates.comingSoonModalDismiss,
+        { required: true },
+        'Cerrar modal',
+      ),
       items: doc.templates.items.map((item) => ({
         category: checkField(item.category, { required: true, max: 60 }, 'Categoría'),
         title: checkField(item.title, { required: true, max: 80 }, 'Título de plantilla'),
         description: checkField(item.description, { required: true, max: 220 }, 'Descripción'),
+        slug: item.comingSoon
+          ? null
+          : checkField(item.slug, { required: true, max: 80 }, 'Slug'),
+        detailDescription: item.comingSoon
+          ? null
+          : checkField(item.detailDescription, { required: true, max: 500 }, 'Descripción larga'),
       })),
     },
     plans: {
@@ -252,14 +284,12 @@ export function getLocaleFieldError(
   if (section === 'templates') {
     if (field === 'items' && index !== undefined && subField) {
       return (
-        errors.templates.items[index]?.[subField as 'category' | 'title' | 'description'] ?? null
+        errors.templates.items[index]?.[
+          subField as 'category' | 'title' | 'description' | 'slug' | 'detailDescription'
+        ] ?? null
       );
     }
-    return (
-      errors.templates[
-        field as 'sectionBadge' | 'title' | 'subheadline' | 'viewAllLabel' | 'viewAllHref'
-      ] ?? null
-    );
+    return (errors.templates[field as keyof typeof errors.templates] as string | null | undefined) ?? null;
   }
   if (section === 'about') {
     if (field === 'founders' && index !== undefined && subField) {

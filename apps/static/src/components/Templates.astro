@@ -1,5 +1,6 @@
 ---
 import type { Translations } from '@bonae/content';
+import { templateDetailPath } from '../lib/templates';
 
 interface Props {
   t: Translations;
@@ -22,44 +23,39 @@ const section = t.templates;
     <div class="grid gap-6 md:grid-cols-3">
       {section.items.map((item) => (
         item.comingSoon ? (
-          <article class="flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed border-light-blue/40 bg-white/60 px-6 py-12 min-h-[320px]">
+          <button
+            type="button"
+            class="template-coming-soon flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed border-light-blue/40 bg-white/60 px-6 py-12 min-h-[320px] transition-colors hover:border-terracotta cursor-pointer"
+            data-coming-soon-open
+          >
             <div class="w-12 h-12 rounded-full bg-cream border border-light-blue/30 flex items-center justify-center mb-5 text-dark-blue text-2xl font-light" aria-hidden="true">
               +
             </div>
             <h3 class="text-lg font-bold text-dark-blue mb-2">{item.title}</h3>
             <p class="text-sm text-body leading-relaxed max-w-xs">{item.description}</p>
-          </article>
+          </button>
         ) : (
-          <article class="bg-white rounded-2xl shadow-sm border border-light-blue/15 overflow-hidden flex flex-col">
-            {item.href ? (
-              <a href={item.href} class="block aspect-[16/10] overflow-hidden bg-cream" target="_blank" rel="noopener noreferrer">
-                <img
-                  src={item.imageSrc}
-                  alt=""
-                  class="w-full h-full object-cover object-top"
-                  width="640"
-                  height="400"
-                  loading="lazy"
-                />
-              </a>
-            ) : (
-              <div class="aspect-[16/10] overflow-hidden bg-cream">
-                <img
-                  src={item.imageSrc}
-                  alt=""
-                  class="w-full h-full object-cover object-top"
-                  width="640"
-                  height="400"
-                  loading="lazy"
-                />
-              </div>
-            )}
+          <a
+            href={templateDetailPath(t.lang, item.slug)}
+            class="group bg-white rounded-2xl shadow-sm border border-light-blue/15 overflow-hidden flex flex-col transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div class="aspect-[16/10] overflow-hidden bg-cream">
+              <img
+                src={item.imageSrc}
+                alt=""
+                class="w-full h-full object-cover object-top"
+                width="640"
+                height="400"
+                loading="lazy"
+              />
+            </div>
             <div class="p-5 text-left flex-1 flex flex-col">
               <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-2">{item.category}</p>
               <h3 class="text-lg font-bold text-dark-blue mb-2">{item.title}</h3>
-              <p class="text-sm text-body leading-relaxed">{item.description}</p>
+              <p class="text-sm text-body leading-relaxed flex-1">{item.description}</p>
+              <p class="text-sm font-semibold text-terracotta mt-4">{section.viewDetailsLabel}</p>
             </div>
-          </article>
+          </a>
         )
       ))}
     </div>
@@ -73,4 +69,39 @@ const section = t.templates;
       </a>
     </div>
   </div>
+
+  <dialog
+    id="templates-coming-soon"
+    class="max-w-md w-[calc(100%-2rem)] rounded-2xl border-0 p-0 shadow-xl backdrop:bg-dark-blue/45"
+  >
+    <div class="bg-white rounded-2xl px-8 py-10 text-center">
+      <div class="w-14 h-14 rounded-full bg-cream text-terracotta flex items-center justify-center mx-auto mb-5 text-2xl font-light" aria-hidden="true">
+        +
+      </div>
+      <h3 class="text-xl font-bold text-dark-blue mb-3">{section.items.find((i) => i.comingSoon)?.title ?? section.sectionBadge}</h3>
+      <p class="text-sm text-body leading-relaxed mb-6">{section.comingSoonModalBody}</p>
+      <button
+        type="button"
+        class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-dark-blue text-white font-semibold hover:bg-dark-blue-dark transition-colors"
+        data-coming-soon-close
+      >
+        {section.comingSoonModalDismiss}
+      </button>
+    </div>
+  </dialog>
 </section>
+
+<script>
+  const dialog = document.getElementById('templates-coming-soon');
+  if (dialog instanceof HTMLDialogElement) {
+    document.querySelectorAll('[data-coming-soon-open]').forEach((el) => {
+      el.addEventListener('click', () => dialog.showModal());
+    });
+    document.querySelectorAll('[data-coming-soon-close]').forEach((el) => {
+      el.addEventListener('click', () => dialog.close());
+    });
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  }
+</script>

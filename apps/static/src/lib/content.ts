@@ -17,4 +17,13 @@ export function whatsappHrefFor(t: ContentDocument): string {
   return buildWhatsAppHref(siteSettings.whatsappNumber, t.contact.whatsappMessage);
 }
 
+export function whatsappHrefForTemplate(t: ContentDocument, templateTitle: string): string {
+  const base = t.contact.whatsappMessage.trim();
+  const suffix =
+    t.lang === 'en'
+      ? ` I am interested in the "${templateTitle}" template.`
+      : ` Me interesa la plantilla "${templateTitle}".`;
+  return buildWhatsAppHref(siteSettings.whatsappNumber, `${base}${suffix}`);
+}
+
 export type { ContentDocument as Translations, SiteSettings } from '@bonae/content';

@@ -121,29 +121,59 @@
     "subheadline": "Plantillas listas para usar, pensadas para negocios de la región. Elige un diseño, personalízalo con tu marca y publícalo en días, no meses.",
     "viewAllLabel": "Ver todas las plantillas",
     "viewAllHref": "#plantillas",
+    "viewDetailsLabel": "Ver detalles →",
+    "backLabel": "← Volver a plantillas",
+    "desktopTabLabel": "Escritorio",
+    "mobileTabLabel": "Móvil",
+    "useTemplateLabel": "Usar esta plantilla",
+    "demoLabel": "Ver demo en vivo",
+    "comingSoonModalBody": "Estamos trabajando en nuevos diseños. Vuelve pronto para ver el portafolio completo.",
+    "comingSoonModalDismiss": "Entendido",
     "items": [
       {
         "category": "Sitio corporativo",
         "title": "Modelo Empresarial",
         "description": "Landing liviana y novedosa para negocios que buscan captar más clientes.",
+        "detailDescription": "Landing liviana y novedosa para negocios que buscan captar más clientes. Diseño limpio con foco en conversión, pensado para presentar servicios y generar contacto rápido.",
         "imageSrc": "/images/templates/empresarial.png",
-        "href": "",
+        "mobileImageSrc": "/images/templates/empresarial.png",
+        "slug": "modelo-empresarial",
+        "demoUrl": "",
+        "features": [
+          "Secciones de servicios, nosotros y contacto listas para editar",
+          "Optimizado para carga rápida en móviles",
+          "Formulario de contacto integrado",
+          "Totalmente personalizable con tu marca y colores"
+        ],
         "comingSoon": false
       },
       {
         "category": "Panel de gestión",
         "title": "model-3 Dashboard",
         "description": "Panel para controlar contratos, saldos y pagos de vendedores en un solo lugar.",
+        "detailDescription": "Panel para controlar contratos, saldos y pagos de vendedores en un solo lugar. Ideal para negocios que gestionan cobros y reportes de forma diaria.",
         "imageSrc": "/images/templates/model-3.png",
-        "href": "",
+        "mobileImageSrc": "/images/templates/model-3.png",
+        "slug": "model-3-dashboard",
+        "demoUrl": "",
+        "features": [
+          "Resumen de contratos activos, cancelados y finalizados",
+          "Control de saldos y deudas por vendedor",
+          "Registro de pagos por múltiples métodos",
+          "Reportes exportables por rango de fechas"
+        ],
         "comingSoon": false
       },
       {
         "category": "Próximamente",
         "title": "Más plantillas próximamente",
         "description": "El portafolio completo de plantillas se irá sumando aquí.",
+        "detailDescription": "",
         "imageSrc": "",
-        "href": "",
+        "mobileImageSrc": "",
+        "slug": "",
+        "demoUrl": "",
+        "features": [],
         "comingSoon": true
       }
     ]

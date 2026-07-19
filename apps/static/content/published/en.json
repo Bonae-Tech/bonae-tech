@@ -121,29 +121,59 @@
     "subheadline": "Ready-to-use templates designed for businesses in the region. Pick a design, customize it with your brand, and publish in days—not months.",
     "viewAllLabel": "See all templates",
     "viewAllHref": "#plantillas",
+    "viewDetailsLabel": "View details →",
+    "backLabel": "← Back to templates",
+    "desktopTabLabel": "Desktop",
+    "mobileTabLabel": "Mobile",
+    "useTemplateLabel": "Use this template",
+    "demoLabel": "View live demo",
+    "comingSoonModalBody": "We are working on new designs. Check back soon for the full portfolio.",
+    "comingSoonModalDismiss": "Got it",
     "items": [
       {
         "category": "Corporate site",
         "title": "Business Model",
         "description": "A lightweight, modern landing for businesses looking to win more customers.",
+        "detailDescription": "A lightweight, modern landing for businesses looking to win more customers. Clean conversion-focused design, built to present services and drive quick contact.",
         "imageSrc": "/images/templates/empresarial.png",
-        "href": "",
+        "mobileImageSrc": "/images/templates/empresarial.png",
+        "slug": "modelo-empresarial",
+        "demoUrl": "",
+        "features": [
+          "Ready-to-edit services, about, and contact sections",
+          "Optimized for fast mobile load times",
+          "Integrated contact form",
+          "Fully customizable with your brand and colors"
+        ],
         "comingSoon": false
       },
       {
         "category": "Management dashboard",
         "title": "model-3 Dashboard",
         "description": "A panel to track contracts, balances, and vendor payments in one place.",
+        "detailDescription": "A panel to track contracts, balances, and vendor payments in one place. Ideal for businesses that manage collections and reports daily.",
         "imageSrc": "/images/templates/model-3.png",
-        "href": "",
+        "mobileImageSrc": "/images/templates/model-3.png",
+        "slug": "model-3-dashboard",
+        "demoUrl": "",
+        "features": [
+          "Summary of active, canceled, and completed contracts",
+          "Balance and debt tracking by vendor",
+          "Payment logging across multiple methods",
+          "Exportable reports by date range"
+        ],
         "comingSoon": false
       },
       {
         "category": "Coming soon",
         "title": "More templates coming soon",
         "description": "The full template portfolio will keep growing here.",
+        "detailDescription": "",
         "imageSrc": "",
-        "href": "",
+        "mobileImageSrc": "",
+        "slug": "",
+        "demoUrl": "",
+        "features": [],
         "comingSoon": true
       }
     ]

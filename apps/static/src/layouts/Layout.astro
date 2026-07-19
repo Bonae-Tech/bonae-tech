@@ -9,12 +9,16 @@ interface Props {
   t: Translations;
   settings: SiteSettings;
   whatsappHref: string;
+  pageTitle?: string;
+  pageDescription?: string;
 }
 
-const { t, whatsappHref, settings } = Astro.props;
+const { t, whatsappHref, settings, pageTitle, pageDescription } = Astro.props;
 const isEn = t.lang === 'en';
 const canonicalES = Astro.site ? new URL('/', Astro.site).href : '/';
 const canonicalEN = Astro.site ? new URL('/en/', Astro.site).href : '/en/';
+const title = pageTitle ?? `${t.siteName} — ${t.siteTagline}`;
+const description = pageDescription ?? t.metaDescription;
 ---
 
 <!doctype html>
@@ -23,7 +27,7 @@ const canonicalEN = Astro.site ? new URL('/en/', Astro.site).href : '/en/';
     <meta charset="UTF-8" />
     <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={t.metaDescription} />
+    <meta name="description" content={description} />
     <meta name="theme-color" content={themeColor} />
 
     <link rel="alternate" hreflang="es" href={canonicalES} />
@@ -35,11 +39,11 @@ const canonicalEN = Astro.site ? new URL('/en/', Astro.site).href : '/en/';
     <link rel="apple-touch-icon" href="/favicon.png" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={`${t.siteName} — ${t.siteTagline}`} />
-    <meta property="og:description" content={t.metaDescription} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:locale" content={isEn ? 'en_US' : 'es_VE'} />
 
-    <title>{t.siteName} — {t.siteTagline}</title>
+    <title>{title}</title>
   </head>
   <body class="min-h-screen flex flex-col">
     <slot />

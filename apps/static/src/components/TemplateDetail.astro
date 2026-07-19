@@ -1,0 +1,154 @@
+---
+import type { Translations } from '@bonae/content';
+import type { TemplateItem } from '../lib/templates';
+import { templatesSectionHref } from '../lib/templates';
+
+interface Props {
+  t: Translations;
+  item: TemplateItem;
+  whatsappHref: string;
+}
+
+const { t, item, whatsappHref } = Astro.props;
+const section = t.templates;
+const backHref = templatesSectionHref(t.lang);
+const desktopSrc = item.imageSrc;
+const mobileSrc = item.mobileImageSrc.trim() || item.imageSrc;
+const demoUrl = item.demoUrl.trim();
+---
+
+<section class="flex-1 bg-cream py-10 md:py-14">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <a
+      href={backHref}
+      class="inline-flex items-center gap-2 text-sm font-semibold text-body hover:text-dark-blue transition-colors mb-8"
+    >
+      {section.backLabel}
+    </a>
+
+    <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14 items-start">
+      <div>
+        <div class="flex gap-2 mb-4" role="tablist" aria-label="Preview">
+          <button
+            type="button"
+            role="tab"
+            aria-selected="true"
+            data-preview-tab="desktop"
+            class="preview-tab preview-tab-active px-5 py-2.5 rounded-lg text-sm font-semibold"
+          >
+            {section.desktopTabLabel}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-preview-tab="mobile"
+            class="preview-tab preview-tab-inactive px-5 py-2.5 rounded-lg text-sm font-semibold"
+          >
+            {section.mobileTabLabel}
+          </button>
+        </div>
+
+        <div data-preview-panel="desktop" class="rounded-2xl overflow-hidden shadow-lg bg-white border border-light-blue/15">
+          <div class="h-2 bg-cream"></div>
+          <img
+            src={desktopSrc}
+            alt=""
+            class="w-full object-cover object-top max-h-[420px]"
+            width="800"
+            height="500"
+          />
+        </div>
+
+        <div data-preview-panel="mobile" class="hidden">
+          <div class="w-[220px] mx-auto rounded-[1.5rem] overflow-hidden border-[6px] border-dark-blue shadow-xl bg-white">
+            <img
+              src={mobileSrc}
+              alt=""
+              class="w-full object-cover object-top"
+              width="220"
+              height="400"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-3">{item.category}</p>
+        <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-4 leading-tight">{item.title}</h1>
+        <p class="text-base text-body leading-relaxed mb-8">{item.detailDescription}</p>
+
+        {item.features.length > 0 && (
+          <ul class="space-y-3.5 mb-8">
+            {item.features.map((feature) => (
+              <li class="flex gap-3 items-start">
+                <span class="w-5 h-5 rounded-full bg-cream text-terracotta text-xs font-bold flex items-center justify-center shrink-0 mt-0.5" aria-hidden="true">
+                  ✓
+                </span>
+                <span class="text-sm text-pacificblue leading-relaxed">{feature}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-terracotta text-white font-semibold hover:bg-terracotta-dark transition-colors"
+          >
+            {section.useTemplateLabel}
+          </a>
+          {demoUrl && (
+            <a
+              href={demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
+            >
+              {section.demoLabel}
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .preview-tab-active {
+    background-color: #40575d;
+    color: #fff;
+  }
+  .preview-tab-inactive {
+    background-color: #fff;
+    color: #6c7a7e;
+    border: 1px solid #dfe3e7;
+  }
+</style>
+
+<script>
+  const tabs = document.querySelectorAll('[data-preview-tab]');
+  const panels = document.querySelectorAll('[data-preview-panel]');
+
+  function setTab(name) {
+    tabs.forEach((tab) => {
+      const active = tab.getAttribute('data-preview-tab') === name;
+      tab.setAttribute('aria-selected', active ? 'true' : 'false');
+      tab.classList.toggle('preview-tab-active', active);
+      tab.classList.toggle('preview-tab-inactive', !active);
+    });
+    panels.forEach((panel) => {
+      const match = panel.getAttribute('data-preview-panel') === name;
+      panel.classList.toggle('hidden', !match);
+    });
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const name = tab.getAttribute('data-preview-tab');
+      if (name) setTab(name);
+    });
+  });
+</script>
