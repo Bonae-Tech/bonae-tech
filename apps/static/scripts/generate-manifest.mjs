@@ -7,13 +7,13 @@
  */
 import { writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { backgroundColor, themeColor } from '../src/styles/colors.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outPath = resolve(__dirname, '../public/manifest.webmanifest');
 
-const manifest = {
+export const manifest = {
   name: 'BONAE TECH - Servicios Digitales',
   short_name: 'BONAE TECH',
   description: 'Servicios digitales para empresas venezolanas',
@@ -31,5 +31,12 @@ const manifest = {
   ],
 };
 
-writeFileSync(outPath, `${JSON.stringify(manifest, null, 2)}\n`);
-console.log(`Wrote ${outPath}`);
+export function writeManifest(targetPath = outPath) {
+  writeFileSync(targetPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  return targetPath;
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const writtenPath = writeManifest();
+  console.log(`Wrote ${writtenPath}`);
+}
