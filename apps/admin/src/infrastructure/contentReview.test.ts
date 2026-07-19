@@ -63,9 +63,10 @@ describe('buildPublishReview', () => {
     draft.es.templates.backLabel = '← Volver al catálogo';
     draft.en.templates.useTemplateLabel = 'Start from this template';
     draft.es.templates.items[0].features = [
-      ...draft.es.templates.items[0].features,
       'Integración con WhatsApp incluida',
+      ...draft.es.templates.items[0].features.slice(1),
     ];
+    draft.en.templates.items[1].features = draft.en.templates.items[1].features.slice(1);
 
     const review = buildPublishReview({ draft, published });
 
@@ -94,8 +95,8 @@ describe('buildPublishReview', () => {
     expect(review.warnings).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          label: 'templates.items[0].features',
-          message: 'Feature count mismatch: es=5, en=4',
+          label: 'templates.items[1].features',
+          message: 'Feature count mismatch: es=4, en=3',
         }),
       ]),
     );
