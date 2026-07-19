@@ -17,7 +17,7 @@
   }
 
   body {
-    @apply font-sans text-pacificblue bg-cream antialiased;
+    @apply font-sans text-body bg-cream antialiased;
   }
 
   h1, h2, h3, h4 {
@@ -29,6 +29,11 @@
   .btn-primary {
     @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-dark-blue text-white font-semibold
            hover:bg-dark-blue-dark active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber text-white font-semibold
+           hover:brightness-95 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg;
   }
 
   .btn-whatsapp {
@@ -45,7 +50,7 @@
   }
 
   .section-subtitle {
-    @apply text-lg text-pacificblue max-w-2xl mx-auto;
+    @apply text-lg text-body max-w-2xl mx-auto;
   }
 
   .card {

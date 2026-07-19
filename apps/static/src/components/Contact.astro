@@ -32,31 +32,31 @@ const closedLabel = t.lang === 'es' ? 'Cerrado' : 'Closed';
         <form action="/api/contact" method="POST" class="space-y-4" id="contact-form">
           <input type="hidden" name="form-name" value="contact" />
           <div>
-            <label for="name" class="block text-sm font-medium text-pacificblue mb-1">
+            <label for="name" class="block text-sm font-medium text-body mb-1">
               {t.contact.form.name} *
             </label>
             <input type="text" id="name" name="name" required class="w-full px-4 py-2 rounded-lg border border-light-blue/30 focus:border-dark-blue focus:ring-1 focus:ring-dark-blue outline-none transition-colors" autocomplete="name" />
           </div>
           <div>
-            <label for="email" class="block text-sm font-medium text-pacificblue mb-1">
+            <label for="email" class="block text-sm font-medium text-body mb-1">
               {t.contact.form.email} *
             </label>
             <input type="email" id="email" name="email" required class="w-full px-4 py-2 rounded-lg border border-light-blue/30 focus:border-dark-blue focus:ring-1 focus:ring-dark-blue outline-none transition-colors" autocomplete="email" />
           </div>
           <div>
-            <label for="phone" class="block text-sm font-medium text-pacificblue mb-1">
+            <label for="phone" class="block text-sm font-medium text-body mb-1">
               {t.contact.form.phone} *
             </label>
             <input type="tel" id="phone" name="phone" required class="w-full px-4 py-2 rounded-lg border border-light-blue/30 focus:border-dark-blue focus:ring-1 focus:ring-dark-blue outline-none transition-colors" autocomplete="tel" />
           </div>
           <div>
-            <label for="business" class="block text-sm font-medium text-pacificblue mb-1">
+            <label for="business" class="block text-sm font-medium text-body mb-1">
               {t.contact.form.business}
             </label>
             <input type="text" id="business" name="business" class="w-full px-4 py-2 rounded-lg border border-light-blue/30 focus:border-dark-blue focus:ring-1 focus:ring-dark-blue outline-none transition-colors" autocomplete="organization" />
           </div>
           <div>
-            <label for="service" class="block text-sm font-medium text-pacificblue mb-1">
+            <label for="service" class="block text-sm font-medium text-body mb-1">
               {t.contact.form.serviceType}
             </label>
             <select id="service" name="service" class="w-full px-4 py-2 rounded-lg border border-light-blue/30 focus:border-dark-blue focus:ring-1 focus:ring-dark-blue outline-none transition-colors bg-white">
@@ -67,7 +67,7 @@ const closedLabel = t.lang === 'es' ? 'Cerrado' : 'Closed';
             </select>
           </div>
           <div>
-            <label for="message" class="block text-sm font-medium text-pacificblue mb-1">
+            <label for="message" class="block text-sm font-medium text-body mb-1">
               {t.contact.form.message} *
             </label>
             <textarea id="message" name="message" rows={4} required class="w-full px-4 py-2 rounded-lg border border-light-blue/30 focus:border-dark-blue focus:ring-1 focus:ring-dark-blue outline-none transition-colors resize-none"></textarea>
@@ -87,12 +87,12 @@ const closedLabel = t.lang === 'es' ? 'Cerrado' : 'Closed';
             </svg>
             WhatsApp
           </a>
-          <p class="text-sm text-pacificblue">
+          <p class="text-sm text-body">
             <a href={`mailto:${t.contact.email}`} class="text-dark-blue font-medium hover:underline">
               {t.contact.email}
             </a>
           </p>
-          <p class="text-sm text-pacificblue mt-1">
+          <p class="text-sm text-body mt-1">
             <a href={whatsappHref} class="text-dark-blue font-medium hover:underline">
               {t.contact.phone}
             </a>
@@ -101,7 +101,7 @@ const closedLabel = t.lang === 'es' ? 'Cerrado' : 'Closed';
             <h4 class="text-sm font-bold text-dark-blue mb-2">{t.contact.hours.title}</h4>
             <dl class="space-y-1.5">
               {t.contact.hours.days.map((day) => (
-                <div class="flex justify-between gap-4 text-sm text-pacificblue">
+                <div class="flex justify-between gap-4 text-sm text-body">
                   <dt class="font-medium">{WEEKDAY_LABELS[t.lang][day.day]}</dt>
                   <dd class="text-right tabular-nums">
                     {day.closed ? closedLabel : `${day.open} – ${day.close}`}
@@ -114,7 +114,7 @@ const closedLabel = t.lang === 'es' ? 'Cerrado' : 'Closed';
 
         <div class="card">
           <h3 class="font-bold text-dark-blue mb-2">{t.contact.location}</h3>
-          <p class="text-sm text-pacificblue">{t.contact.locationNote}</p>
+          <p class="text-sm text-body">{t.contact.locationNote}</p>
         </div>
 
         <div class="mt-6 flex gap-4">

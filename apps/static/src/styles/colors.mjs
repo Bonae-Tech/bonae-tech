@@ -5,24 +5,27 @@
 
 export const colors = {
   terracotta: {
-    DEFAULT: '#FD7062',
-    dark: '#E85A4F',
+    DEFAULT: '#FF6F61', // Coral — primary CTA / accent
+    dark: '#E65A4C',
   },
+  cyan: '#00CED1', // Cian Eléctrico — tech / data highlights (sparingly)
+  amber: '#DAA520', // Ámbar Profundo — secondary / success
+  body: '#6c7a7e', // Antracita Claro — body copy (text-body)
   'mid-blue': '#5A7A82',
-  'light-blue': '#8AA3AB',
+  'light-blue': '#8AA3AB', // borders / secondary on dark surfaces
   'dark-blue': {
-    DEFAULT: '#40575D',
+    DEFAULT: '#40575D', // Gris Petróleo — primary surfaces / headings
     dark: '#3A4E53',
   },
   pacificblue: '#2C454C',
-  cream: '#F2F5F5',
+  cream: '#FBFDFF', // Blanco Hielo — page background
 };
 
 /** Lighter coral stops for Plans CTA gradients (derived from terracotta) */
 export const terracottaGradientStops = {
-  light1: '#FE8579',
-  light2: '#FE9186',
-  light3: '#FE9C92',
+  light1: '#FF8478',
+  light2: '#FF9186',
+  light3: '#FF9C92',
 };
 
 /** Browser chrome / PWA theme */
@@ -41,6 +44,9 @@ export const cssVariables = {
   '--color-terracotta-light-1': terracottaGradientStops.light1,
   '--color-terracotta-light-2': terracottaGradientStops.light2,
   '--color-terracotta-light-3': terracottaGradientStops.light3,
+  '--color-cyan': colors.cyan,
+  '--color-amber': colors.amber,
+  '--color-body': colors.body,
   '--color-mid-blue': colors['mid-blue'],
   '--color-light-blue': colors['light-blue'],
   '--color-dark-blue': colors['dark-blue'].DEFAULT,
