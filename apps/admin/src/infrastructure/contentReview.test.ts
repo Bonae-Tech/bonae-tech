@@ -65,8 +65,8 @@ describe('buildPublishReview', () => {
     draft.es.templates.backLabel = '← Regresar al catálogo';
     draft.es.templates.items[0].detailDescription = 'Detalle extendido para revisar antes de publicar.';
     draft.es.templates.items[0].features = [
-      ...draft.es.templates.items[0].features,
-      'Bloque adicional de prueba social',
+      'Bloque principal actualizado para prueba social',
+      ...draft.es.templates.items[0].features.slice(1),
     ];
 
     const review = buildPublishReview({ draft, published });
@@ -87,7 +87,7 @@ describe('buildPublishReview', () => {
         expect.objectContaining({
           label: 'ES › Plantillas › Ítem 1 › Características',
           kind: 'changed',
-          after: expect.stringContaining('Bloque adicional de prueba social'),
+          after: expect.stringContaining('Bloque principal actualizado para prueba social'),
         }),
       ]),
     );
