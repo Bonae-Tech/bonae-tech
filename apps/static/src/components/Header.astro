@@ -13,15 +13,14 @@ const base = t.lang === 'en' ? '/en/' : '/';
   <nav class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
     <a href={base} class="flex items-center gap-2 group" aria-label={t.siteName}>
       <img src="/favicon.png" alt="" class="w-9 h-9" width="36" height="36" />
-      <span class="font-bold text-dark-blue text-xl tracking-tight">BONAE TECH</span>
+      <span class="font-display font-bold text-dark-blue text-xl tracking-tight">BONAE TECH</span>
     </a>
 
     <div class="hidden md:flex items-center gap-6">
       <a href={base} class="text-sm font-medium text-pacificblue hover:text-dark-blue transition-colors">{t.nav.home}</a>
-      <a href={`${base}#nosotras`} class="text-sm font-medium text-pacificblue hover:text-dark-blue transition-colors">{t.nav.about}</a>
       <a href={`${base}#servicios`} class="text-sm font-medium text-pacificblue hover:text-dark-blue transition-colors">{t.nav.valueProp}</a>
       <a href={`${base}#plantillas`} class="text-sm font-medium text-pacificblue hover:text-dark-blue transition-colors">{t.nav.templates}</a>
-      <a href={`${base}#contacto`} class="text-sm font-medium text-pacificblue hover:text-dark-blue transition-colors">{t.nav.contact}</a>
+      <a href={`${base}#nosotras`} class="text-sm font-medium text-pacificblue hover:text-dark-blue transition-colors">{t.nav.about}</a>
       <a
         href={`${base}#contacto`}
         class="btn-primary text-sm py-2 px-4"
@@ -52,10 +51,9 @@ const base = t.lang === 'en' ? '/en/' : '/';
   <input type="checkbox" id="mobile-menu-toggle" class="hidden peer" />
   <div class="hidden peer-checked:block md:hidden border-t border-cream bg-white px-4 py-4 space-y-3">
     <a href={base} class="block text-sm font-medium text-pacificblue hover:text-dark-blue py-1">{t.nav.home}</a>
-    <a href={`${base}#nosotras`} class="block text-sm font-medium text-pacificblue hover:text-dark-blue py-1">{t.nav.about}</a>
     <a href={`${base}#servicios`} class="block text-sm font-medium text-pacificblue hover:text-dark-blue py-1">{t.nav.valueProp}</a>
     <a href={`${base}#plantillas`} class="block text-sm font-medium text-pacificblue hover:text-dark-blue py-1">{t.nav.templates}</a>
-    <a href={`${base}#contacto`} class="block text-sm font-medium text-pacificblue hover:text-dark-blue py-1">{t.nav.contact}</a>
+    <a href={`${base}#nosotras`} class="block text-sm font-medium text-pacificblue hover:text-dark-blue py-1">{t.nav.about}</a>
     <a href={`${base}#contacto`} class="block btn-primary text-center py-2 mt-2">{t.nav.cta}</a>
   </div>
   <div class="h-0.5 bg-terracotta" aria-hidden="true"></div>
