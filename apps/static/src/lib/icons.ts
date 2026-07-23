@@ -4,6 +4,23 @@ const svg = (paths: string) =>
 const path = (d: string) =>
   `<path stroke-linecap="round" stroke-linejoin="round" d="${d}"/>`;
 
+/** Custom illustrated icons for value-prop cards (public/images/value-prop). */
+export const valuePropIconSrc: Record<string, string> = {
+  accessible: '/images/value-prop/web.png',
+  simple: '/images/value-prop/social.png',
+  secure: '/images/value-prop/crm.png',
+  close: '/images/value-prop/consulting.png',
+  education: '/images/value-prop/education.png',
+};
+
+export const valuePropIconAlt: Record<string, string> = {
+  accessible: 'Presencia web',
+  simple: 'Redes sociales',
+  secure: 'Gestión comercial',
+  close: 'Consultoría digital',
+  education: 'E-learning',
+};
+
 export const valuePropIconMarkup: Record<string, string> = {
   accessible: svg(path('M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z')),
   simple: svg(path('M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z')),
