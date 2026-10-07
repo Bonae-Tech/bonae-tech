@@ -1,8 +1,6 @@
 interface Env {
-  CF_ACCOUNT_ID?: string;
-  CF_EMAIL_TOKEN?: string;
-  CLOUDFLARE_ACCOUNT_ID?: string;
-  CLOUDFLARE_API_TOKEN?: string;
+  CF_ACCOUNT_ID: string;
+  CLOUDFLARE_API_TOKEN: string;
   CONTACT_TO?: string;
   CONTACT_FROM?: string;
 }
@@ -29,9 +27,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!name || !phone || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return redirect('error', 'invalid fields');
 
   try {
-    const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID ?? env.CLOUDFLARE_ACCOUNT_ID}/email/sending/send`, {
+    const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/email/sending/send`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${env.CF_EMAIL_TOKEN ?? env.CLOUDFLARE_API_TOKEN}`, 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: env.CONTACT_TO ?? 'bonaetech@gmail.com',
         from: { address: env.CONTACT_FROM ?? 'contacto@bonaetech.com', name: 'Bonae Tech Web' },
