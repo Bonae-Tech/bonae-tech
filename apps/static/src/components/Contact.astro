@@ -28,6 +28,7 @@ const socialTitle = t.lang === 'es' ? 'Redes sociales' : 'Social media';
 
     <div class="grid lg:grid-cols-2 gap-12">
       <div class="card">
+        <p id="contact-status" class="hidden mb-4 rounded-lg px-4 py-3 text-sm" role="status"></p>
         <form action="/api/contact" method="POST" class="space-y-4" id="contact-form">
           <input type="hidden" name="form-name" value="contact" />
           <div>
@@ -122,3 +123,12 @@ const socialTitle = t.lang === 'es' ? 'Redes sociales' : 'Social media';
     </div>
   </div>
 </section>
+
+<script is:inline define:vars={{ ok: t.lang === 'es' ? '¡Gracias! Recibimos tu mensaje y te responderemos pronto.' : 'Thanks! We got your message and will reply soon.', fail: t.lang === 'es' ? 'No pudimos enviar tu mensaje. Escríbenos por WhatsApp o correo.' : "We couldn't send your message. Please use WhatsApp or email." }}>
+  const r = new URLSearchParams(location.search).get('contact');
+  const el = document.getElementById('contact-status');
+  if (el && r) {
+    el.textContent = r === 'sent' ? ok : fail;
+    el.className = 'mb-4 rounded-lg px-4 py-3 text-sm ' + (r === 'sent' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800');
+  }
+</script>
