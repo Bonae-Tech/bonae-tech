@@ -15,6 +15,10 @@ on:
       - 'apps/static/content/published/**'
       - 'apps/static/public/**'
       - 'apps/static/scripts/**'
+      - 'apps/static/src/**'
+      - 'apps/static/functions/**'
+      - 'apps/static/wrangler.toml'
+      - '.github/workflows/deploy-site.yml'
       - 'packages/content/**'
   workflow_dispatch:
 
