@@ -124,11 +124,29 @@ const socialTitle = t.lang === 'es' ? 'Redes sociales' : 'Social media';
   </div>
 </section>
 
-<script is:inline define:vars={{ ok: t.lang === 'es' ? '¡Gracias! Recibimos tu mensaje y te responderemos pronto.' : 'Thanks! We got your message and will reply soon.', fail: t.lang === 'es' ? 'No pudimos enviar tu mensaje. Escríbenos por WhatsApp o correo.' : "We couldn't send your message. Please use WhatsApp or email." }}>
-  const r = new URLSearchParams(location.search).get('contact');
+<script is:inline define:vars={{ ok: t.lang === 'es' ? '¡Gracias! Recibimos tu mensaje y te responderemos pronto.' : 'Thanks! We got your message and will reply soon.', fail: t.lang === 'es' ? 'No pudimos enviar tu mensaje. Escríbenos por WhatsApp o correo.' : "We couldn't send your message. Please use WhatsApp or email.", sending: t.lang === 'es' ? 'Enviando…' : 'Sending…' }}>
+  const form = document.getElementById('contact-form');
   const el = document.getElementById('contact-status');
-  if (el && r) {
-    el.textContent = r === 'sent' ? ok : fail;
-    el.className = 'mb-4 rounded-lg px-4 py-3 text-sm ' + (r === 'sent' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800');
-  }
+  const show = (good, text) => {
+    el.textContent = text;
+    el.className = 'mb-4 rounded-lg px-4 py-3 text-sm ' + (good ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = sending;
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      if (res.ok) form.reset();
+      show(res.ok, res.ok ? ok : fail);
+    } catch {
+      show(false, fail);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = label;
+    }
+  });
 </script>

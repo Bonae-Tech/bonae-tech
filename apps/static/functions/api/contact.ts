@@ -11,8 +11,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const url = new URL(request.url);
   const referer = request.headers.get('Referer');
   const back = referer && new URL(referer).origin === url.origin ? new URL(referer).pathname : '/';
+  const wantsJson = request.headers.get('Accept')?.includes('application/json');
   const redirect = (status: 'sent' | 'error') =>
-    Response.redirect(`${url.origin}${back}?contact=${status}#contacto`, 303);
+    wantsJson
+      ? Response.json({ ok: status === 'sent' }, { status: status === 'sent' ? 200 : 400 })
+      : Response.redirect(`${url.origin}${back}?contact=${status}#contacto`, 303);
 
   const form = await request.formData();
   const name = String(form.get('name') ?? '').trim().slice(0, 200);
