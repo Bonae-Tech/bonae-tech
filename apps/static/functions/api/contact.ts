@@ -1,5 +1,6 @@
 interface Env {
-  EMAIL: { send(msg: Record<string, unknown>): Promise<unknown> };
+  CF_ACCOUNT_ID: string;
+  CF_EMAIL_TOKEN: string;
   CONTACT_TO?: string;
   CONTACT_FROM?: string;
 }
@@ -26,14 +27,19 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!name || !phone || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return redirect('error');
 
   try {
-    await env.EMAIL.send({
-      to: env.CONTACT_TO ?? 'bonaetech@gmail.com',
-      from: { email: env.CONTACT_FROM ?? 'contacto@bonaetech.com', name: 'Bonae Tech Web' },
-      replyTo: email,
-      subject: `Nuevo contacto web: ${name}`,
-      text: `Nombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\n\n${message}`,
-      html: `<p><b>Nombre:</b> ${esc(name)}<br><b>Email:</b> ${esc(email)}<br><b>Teléfono:</b> ${esc(phone)}</p><p>${esc(message).replace(/\n/g, '<br>')}</p>`,
+    const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/email/sending/send`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${env.CF_EMAIL_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: env.CONTACT_TO ?? 'bonaetech@gmail.com',
+        from: { address: env.CONTACT_FROM ?? 'contacto@bonaetech.com', name: 'Bonae Tech Web' },
+        reply_to: email,
+        subject: `Nuevo contacto web: ${name}`,
+        text: `Nombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\n\n${message}`,
+        html: `<p><b>Nombre:</b> ${esc(name)}<br><b>Email:</b> ${esc(email)}<br><b>Teléfono:</b> ${esc(phone)}</p><p>${esc(message).replace(/\n/g, '<br>')}</p>`,
+      }),
     });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
   } catch (err) {
     console.error('contact send failed', err);
     return redirect('error');
