@@ -46,8 +46,8 @@ runs:
         if ! echo "$list_json" | jq -e '.success == true' >/dev/null; then
           echo "::warning::Pages project list failed; will try create-if-needed."
           echo "$list_json" | jq -r '.errors[]? | "\(.code): \(.message)"' || true
-      echo "::warning::Could not verify project; skipping create and attempting deploy."
-      exit 0
+          echo "::warning::Could not verify project; skipping create and attempting deploy."
+          exit 0
         fi
 
         echo "Creating Cloudflare Pages project ${PROJECT_NAME}..."
