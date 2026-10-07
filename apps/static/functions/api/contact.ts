@@ -13,9 +13,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const referer = request.headers.get('Referer');
   const back = referer && new URL(referer).origin === url.origin ? new URL(referer).pathname : '/';
   const wantsJson = request.headers.get('Accept')?.includes('application/json');
-  const redirect = (status: 'sent' | 'error') =>
+  const redirect = (status: 'sent' | 'error', detail = '') =>
     wantsJson
-      ? Response.json({ ok: status === 'sent' }, { status: status === 'sent' ? 200 : 400 })
+      ? Response.json({ ok: status === 'sent', detail }, { status: status === 'sent' ? 200 : 400 })
       : Response.redirect(`${url.origin}${back}?contact=${status}#contacto`, 303);
 
   const form = await request.formData();
@@ -24,7 +24,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const phone = String(form.get('phone') ?? '').trim().slice(0, 50);
   const message = String(form.get('message') ?? '').trim().slice(0, 5000);
 
-  if (!name || !phone || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return redirect('error');
+  if (!name || !phone || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return redirect('error', 'invalid fields');
 
   try {
     const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/email/sending/send`, {
@@ -42,7 +42,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
   } catch (err) {
     console.error('contact send failed', err);
-    return redirect('error');
+    return redirect('error', String(err).slice(0, 300));
   }
   return redirect('sent');
 };
