@@ -27,6 +27,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!name || !phone || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return redirect('error', 'invalid fields');
 
   try {
+    if (!env.CLOUDFLARE_ACCOUNT_ID || !env.CLOUDFLARE_API_TOKEN)
+      throw new Error(`missing env; function can see: ${Object.keys(env).join(', ') || '(none)'}`);
     const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/email/sending/send`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`, 'Content-Type': 'application/json' },
