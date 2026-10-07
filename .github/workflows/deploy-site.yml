@@ -59,6 +59,15 @@ jobs:
           cloudflare_account_id: ${{ steps.cloudflare.outputs.account_id }}
           working_directory: apps/static
 
+      - name: Set contact form env on Pages project
+        working-directory: apps/static
+        run: |
+          printf '%s' "$CLOUDFLARE_API_TOKEN" | npx wrangler pages secret put CLOUDFLARE_API_TOKEN --project-name bonae-tech
+          printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | npx wrangler pages secret put CLOUDFLARE_ACCOUNT_ID --project-name bonae-tech
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.cloudflare.outputs.account_id }}
+
       - name: Deploy to Cloudflare Pages
         run: npx wrangler pages deploy dist --project-name bonae-tech
         working-directory: apps/static
