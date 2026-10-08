@@ -206,8 +206,9 @@ const es: CategoriesCopy = {
             'Destaca tus ofertas',
             'Recibe pagos en línea, nacional e internacional (no incluye comisiones)',
             'Tus productos ordenados por categorías',
+            'Bonus Chatbot',
           ],
-          excludedFeatures: [],
+          excludedFeatures: ['No incluye fotografía de productos'],
         },
       ],
       features: [
@@ -218,7 +219,9 @@ const es: CategoriesCopy = {
         'Destaca tus ofertas',
         'Recibe pagos en línea, nacional e internacional (no incluye comisiones)',
         'Tus productos ordenados por categorías',
+        'Bonus Chatbot',
       ],
+      excludedFeatures: ['No incluye fotografía de productos'],
       sampleSlug: 'modelo-4',
     },
     {
@@ -408,8 +411,9 @@ const en: CategoriesCopy = {
             'Highlight your deals',
             'Accept online payments, domestic and international (fees not included)',
             'Your products organized by category',
+            'Bonus Chatbot',
           ],
-          excludedFeatures: [],
+          excludedFeatures: ['Product photography not included'],
         },
       ],
       features: [
@@ -420,7 +424,9 @@ const en: CategoriesCopy = {
         'Highlight your deals',
         'Accept online payments, domestic and international (fees not included)',
         'Your products organized by category',
+        'Bonus Chatbot',
       ],
+      excludedFeatures: ['Product photography not included'],
       sampleSlug: 'modelo-4',
     },
     {
