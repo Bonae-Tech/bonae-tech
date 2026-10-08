@@ -89,6 +89,7 @@ const es: CategoriesCopy = {
       ],
       excludedFeatures: ['No incluye diseño de marca personal (logo, colores)'],
       sampleSlug: null,
+      comingSoon: true,
     },
     {
       id: 'multipage',
@@ -227,6 +228,7 @@ const en: CategoriesCopy = {
       ],
       excludedFeatures: ['Personal brand design not included (logo, colors)'],
       sampleSlug: null,
+      comingSoon: true,
     },
     {
       id: 'multipage',
