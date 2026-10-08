@@ -183,6 +183,7 @@ const es: CategoriesCopy = {
         'Actualiza precios y productos cuando quieras',
       ],
       sampleSlug: 'modelo-5',
+      featured: true,
     },
     {
       id: 'store',
@@ -199,7 +200,6 @@ const es: CategoriesCopy = {
         'Opiniones de clientes y enlaces a tus redes',
       ],
       sampleSlug: 'modelo-4',
-      featured: true,
     },
     {
       id: 'sales',
@@ -365,6 +365,7 @@ const en: CategoriesCopy = {
         'Update prices and products whenever you want',
       ],
       sampleSlug: 'modelo-5',
+      featured: true,
     },
     {
       id: 'store',
@@ -381,7 +382,6 @@ const en: CategoriesCopy = {
         'Customer reviews and links to your social media',
       ],
       sampleSlug: 'modelo-4',
-      featured: true,
     },
     {
       id: 'sales',
