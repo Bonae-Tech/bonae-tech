@@ -1,3 +1,6 @@
+# RETIRED: the CMS (admin + content-api worker + Cognito) is being retired.
+# All jobs are disabled (if: false) so this cannot be re-run by mistake.
+# Do not re-enable without reviewing docs/retirement.md.
 # Terraform plan on infra PRs. No apply.
 #
 # See docs/workflows.md
@@ -5,10 +8,7 @@
 name: Terraform plan
 
 on:
-  pull_request:
-    paths:
-      - 'infra/terraform/**'
-      - '.github/workflows/terraform-plan.yml'
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   plan:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

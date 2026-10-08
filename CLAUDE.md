@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> **RETIRING:** el admin, el worker `content-api` y Cognito están en retiro (workflows deshabilitados). No desplegar ni aplicar. Ver [docs/retirement.md](docs/retirement.md).
+
 Este archivo proporciona orientación a Claude Code (claude.ai/code) para trabajar con el código de este repositorio.
 
 ## Estructura del repositorio

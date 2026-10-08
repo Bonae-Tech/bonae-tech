@@ -1,3 +1,6 @@
+# RETIRED: the CMS (admin + content-api worker + Cognito) is being retired.
+# All jobs are disabled (if: false) so this cannot be re-run by mistake.
+# Do not re-enable without reviewing docs/retirement.md.
 # Recurring deploy: admin SPA to Cloudflare Pages (bonae-admin).
 # Solo código SPA — no verifica Worker ni bootstrap (usar Setup admin).
 # First-time bootstrap: use "Setup admin" (creates project if missing, verifies Worker exists).
@@ -9,15 +12,6 @@ name: Deploy admin
 
 on:
   workflow_call:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/admin/**'
-      - 'packages/content/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'turbo.json'
-      - '.github/workflows/deploy-admin.yml'
   workflow_dispatch:
 
 concurrency:
@@ -26,6 +20,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: false
     runs-on: ubuntu-latest
     environment: prod
     permissions:

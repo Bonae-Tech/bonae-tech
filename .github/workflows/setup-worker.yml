@@ -1,3 +1,6 @@
+# RETIRED: the CMS (admin + content-api worker + Cognito) is being retired.
+# All jobs are disabled (if: false) so this cannot be re-run by mistake.
+# Do not re-enable without reviewing docs/retirement.md.
 # Bootstrap: deploy Worker, sync GitHub App secrets, optional teardown.
 # setup = guardrails + deploy + secretos (primera vez o rotación).
 # Deploy worker = solo código en cada push — no sincroniza secretos.
@@ -48,6 +51,7 @@ concurrency:
 
 jobs:
   setup:
+    if: false
     runs-on: ubuntu-latest
     environment: prod
     permissions:
