@@ -24,6 +24,9 @@ export interface TemplateCategory {
 
 interface CategoriesCopy {
   priceLabel: string;
+  offerNote: string;
+  showMoreLabel: string;
+  showLessLabel: string;
   planLabels: Record<TemplatePlanId, string>;
   featuredLabel: string;
   viewTemplateLabel: string;
@@ -32,7 +35,10 @@ interface CategoriesCopy {
 
 const es: CategoriesCopy = {
   priceLabel: 'Modelo Estándar',
-  planLabels: { standard: 'Estándar', full: 'Full' },
+  offerNote: 'Oferta limitada',
+  showMoreLabel: 'Ver más',
+  showLessLabel: 'Ver menos',
+  planLabels: { standard: 'Estándar', full: 'Premium' },
   featuredLabel: 'Más solicitado',
   viewTemplateLabel: 'Ver plantilla',
   categories: [
@@ -41,18 +47,18 @@ const es: CategoriesCopy = {
       name: 'OnePage',
       tagline: 'Todo tu negocio en una sola página',
       description:
-        'Sitio de una sola página con navegación por secciones. Ideal para emprendedores y profesionales que necesitan presencia rápida.',
+        'Sitio de una sola página, obtén presencia rápida y efectiva.',
       plans: [
         { id: 'standard', price: 99, originalPrice: 120 },
         { id: 'full', price: 250, originalPrice: 270 },
       ],
       features: [
         'Hasta 6 secciones para contar todo sobre tu negocio',
-        'Aparece en Google para que tus clientes te encuentren fácil',
+        'Botón de WhatsApp para atenderlos al instante',
         'Se ve perfecta en celulares, tablets y computadoras',
+        'Aparece en Google para que tus clientes te encuentren fácil',
         'Enlaces a todas tus redes sociales',
         'Formulario para que tus clientes te escriban',
-        'Botón de WhatsApp para atenderlos al instante',
         '15 días de mantenimiento gratis',
         'Hosting incluido: tu página siempre en línea',
         'Dominio incluido: tu propia dirección web (aplican condiciones)',
@@ -146,7 +152,10 @@ const es: CategoriesCopy = {
 
 const en: CategoriesCopy = {
   priceLabel: 'Standard Model',
-  planLabels: { standard: 'Standard', full: 'Full' },
+  offerNote: 'Limited-time offer',
+  showMoreLabel: 'Show more',
+  showLessLabel: 'Show less',
+  planLabels: { standard: 'Standard', full: 'Premium' },
   featuredLabel: 'Most popular',
   viewTemplateLabel: 'View template',
   categories: [
@@ -155,18 +164,18 @@ const en: CategoriesCopy = {
       name: 'OnePage',
       tagline: 'Your whole business on one page',
       description:
-        'A single-page site with section navigation. Ideal for entrepreneurs and professionals who need a fast online presence.',
+        'A single-page site to get a fast, effective online presence.',
       plans: [
         { id: 'standard', price: 99, originalPrice: 120 },
         { id: 'full', price: 250, originalPrice: 270 },
       ],
       features: [
         'Up to 6 sections to tell your business story',
-        'Shows up on Google so customers find you easily',
+        'WhatsApp button to reply instantly',
         'Looks great on phones, tablets and computers',
+        'Shows up on Google so customers find you easily',
         'Links to all your social media',
         'A form so customers can reach you',
-        'WhatsApp button to reply instantly',
         '15 days of free maintenance',
         'Hosting included: your site always online',
         'Domain included: your own web address (conditions apply)',

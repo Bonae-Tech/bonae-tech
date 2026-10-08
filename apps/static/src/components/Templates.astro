@@ -11,9 +11,15 @@ const { t } = Astro.props;
 const section = t.templates;
 const copy = templateCategoriesFor(t.lang);
 
+const VISIBLE_BULLETS = 3;
+
 const cards = copy.categories.map((category) => {
   const sample = category.sampleSlug ? findTemplateBySlug(t, category.sampleSlug) : undefined;
-  return { ...category, href: sample ? templateDetailPath(t.lang, sample.slug) : null };
+  const bullets = [
+    ...category.features.map((text) => ({ text, included: true })),
+    ...(category.excludedFeatures ?? []).map((text) => ({ text, included: false })),
+  ];
+  return { ...category, bullets, href: sample ? templateDetailPath(t.lang, sample.slug) : null };
 });
 ---
 
@@ -68,35 +74,61 @@ const cards = copy.categories.map((category) => {
               <span class="text-sm text-body">{copy.priceLabel}</span>
             )}
             {card.plans.map((plan, index) => (
-              <div class:list={['flex items-baseline gap-2', { hidden: index > 0 }]} data-plan-price={plan.id}>
-                {plan.originalPrice && (
-                  <s class="text-2xl font-semibold text-light-blue decoration-terracotta decoration-2">${plan.originalPrice}</s>
-                )}
-                <span class="text-4xl font-extrabold text-dark-blue">${plan.price}</span>
-                <span class="text-sm font-semibold text-body">{section.priceCurrency}</span>
+              <div class:list={{ hidden: index > 0 }} data-plan-price={plan.id}>
+                <div class="flex items-baseline gap-2">
+                  {plan.originalPrice && (
+                    <s class="text-2xl font-semibold text-light-blue decoration-terracotta decoration-2">${plan.originalPrice}</s>
+                  )}
+                  <span class="text-4xl font-extrabold text-dark-blue">${plan.price}</span>
+                  <span class="text-sm font-semibold text-body">{section.priceCurrency}</span>
+                </div>
+                <span class:list={['text-xs', plan.originalPrice ? 'font-semibold text-terracotta' : 'text-body']}>
+                  {plan.originalPrice ? copy.offerNote : section.priceNote}
+                </span>
               </div>
             ))}
-            <span class="text-xs text-body">{section.priceNote}</span>
           </div>
 
-          <ul class="space-y-2.5 mb-7 flex-1">
-            {card.features.map((feature) => (
-              <li class="flex items-start gap-2.5 text-sm text-dark-blue">
-                <svg class="w-5 h-5 shrink-0 text-terracotta" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0z" clip-rule="evenodd" />
+          <div class="flex-1 mb-7" data-features>
+            <ul class="space-y-2.5">
+              {card.bullets.map((bullet, index) => (
+                <li
+                  class:list={[
+                    'flex items-start gap-2.5 text-sm',
+                    bullet.included ? 'text-dark-blue' : 'text-body',
+                    { hidden: index >= VISIBLE_BULLETS },
+                  ]}
+                  data-feature-extra={index >= VISIBLE_BULLETS ? '' : undefined}
+                >
+                  {bullet.included ? (
+                    <svg class="w-5 h-5 shrink-0 text-terracotta" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0z" clip-rule="evenodd" />
+                    </svg>
+                  ) : (
+                    <svg class="w-5 h-5 shrink-0 text-light-blue" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.3 5.3a1 1 0 0 1 1.4 0L10 8.6l3.3-3.3a1 1 0 1 1 1.4 1.4L11.4 10l3.3 3.3a1 1 0 0 1-1.4 1.4L10 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L8.6 10 5.3 6.7a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
+                    </svg>
+                  )}
+                  <span>{bullet.text}</span>
+                </li>
+              ))}
+            </ul>
+            {card.bullets.length > VISIBLE_BULLETS && (
+              <button
+                type="button"
+                class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-terracotta hover:text-terracotta-dark cursor-pointer"
+                aria-expanded="false"
+                data-features-toggle
+                data-label-more={copy.showMoreLabel}
+                data-label-less={copy.showLessLabel}
+              >
+                <span data-features-toggle-label>{copy.showMoreLabel}</span>
+                <svg class="features-chevron w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.3 7.3a1 1 0 0 1 1.4 0L10 10.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
                 </svg>
-                <span>{feature}</span>
-              </li>
-            ))}
-            {card.excludedFeatures?.map((feature) => (
-              <li class="flex items-start gap-2.5 text-sm text-body">
-                <svg class="w-5 h-5 shrink-0 text-light-blue" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M5.3 5.3a1 1 0 0 1 1.4 0L10 8.6l3.3-3.3a1 1 0 1 1 1.4 1.4L11.4 10l3.3 3.3a1 1 0 0 1-1.4 1.4L10 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L8.6 10 5.3 6.7a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
-                </svg>
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
+              </button>
+            )}
+          </div>
 
           {card.href ? (
             <a
@@ -176,6 +208,20 @@ const cards = copy.categories.map((category) => {
       });
     });
   });
+
+  document.querySelectorAll<HTMLElement>('[data-features]').forEach((block) => {
+    const toggle = block.querySelector<HTMLButtonElement>('[data-features-toggle]');
+    const label = toggle?.querySelector('[data-features-toggle-label]');
+    if (!toggle || !label) return;
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(expanded));
+      label.textContent = (expanded ? toggle.dataset.labelLess : toggle.dataset.labelMore) ?? '';
+      block.querySelectorAll('[data-feature-extra]').forEach((item) => {
+        item.classList.toggle('hidden', !expanded);
+      });
+    });
+  });
 </script>
 
 <style>
@@ -185,5 +231,8 @@ const cards = copy.categories.map((category) => {
   .plan-toggle[aria-pressed='true'] {
     background-color: var(--color-dark-blue);
     color: #fff;
+  }
+  [aria-expanded='true'] .features-chevron {
+    transform: rotate(180deg);
   }
 </style>
