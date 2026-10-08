@@ -201,7 +201,7 @@ const es: CategoriesCopy = {
           features: [
             'Hasta 50 productos para vender en tu tienda',
             'Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras',
-            'Carrito de compras',
+            'Carrito de compras y favoritos',
             'Controla tu inventario y tus productos',
             'Destaca tus ofertas',
             'Recibe pagos en línea, nacional e internacional (no incluye comisiones)',
@@ -213,7 +213,7 @@ const es: CategoriesCopy = {
       features: [
         'Hasta 25 productos para vender en tu tienda',
         'Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras',
-        'Carrito de compras',
+        'Carrito de compras y favoritos',
         'Controla tu inventario y tus productos',
         'Destaca tus ofertas',
         'Recibe pagos en línea, nacional e internacional (no incluye comisiones)',
@@ -403,7 +403,7 @@ const en: CategoriesCopy = {
           features: [
             'Up to 50 products to sell in your store',
             'Product pages with photos, price and details you can update anytime',
-            'Shopping cart',
+            'Shopping cart and favorites',
             'Keep track of your inventory and products',
             'Highlight your deals',
             'Accept online payments, domestic and international (fees not included)',
@@ -415,7 +415,7 @@ const en: CategoriesCopy = {
       features: [
         'Up to 25 products to sell in your store',
         'Product pages with photos, price and details you can update anytime',
-        'Shopping cart',
+        'Shopping cart and favorites',
         'Keep track of your inventory and products',
         'Highlight your deals',
         'Accept online payments, domestic and international (fees not included)',
