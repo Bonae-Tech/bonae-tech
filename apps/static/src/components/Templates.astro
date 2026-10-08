@@ -15,11 +15,14 @@ const VISIBLE_BULLETS = 3;
 
 const cards = copy.categories.map((category) => {
   const sample = category.sampleSlug ? findTemplateBySlug(t, category.sampleSlug) : undefined;
-  const bullets = [
-    ...category.features.map((text) => ({ text, included: true })),
-    ...(category.excludedFeatures ?? []).map((text) => ({ text, included: false })),
-  ];
-  return { ...category, bullets, href: sample ? templateDetailPath(t.lang, sample.slug) : null };
+  const plans = category.plans.map((plan) => ({
+    ...plan,
+    bullets: [
+      ...(plan.features ?? category.features).map((text) => ({ text, included: true })),
+      ...(plan.excludedFeatures ?? category.excludedFeatures ?? []).map((text) => ({ text, included: false })),
+    ],
+  }));
+  return { ...category, plans, href: sample ? templateDetailPath(t.lang, sample.slug) : null };
 });
 ---
 
@@ -42,6 +45,7 @@ const cards = copy.categories.map((category) => {
               ? 'border-2 border-terracotta shadow-md'
               : 'border border-light-blue/20 shadow-sm',
           ]}
+          data-plan-group
         >
           {card.featured && (
             <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-terracotta px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
@@ -56,7 +60,7 @@ const cards = copy.categories.map((category) => {
 
           <p class="text-sm text-body leading-relaxed mb-5">{card.description}</p>
 
-          <div class="mb-5 pb-5 border-b border-light-blue/20" data-plan-group>
+          <div class="mb-5 pb-5 border-b border-light-blue/20">
             {card.plans.length > 1 ? (
               <div class="inline-flex rounded-lg bg-cream border border-light-blue/25 p-1 mb-3" role="group">
                 {card.plans.map((plan, index) => (
@@ -89,45 +93,49 @@ const cards = copy.categories.map((category) => {
             ))}
           </div>
 
-          <div class="flex-1 mb-7" data-features>
-            <ul class="space-y-2.5">
-              {card.bullets.map((bullet, index) => (
-                <li
-                  class:list={[
-                    'flex items-start gap-2.5 text-sm',
-                    bullet.included ? 'text-dark-blue' : 'text-body',
-                    { hidden: index >= VISIBLE_BULLETS },
-                  ]}
-                  data-feature-extra={index >= VISIBLE_BULLETS ? '' : undefined}
-                >
-                  {bullet.included ? (
-                    <svg class="w-5 h-5 shrink-0 text-terracotta" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0z" clip-rule="evenodd" />
+          <div class="flex-1 mb-7">
+            {card.plans.map((plan, planIndex) => (
+              <div class:list={{ hidden: planIndex > 0 }} data-plan-price={plan.id} data-features>
+                <ul class="space-y-2.5">
+                  {plan.bullets.map((bullet, index) => (
+                    <li
+                      class:list={[
+                        'flex items-start gap-2.5 text-sm',
+                        bullet.included ? 'text-dark-blue' : 'text-body',
+                        { hidden: index >= VISIBLE_BULLETS },
+                      ]}
+                      data-feature-extra={index >= VISIBLE_BULLETS ? '' : undefined}
+                    >
+                      {bullet.included ? (
+                        <svg class="w-5 h-5 shrink-0 text-terracotta" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0z" clip-rule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg class="w-5 h-5 shrink-0 text-light-blue" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M5.3 5.3a1 1 0 0 1 1.4 0L10 8.6l3.3-3.3a1 1 0 1 1 1.4 1.4L11.4 10l3.3 3.3a1 1 0 0 1-1.4 1.4L10 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L8.6 10 5.3 6.7a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
+                        </svg>
+                      )}
+                      <span>{bullet.text}</span>
+                    </li>
+                  ))}
+                </ul>
+                {plan.bullets.length > VISIBLE_BULLETS && (
+                  <button
+                    type="button"
+                    class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-terracotta hover:text-terracotta-dark cursor-pointer"
+                    aria-expanded="false"
+                    data-features-toggle
+                    data-label-more={copy.showMoreLabel}
+                    data-label-less={copy.showLessLabel}
+                  >
+                    <span data-features-toggle-label>{copy.showMoreLabel}</span>
+                    <svg class="features-chevron w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.3 7.3a1 1 0 0 1 1.4 0L10 10.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
                     </svg>
-                  ) : (
-                    <svg class="w-5 h-5 shrink-0 text-light-blue" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M5.3 5.3a1 1 0 0 1 1.4 0L10 8.6l3.3-3.3a1 1 0 1 1 1.4 1.4L11.4 10l3.3 3.3a1 1 0 0 1-1.4 1.4L10 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L8.6 10 5.3 6.7a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
-                    </svg>
-                  )}
-                  <span>{bullet.text}</span>
-                </li>
-              ))}
-            </ul>
-            {card.bullets.length > VISIBLE_BULLETS && (
-              <button
-                type="button"
-                class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-terracotta hover:text-terracotta-dark cursor-pointer"
-                aria-expanded="false"
-                data-features-toggle
-                data-label-more={copy.showMoreLabel}
-                data-label-less={copy.showLessLabel}
-              >
-                <span data-features-toggle-label>{copy.showMoreLabel}</span>
-                <svg class="features-chevron w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M5.3 7.3a1 1 0 0 1 1.4 0L10 10.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            )}
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
 
           {card.href ? (

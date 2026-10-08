@@ -7,6 +7,9 @@ export interface TemplatePlan {
   price: number;
   /** Shown struck through next to `price` as an offer. */
   originalPrice?: number;
+  /** Overrides the category bullets while this plan is selected. */
+  features?: string[];
+  excludedFeatures?: string[];
 }
 
 export interface TemplateCategory {
@@ -50,7 +53,26 @@ const es: CategoriesCopy = {
         'Sitio de una sola página, obtén presencia rápida y efectiva.',
       plans: [
         { id: 'standard', price: 99, originalPrice: 120 },
-        { id: 'full', price: 250, originalPrice: 270 },
+        {
+          id: 'full',
+          price: 250,
+          originalPrice: 270,
+          features: [
+            'Hasta 6 secciones para contar todo sobre tu negocio',
+            'Botón de WhatsApp para atenderlos al instante',
+            'Se ve perfecta en celulares, tablets y computadoras',
+            'Aparece en Google para que tus clientes te encuentren fácil',
+            'Enlaces a todas tus redes sociales',
+            'Formulario para que tus clientes te escriban',
+            'Tu ubicación en Google Maps para que lleguen sin perderse',
+            'Creamos textos e imágenes acordes a la marca de tu empresa',
+            'Páginas legales: cookies, términos y privacidad',
+            '30 días de mantenimiento gratis',
+            'Hosting incluido: tu página siempre en línea',
+            'Dominio incluido: tu propia dirección web (aplican condiciones)',
+          ],
+          excludedFeatures: [],
+        },
       ],
       features: [
         'Hasta 6 secciones para contar todo sobre tu negocio',
@@ -167,7 +189,26 @@ const en: CategoriesCopy = {
         'A single-page site to get a fast, effective online presence.',
       plans: [
         { id: 'standard', price: 99, originalPrice: 120 },
-        { id: 'full', price: 250, originalPrice: 270 },
+        {
+          id: 'full',
+          price: 250,
+          originalPrice: 270,
+          features: [
+            'Up to 6 sections to tell your business story',
+            'WhatsApp button to reply instantly',
+            'Looks great on phones, tablets and computers',
+            'Shows up on Google so customers find you easily',
+            'Links to all your social media',
+            'A form so customers can reach you',
+            'Your location on Google Maps so customers find their way',
+            'We create copy and images that match your brand',
+            'Legal pages: cookies, terms and privacy',
+            '30 days of free maintenance',
+            'Hosting included: your site always online',
+            'Domain included: your own web address (conditions apply)',
+          ],
+          excludedFeatures: [],
+        },
       ],
       features: [
         'Up to 6 sections to tell your business story',
