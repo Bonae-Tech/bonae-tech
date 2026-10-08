@@ -58,7 +58,7 @@ const es: CategoriesCopy = {
           price: 250,
           originalPrice: 270,
           features: [
-            'Hasta 6 secciones para contar todo sobre tu negocio',
+            'Hasta 10 secciones para contar todo sobre tu negocio',
             'Botón de WhatsApp para atenderlos al instante',
             'Se ve perfecta en celulares, tablets y computadoras',
             'Aparece en Google para que tus clientes te encuentren fácil',
@@ -194,7 +194,7 @@ const en: CategoriesCopy = {
           price: 250,
           originalPrice: 270,
           features: [
-            'Up to 6 sections to tell your business story',
+            'Up to 10 sections to tell your business story',
             'WhatsApp button to reply instantly',
             'Looks great on phones, tablets and computers',
             'Shows up on Google so customers find you easily',
