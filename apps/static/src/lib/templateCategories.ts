@@ -228,10 +228,10 @@ const es: CategoriesCopy = {
       name: 'Sistemas de Ventas',
       tagline: 'Controla tu operación comercial',
       description:
-        'Panel administrativo para gestionar ventas, contratos, pagos y vendedores con métricas en tiempo real.',
+        'Panel administrativo para gestionar ventas, pagos y vendedores con métricas en tiempo real.',
       plans: [{ id: 'standard', price: 300 }],
       features: [
-        'Sigue tus contratos y pedidos en tiempo real',
+        'Sigue tus pedidos en tiempo real',
         'Mira cuánto te deben y cuánto has cobrado',
         'Registra pagos por Zelle, PayPal, Binance o efectivo',
         'Descarga reportes de ventas por vendedor',
@@ -432,10 +432,10 @@ const en: CategoriesCopy = {
       name: 'Sales Systems',
       tagline: 'Control your sales operation',
       description:
-        'An admin dashboard to manage sales, contracts, payments and sales reps with real-time metrics.',
+        'An admin dashboard to manage sales, payments and sales reps with real-time metrics.',
       plans: [{ id: 'standard', price: 300 }],
       features: [
-        'Track your contracts and orders in real time',
+        'Track your orders in real time',
         "See how much you're owed and how much you've collected",
         'Log payments via Zelle, PayPal, Binance or cash',
         'Download sales reports by sales rep',
