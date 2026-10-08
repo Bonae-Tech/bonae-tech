@@ -132,8 +132,7 @@ const es: CategoriesCopy = {
         'Dominio incluido por 1 año (aplican condiciones)',
       ],
       excludedFeatures: ['No incluye diseño de marca personal (logo, colores)'],
-      sampleSlug: null,
-      comingSoon: true,
+      sampleSlug: 'modelo-2',
     },
     {
       id: 'landing',
@@ -298,8 +297,7 @@ const en: CategoriesCopy = {
         'Domain included for 1 year (conditions apply)',
       ],
       excludedFeatures: ['Personal brand design not included (logo, colors)'],
-      sampleSlug: null,
-      comingSoon: true,
+      sampleSlug: 'modelo-2',
     },
     {
       id: 'landing',
