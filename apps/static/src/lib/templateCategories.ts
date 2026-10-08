@@ -192,7 +192,24 @@ const es: CategoriesCopy = {
       tagline: 'Vende en línea las 24 horas',
       description:
         'Tienda en línea completa con carrito de compras y gestión de productos.',
-      plans: [{ id: 'standard', price: 499, originalPrice: 520 }],
+      plans: [
+        { id: 'standard', price: 499, originalPrice: 520 },
+        {
+          id: 'full',
+          price: 650,
+          originalPrice: 680,
+          features: [
+            'Carrito de compras',
+            'Cada producto con fotos, precio y detalles',
+            'Controla tu inventario y tus productos',
+            'Destaca tus ofertas',
+            'Recibe pagos en línea, nacional e internacional (no incluye comisiones)',
+            'Tus productos ordenados por categorías',
+            'Actualiza precios y productos cuando quieras',
+          ],
+          excludedFeatures: [],
+        },
+      ],
       features: [
         'Carrito de compras',
         'Cada producto con fotos, precio y detalles',
@@ -377,7 +394,24 @@ const en: CategoriesCopy = {
       tagline: 'Sell online around the clock',
       description:
         'A full online store with shopping cart and product management.',
-      plans: [{ id: 'standard', price: 499, originalPrice: 520 }],
+      plans: [
+        { id: 'standard', price: 499, originalPrice: 520 },
+        {
+          id: 'full',
+          price: 650,
+          originalPrice: 680,
+          features: [
+            'Shopping cart',
+            'Every product with photos, price and details',
+            'Keep track of your inventory and products',
+            'Highlight your deals',
+            'Accept online payments, domestic and international (fees not included)',
+            'Your products organized by category',
+            'Update prices and products whenever you want',
+          ],
+          excludedFeatures: [],
+        },
+      ],
       features: [
         'Shopping cart',
         'Every product with photos, price and details',
