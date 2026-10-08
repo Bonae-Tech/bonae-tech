@@ -1,13 +1,20 @@
 import type { ContentDocument } from '@bonae/content';
 
+export type TemplatePlanId = 'standard' | 'full';
+
+export interface TemplatePlan {
+  id: TemplatePlanId;
+  price: number;
+  /** Shown struck through next to `price` as an offer. */
+  originalPrice?: number;
+}
+
 export interface TemplateCategory {
   id: string;
   name: string;
   tagline: string;
   description: string;
-  price: number;
-  /** Shown struck through next to `price` as an offer. */
-  originalPrice?: number;
+  plans: TemplatePlan[];
   features: string[];
   excludedFeatures?: string[];
   /** Existing template shown by "Ver plantilla"; null opens the coming-soon modal. */
@@ -17,6 +24,7 @@ export interface TemplateCategory {
 
 interface CategoriesCopy {
   priceLabel: string;
+  planLabels: Record<TemplatePlanId, string>;
   featuredLabel: string;
   viewTemplateLabel: string;
   categories: TemplateCategory[];
@@ -24,6 +32,7 @@ interface CategoriesCopy {
 
 const es: CategoriesCopy = {
   priceLabel: 'Modelo Estándar',
+  planLabels: { standard: 'Estándar', full: 'Full' },
   featuredLabel: 'Más solicitado',
   viewTemplateLabel: 'Ver plantilla',
   categories: [
@@ -33,8 +42,10 @@ const es: CategoriesCopy = {
       tagline: 'Todo tu negocio en una sola página',
       description:
         'Sitio de una sola página con navegación por secciones. Ideal para emprendedores y profesionales que necesitan presencia rápida.',
-      price: 99,
-      originalPrice: 120,
+      plans: [
+        { id: 'standard', price: 99, originalPrice: 120 },
+        { id: 'full', price: 250, originalPrice: 270 },
+      ],
       features: [
         'Hasta 6 secciones para contar todo sobre tu negocio',
         'Aparece en Google para que tus clientes te encuentren fácil',
@@ -55,7 +66,7 @@ const es: CategoriesCopy = {
       tagline: 'Un sitio corporativo completo',
       description:
         'Sitio con varias páginas independientes para empresas que necesitan presentar servicios, equipo y contenido en profundidad.',
-      price: 180,
+      plans: [{ id: 'standard', price: 180 }],
       features: [
         'Hasta 6 páginas para mostrar todo lo que ofreces',
         'Menú claro para que tus visitantes no se pierdan',
@@ -71,7 +82,7 @@ const es: CategoriesCopy = {
       tagline: 'Diseñada para convertir',
       description:
         'Página enfocada en una sola oferta o campaña, pensada para captar clientes potenciales desde anuncios y redes sociales.',
-      price: 80,
+      plans: [{ id: 'standard', price: 80 }],
       features: [
         'Pensada para convertir visitantes en clientes',
         'Botones llamativos que invitan a comprar o contactarte',
@@ -87,7 +98,7 @@ const es: CategoriesCopy = {
       tagline: 'Muestra tus productos sin complicaciones',
       description:
         'Catálogo en línea para exhibir productos con precios y fotos; tus clientes consultan y piden directamente por WhatsApp.',
-      price: 120,
+      plans: [{ id: 'standard', price: 120 }],
       features: [
         'Tus productos ordenados por categorías',
         'Cada producto con fotos, precio y detalles',
@@ -103,7 +114,7 @@ const es: CategoriesCopy = {
       tagline: 'Vende en línea las 24 horas',
       description:
         'Tienda en línea completa con carrito de compras y gestión de productos para negocios que quieren vender sin intermediarios.',
-      price: 150,
+      plans: [{ id: 'standard', price: 150 }],
       features: [
         'Carrito de compras para que tus clientes compren solos',
         'Controla tu inventario y tus productos',
@@ -120,7 +131,7 @@ const es: CategoriesCopy = {
       tagline: 'Controla tu operación comercial',
       description:
         'Panel administrativo para gestionar ventas, contratos, pagos y vendedores con métricas en tiempo real.',
-      price: 300,
+      plans: [{ id: 'standard', price: 300 }],
       features: [
         'Sigue tus contratos y pedidos en tiempo real',
         'Mira cuánto te deben y cuánto has cobrado',
@@ -135,6 +146,7 @@ const es: CategoriesCopy = {
 
 const en: CategoriesCopy = {
   priceLabel: 'Standard Model',
+  planLabels: { standard: 'Standard', full: 'Full' },
   featuredLabel: 'Most popular',
   viewTemplateLabel: 'View template',
   categories: [
@@ -144,8 +156,10 @@ const en: CategoriesCopy = {
       tagline: 'Your whole business on one page',
       description:
         'A single-page site with section navigation. Ideal for entrepreneurs and professionals who need a fast online presence.',
-      price: 99,
-      originalPrice: 120,
+      plans: [
+        { id: 'standard', price: 99, originalPrice: 120 },
+        { id: 'full', price: 250, originalPrice: 270 },
+      ],
       features: [
         'Up to 6 sections to tell your business story',
         'Shows up on Google so customers find you easily',
@@ -166,7 +180,7 @@ const en: CategoriesCopy = {
       tagline: 'A complete corporate website',
       description:
         'A site with several standalone pages for companies that need to present services, team and content in depth.',
-      price: 180,
+      plans: [{ id: 'standard', price: 180 }],
       features: [
         'Up to 6 pages to show everything you offer',
         'Clear menu so visitors never get lost',
@@ -182,7 +196,7 @@ const en: CategoriesCopy = {
       tagline: 'Built to convert',
       description:
         'A page focused on a single offer or campaign, designed to capture leads from ads and social media.',
-      price: 80,
+      plans: [{ id: 'standard', price: 80 }],
       features: [
         'Designed to turn visitors into customers',
         'Eye-catching buttons that invite people to buy or contact you',
@@ -198,7 +212,7 @@ const en: CategoriesCopy = {
       tagline: 'Showcase your products effortlessly',
       description:
         'An online catalog to display products with prices and photos; customers browse and order directly via WhatsApp.',
-      price: 120,
+      plans: [{ id: 'standard', price: 120 }],
       features: [
         'Your products organized by category',
         'Every product with photos, price and details',
@@ -214,7 +228,7 @@ const en: CategoriesCopy = {
       tagline: 'Sell online around the clock',
       description:
         'A full online store with shopping cart and product management for businesses that want to sell without middlemen.',
-      price: 150,
+      plans: [{ id: 'standard', price: 150 }],
       features: [
         'Shopping cart so customers can buy on their own',
         'Keep track of your inventory and products',
@@ -231,7 +245,7 @@ const en: CategoriesCopy = {
       tagline: 'Control your sales operation',
       description:
         'An admin dashboard to manage sales, contracts, payments and sales reps with real-time metrics.',
-      price: 300,
+      plans: [{ id: 'standard', price: 300 }],
       features: [
         'Track your contracts and orders in real time',
         "See how much you're owed and how much you've collected",
