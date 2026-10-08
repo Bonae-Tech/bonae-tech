@@ -1,6 +1,7 @@
 ---
 import type { Translations } from '@bonae/content';
-import { templateDetailPath } from '../lib/templates';
+import { findTemplateBySlug, templateDetailPath } from '../lib/templates';
+import { templateCategoriesFor, type TemplateCategoryIcon } from '../lib/templateCategories';
 
 interface Props {
   t: Translations;
@@ -8,6 +9,21 @@ interface Props {
 
 const { t } = Astro.props;
 const section = t.templates;
+const copy = templateCategoriesFor(t.lang);
+
+const cards = copy.categories.map((category) => {
+  const sample = category.sampleSlug ? findTemplateBySlug(t, category.sampleSlug) : undefined;
+  return { ...category, href: sample ? templateDetailPath(t.lang, sample.slug) : null };
+});
+
+const iconPaths: Record<TemplateCategoryIcon, string[]> = {
+  onepage: ['M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z', 'M8 7h8', 'M8 11h8', 'M8 15h5'],
+  multipage: ['M8 7h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z', 'M4 17V4a1 1 0 0 1 1-1h11'],
+  landing: ['M12 2l3 7h-6l3-7z', 'M9 9v6l-3 3h12l-3-3V9', 'M12 18v4'],
+  catalog: ['M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2V5z', 'M13 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5V3z', 'M7 8h1', 'M16 8h1'],
+  store: ['M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6', 'M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z', 'M17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'],
+  sales: ['M4 20V10', 'M10 20V4', 'M16 20v-7', 'M22 20H2'],
+};
 ---
 
 <section id="plantillas" class="py-20 bg-cream">
@@ -20,53 +36,80 @@ const section = t.templates;
       <p class="section-subtitle">{section.subheadline}</p>
     </div>
 
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {section.items.map((item) => (
-        item.comingSoon ? (
-          <button
-            type="button"
-            class="template-coming-soon flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed border-light-blue/40 bg-white/60 px-6 py-12 min-h-[320px] transition-colors hover:border-terracotta cursor-pointer"
-            data-coming-soon-open
-          >
-            <div class="w-12 h-12 rounded-full bg-cream border border-light-blue/30 flex items-center justify-center mb-5 text-dark-blue text-2xl font-light" aria-hidden="true">
-              +
-            </div>
-            <h3 class="text-lg font-bold text-dark-blue mb-2">{item.title}</h3>
-            <p class="text-sm text-body leading-relaxed max-w-xs">{item.description}</p>
-          </button>
-        ) : (
-          <a
-            href={templateDetailPath(t.lang, item.slug)}
-            class="group bg-white rounded-2xl shadow-sm border border-light-blue/15 overflow-hidden flex flex-col transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
-          >
-            <div class="aspect-[16/10] overflow-hidden bg-cream">
-              <img
-                src={item.imageSrc}
-                alt=""
-                class="w-full h-full object-cover object-top"
-                width="640"
-                height="400"
-                loading="lazy"
-              />
-            </div>
-            <div class="p-5 text-left flex-1 flex flex-col">
-              <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-2">{item.category}</p>
-              <h3 class="text-lg font-bold text-dark-blue mb-2">{item.title}</h3>
-              <p class="text-sm text-body leading-relaxed flex-1">{item.description}</p>
-              <p class="text-sm font-semibold text-terracotta mt-4">{section.viewDetailsLabel}</p>
-            </div>
-          </a>
-        )
-      ))}
-    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+      {cards.map((card) => (
+        <article
+          class:list={[
+            'relative flex flex-col rounded-2xl bg-white p-7 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
+            card.featured
+              ? 'border-2 border-terracotta shadow-md'
+              : 'border border-light-blue/20 shadow-sm',
+          ]}
+        >
+          {card.featured && (
+            <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-terracotta px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
+              {copy.featuredLabel}
+            </span>
+          )}
 
-    <div class="mt-12 text-center">
-      <a
-        href={section.viewAllHref}
-        class="inline-flex items-center justify-center px-6 py-3 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
-      >
-        {section.viewAllLabel}
-      </a>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-xl bg-cream border border-light-blue/25 flex items-center justify-center text-terracotta shrink-0">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                {iconPaths[card.icon].map((d) => <path d={d} />)}
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-dark-blue leading-tight">{card.name}</h3>
+              <p class="text-xs font-semibold uppercase tracking-wider text-terracotta">{card.tagline}</p>
+            </div>
+          </div>
+
+          <p class="text-sm text-body leading-relaxed mb-5">{card.description}</p>
+
+          <div class="mb-5 pb-5 border-b border-light-blue/20">
+            <span class="text-sm text-body">{copy.priceFromLabel}</span>
+            <div class="flex items-baseline gap-1">
+              <span class="text-4xl font-extrabold text-dark-blue">${card.priceFrom}</span>
+              <span class="text-sm font-semibold text-body">{section.priceCurrency}</span>
+            </div>
+            <span class="text-xs text-body">{section.priceNote}</span>
+          </div>
+
+          <ul class="space-y-2.5 mb-7 flex-1">
+            {card.features.map((feature) => (
+              <li class="flex items-start gap-2.5 text-sm text-dark-blue">
+                <svg class="w-5 h-5 shrink-0 text-terracotta" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0z" clip-rule="evenodd" />
+                </svg>
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+
+          {card.href ? (
+            <a
+              href={card.href}
+              class:list={[
+                'inline-flex items-center justify-center w-full px-6 py-3 rounded-lg font-semibold transition-colors',
+                card.featured
+                  ? 'bg-terracotta text-white hover:bg-terracotta-dark'
+                  : 'border-2 border-dark-blue text-dark-blue hover:bg-dark-blue hover:text-white',
+              ]}
+            >
+              {copy.viewTemplateLabel}
+            </a>
+          ) : (
+            <button
+              type="button"
+              class="inline-flex items-center justify-center w-full px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-dark-blue text-dark-blue hover:bg-dark-blue hover:text-white cursor-pointer"
+              data-coming-soon-open
+              data-coming-soon-title={card.name}
+            >
+              {copy.viewTemplateLabel}
+            </button>
+          )}
+        </article>
+      ))}
     </div>
   </div>
 
@@ -78,7 +121,7 @@ const section = t.templates;
       <div class="w-14 h-14 rounded-full bg-cream text-terracotta flex items-center justify-center mx-auto mb-5 text-2xl font-light" aria-hidden="true">
         +
       </div>
-      <h3 class="text-xl font-bold text-dark-blue mb-3">{section.items.find((i) => i.comingSoon)?.title ?? section.sectionBadge}</h3>
+      <h3 class="text-xl font-bold text-dark-blue mb-3" data-coming-soon-heading>{section.sectionBadge}</h3>
       <p class="text-sm text-body leading-relaxed mb-6">{section.comingSoonModalBody}</p>
       <button
         type="button"
@@ -94,8 +137,12 @@ const section = t.templates;
 <script>
   const dialog = document.getElementById('templates-coming-soon');
   if (dialog instanceof HTMLDialogElement) {
-    document.querySelectorAll('[data-coming-soon-open]').forEach((el) => {
-      el.addEventListener('click', () => dialog.showModal());
+    const heading = dialog.querySelector('[data-coming-soon-heading]');
+    document.querySelectorAll<HTMLElement>('[data-coming-soon-open]').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (heading && el.dataset.comingSoonTitle) heading.textContent = el.dataset.comingSoonTitle;
+        dialog.showModal();
+      });
     });
     document.querySelectorAll('[data-coming-soon-close]').forEach((el) => {
       el.addEventListener('click', () => dialog.close());
