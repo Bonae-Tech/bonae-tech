@@ -154,8 +154,8 @@ const cards = copy.categories.map((category) => {
             <button
               type="button"
               class="inline-flex items-center justify-center w-full px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-dark-blue text-dark-blue hover:bg-dark-blue hover:text-white cursor-pointer"
-              data-coming-soon-open
-              data-coming-soon-title={card.name}
+              data-coming-soon-open={card.comingSoon ? '' : undefined}
+              data-coming-soon-title={card.comingSoon ? card.name : undefined}
             >
               {copy.viewTemplateLabel}
             </button>

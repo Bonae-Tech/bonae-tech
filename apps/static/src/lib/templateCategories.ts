@@ -20,8 +20,10 @@ export interface TemplateCategory {
   plans: TemplatePlan[];
   features: string[];
   excludedFeatures?: string[];
-  /** Existing template shown by "Ver plantilla"; null opens the coming-soon modal. */
+  /** Existing template linked by "Ver plantilla"; null leaves the button without a destination. */
   sampleSlug: string | null;
+  /** With no sample, "Ver plantilla" opens the coming-soon modal instead of doing nothing. */
+  comingSoon?: boolean;
   featured?: boolean;
 }
 
@@ -86,7 +88,7 @@ const es: CategoriesCopy = {
         'Dominio incluido por 1 año (aplican condiciones)',
       ],
       excludedFeatures: ['No incluye diseño de marca personal (logo, colores)'],
-      sampleSlug: 'modelo-2',
+      sampleSlug: null,
     },
     {
       id: 'multipage',
@@ -103,6 +105,7 @@ const es: CategoriesCopy = {
         'Aparece en Google y te muestra cuántas personas te visitan',
       ],
       sampleSlug: null,
+      comingSoon: true,
     },
     {
       id: 'landing',
@@ -119,6 +122,7 @@ const es: CategoriesCopy = {
         'Carga muy rápido, ideal para tus anuncios en redes',
       ],
       sampleSlug: null,
+      comingSoon: true,
     },
     {
       id: 'catalog',
@@ -222,7 +226,7 @@ const en: CategoriesCopy = {
         'Domain included for 1 year (conditions apply)',
       ],
       excludedFeatures: ['Personal brand design not included (logo, colors)'],
-      sampleSlug: 'modelo-2',
+      sampleSlug: null,
     },
     {
       id: 'multipage',
@@ -239,6 +243,7 @@ const en: CategoriesCopy = {
         'Shows up on Google and tells you how many people visit',
       ],
       sampleSlug: null,
+      comingSoon: true,
     },
     {
       id: 'landing',
@@ -255,6 +260,7 @@ const en: CategoriesCopy = {
         'Loads super fast, perfect for your social media ads',
       ],
       sampleSlug: null,
+      comingSoon: true,
     },
     {
       id: 'catalog',
