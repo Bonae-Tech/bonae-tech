@@ -155,8 +155,7 @@ const es: CategoriesCopy = {
       id: 'catalog',
       name: 'Catálogo Digital',
       tagline: 'Muestra tus productos sin complicaciones',
-      description:
-        'Catálogo en línea, muestra tus productos con presencia rápida y efectiva.',
+      description: 'Muestra tus productos',
       plans: [
         { id: 'standard', price: 199, originalPrice: 220 },
         {
@@ -360,8 +359,7 @@ const en: CategoriesCopy = {
       id: 'catalog',
       name: 'Digital Catalog',
       tagline: 'Showcase your products effortlessly',
-      description:
-        'An online catalog to showcase your products with a fast, effective presence.',
+      description: 'Showcase your products',
       plans: [
         { id: 'standard', price: 199, originalPrice: 220 },
         {
