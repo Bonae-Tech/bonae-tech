@@ -43,17 +43,17 @@ const cards = copy.categories.map((category) => {
             'relative flex flex-col rounded-2xl p-7 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
             'bg-white',
             card.featured
-              ? 'border-2 border-[#25D366] shadow-md'
+              ? 'border-2 border-cyan shadow-md'
               : card.group === 'web'
                 ? 'border-2 border-terracotta/45 shadow-sm'
                 : card.group === 'business'
-                  ? 'border-2 border-[#25D366]/45 shadow-sm'
+                  ? 'border-2 border-cyan/40 shadow-sm'
                   : 'border border-light-blue/20 shadow-sm',
           ]}
           data-plan-group
         >
           {card.featured && (
-            <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#25D366] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
+            <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-br from-cyan/90 to-mid-blue px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow-md">
               {copy.featuredLabel}
             </span>
           )}
@@ -63,7 +63,7 @@ const cards = copy.categories.map((category) => {
               <p class="text-xs font-semibold uppercase tracking-wider text-mid-blue mb-2">{copy.webServicesLabel}</p>
             )}
             {card.group === 'business' && (
-              <p class="text-xs font-semibold uppercase tracking-wider text-[#1ebe5d] mb-2">{copy.businessServicesLabel}</p>
+              <p class="text-xs font-semibold uppercase tracking-wider text-mid-blue mb-2">{copy.businessServicesLabel}</p>
             )}
             <h3 class="text-xl font-bold text-dark-blue leading-tight mb-2">{card.name}</h3>
             <p class="text-xs font-semibold uppercase tracking-wider text-terracotta">{card.tagline}</p>
@@ -155,7 +155,7 @@ const cards = copy.categories.map((category) => {
               class:list={[
                 'inline-flex items-center justify-center w-full px-6 py-3 rounded-lg font-semibold transition-colors',
                 card.featured
-                  ? 'bg-[#25D366] text-white hover:bg-[#1ebe5d]'
+                  ? 'bg-gradient-to-br from-cyan/90 to-mid-blue text-white hover:brightness-110'
                   : 'border-2 border-dark-blue text-dark-blue hover:bg-dark-blue hover:text-white',
               ]}
             >
