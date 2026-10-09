@@ -174,7 +174,7 @@ const es: CategoriesCopy = {
           price: 340,
           originalPrice: 380,
           features: [
-            'Hasta 50 productos para exhibir en tu catálogo',
+            'Hasta 50 productos precargados para exhibir en tu catálogo',
             'Tus productos ordenados por categorías',
             'Cada producto con fotos, precio y detalles',
             'Tus clientes te hacen pedidos directo por WhatsApp',
@@ -185,7 +185,7 @@ const es: CategoriesCopy = {
         },
       ],
       features: [
-        'Hasta 25 productos para exhibir en tu catálogo',
+        'Hasta 25 productos precargados para exhibir en tu catálogo',
         'Tus productos ordenados por categorías',
         'Cada producto con fotos, precio y detalles',
         'Tus clientes te hacen pedidos directo por WhatsApp',
@@ -210,7 +210,7 @@ const es: CategoriesCopy = {
           price: 650,
           originalPrice: 680,
           features: [
-            'Hasta 50 productos para vender en tu tienda',
+            'Hasta 50 productos precargados para vender en tu tienda',
             'Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras',
             'Carrito de compras y favoritos',
             'Controla tu inventario y tus productos',
@@ -223,7 +223,7 @@ const es: CategoriesCopy = {
         },
       ],
       features: [
-        'Hasta 25 productos para vender en tu tienda',
+        'Hasta 25 productos precargados para vender en tu tienda',
         'Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras',
         'Carrito de compras y favoritos',
         'Controla tu inventario y tus productos',
@@ -386,7 +386,7 @@ const en: CategoriesCopy = {
           price: 340,
           originalPrice: 380,
           features: [
-            'Up to 50 products to showcase in your catalog',
+            'Up to 50 preloaded products to showcase in your catalog',
             'Your products organized by category',
             'Every product with photos, price and details',
             'Customers order directly via WhatsApp',
@@ -422,7 +422,7 @@ const en: CategoriesCopy = {
           price: 650,
           originalPrice: 680,
           features: [
-            'Up to 50 products to sell in your store',
+            'Up to 50 preloaded products to sell in your store',
             'Product pages with photos, price and details you can update anytime',
             'Shopping cart and favorites',
             'Keep track of your inventory and products',
