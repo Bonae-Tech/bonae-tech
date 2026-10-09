@@ -41,7 +41,11 @@ const cards = copy.categories.map((category) => {
         <article
           class:list={[
             'relative flex flex-col rounded-2xl p-7 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
-            card.webService ? 'template-card--web' : 'bg-white',
+            card.group === 'web'
+              ? 'template-card--web'
+              : card.group === 'business'
+                ? 'template-card--business'
+                : 'bg-white',
             card.featured
               ? 'border-2 border-terracotta shadow-md'
               : 'border border-light-blue/20 shadow-sm',
@@ -55,8 +59,11 @@ const cards = copy.categories.map((category) => {
           )}
 
           <div class="mb-4">
-            {card.webService && (
+            {card.group === 'web' && (
               <p class="text-xs font-semibold uppercase tracking-wider text-mid-blue mb-2">{copy.webServicesLabel}</p>
+            )}
+            {card.group === 'business' && (
+              <p class="text-xs font-semibold uppercase tracking-wider text-[#1ebe5d] mb-2">{copy.businessServicesLabel}</p>
             )}
             <h3 class="text-xl font-bold text-dark-blue leading-tight mb-2">{card.name}</h3>
             <p class="text-xs font-semibold uppercase tracking-wider text-terracotta">{card.tagline}</p>
@@ -241,6 +248,13 @@ const cards = copy.categories.map((category) => {
     background: linear-gradient(
       165deg,
       color-mix(in srgb, var(--color-mid-blue) 7%, var(--color-cream)) 0%,
+      #fff 55%
+    );
+  }
+  .template-card--business {
+    background: linear-gradient(
+      165deg,
+      color-mix(in srgb, #25d366 7%, var(--color-cream)) 0%,
       #fff 55%
     );
   }

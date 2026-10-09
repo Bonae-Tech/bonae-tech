@@ -1,6 +1,7 @@
 import type { ContentDocument } from '@bonae/content';
 
 export type TemplatePlanId = 'standard' | 'full';
+export type TemplateCardGroup = 'web' | 'business';
 
 export interface TemplatePlan {
   id: TemplatePlanId;
@@ -25,8 +26,8 @@ export interface TemplateCategory {
   /** With no sample, "Ver plantilla" opens the coming-soon modal instead of doing nothing. */
   comingSoon?: boolean;
   featured?: boolean;
-  /** Web service cards: group label above title and subtle card tint. */
-  webService?: boolean;
+  /** Group label above title and subtle card tint. */
+  group?: TemplateCardGroup;
 }
 
 interface CategoriesCopy {
@@ -38,6 +39,7 @@ interface CategoriesCopy {
   featuredLabel: string;
   viewTemplateLabel: string;
   webServicesLabel: string;
+  businessServicesLabel: string;
   categories: TemplateCategory[];
 }
 
@@ -50,10 +52,11 @@ const es: CategoriesCopy = {
   featuredLabel: 'Más solicitado',
   viewTemplateLabel: 'Ver plantilla',
   webServicesLabel: 'Servicios Web',
+  businessServicesLabel: 'Gestión de Negocios',
   categories: [
     {
       id: 'onepage',
-      webService: true,
+      group: 'web',
       name: 'OnePage',
       tagline: 'Todo tu negocio en una sola página',
       description:
@@ -98,7 +101,7 @@ const es: CategoriesCopy = {
     },
     {
       id: 'multipage',
-      webService: true,
+      group: 'web',
       name: 'Multipage',
       tagline: 'Un sitio corporativo completo',
       description:
@@ -142,7 +145,7 @@ const es: CategoriesCopy = {
     },
     {
       id: 'landing',
-      webService: true,
+      group: 'web',
       name: 'LandingPage',
       tagline: 'Diseñada para convertir',
       description:
@@ -160,6 +163,7 @@ const es: CategoriesCopy = {
     },
     {
       id: 'catalog',
+      group: 'business',
       name: 'Catálogo Digital',
       tagline: 'Muestra tus productos sin complicaciones',
       description: 'Muestra tus productos',
@@ -194,6 +198,7 @@ const es: CategoriesCopy = {
     },
     {
       id: 'store',
+      group: 'business',
       name: 'Tienda Virtual',
       tagline: 'Vende en línea las 24 horas',
       description:
@@ -232,6 +237,7 @@ const es: CategoriesCopy = {
     },
     {
       id: 'sales',
+      group: 'business',
       name: 'Sistemas de Ventas',
       tagline: 'Controla tu operación comercial',
       description:
@@ -258,10 +264,11 @@ const en: CategoriesCopy = {
   featuredLabel: 'Most popular',
   viewTemplateLabel: 'View template',
   webServicesLabel: 'Web Services',
+  businessServicesLabel: 'Business Management',
   categories: [
     {
       id: 'onepage',
-      webService: true,
+      group: 'web',
       name: 'OnePage',
       tagline: 'Your whole business on one page',
       description:
@@ -306,7 +313,7 @@ const en: CategoriesCopy = {
     },
     {
       id: 'multipage',
-      webService: true,
+      group: 'web',
       name: 'Multipage',
       tagline: 'A complete corporate website',
       description:
@@ -350,7 +357,7 @@ const en: CategoriesCopy = {
     },
     {
       id: 'landing',
-      webService: true,
+      group: 'web',
       name: 'LandingPage',
       tagline: 'Built to convert',
       description:
@@ -368,6 +375,7 @@ const en: CategoriesCopy = {
     },
     {
       id: 'catalog',
+      group: 'business',
       name: 'Digital Catalog',
       tagline: 'Showcase your products effortlessly',
       description: 'Showcase your products',
@@ -402,6 +410,7 @@ const en: CategoriesCopy = {
     },
     {
       id: 'store',
+      group: 'business',
       name: 'Online Store',
       tagline: 'Sell online around the clock',
       description:
@@ -440,6 +449,7 @@ const en: CategoriesCopy = {
     },
     {
       id: 'sales',
+      group: 'business',
       name: 'Sales Systems',
       tagline: 'Control your sales operation',
       description:
