@@ -40,7 +40,8 @@ const cards = copy.categories.map((category) => {
       {cards.map((card) => (
         <article
           class:list={[
-            'relative flex flex-col rounded-2xl bg-white p-7 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
+            'relative flex flex-col rounded-2xl p-7 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
+            card.webService ? 'template-card--web' : 'bg-white',
             card.featured
               ? 'border-2 border-terracotta shadow-md'
               : 'border border-light-blue/20 shadow-sm',
@@ -54,6 +55,9 @@ const cards = copy.categories.map((category) => {
           )}
 
           <div class="mb-4">
+            {card.webService && (
+              <p class="text-xs font-semibold uppercase tracking-wider text-mid-blue mb-2">{copy.webServicesLabel}</p>
+            )}
             <h3 class="text-xl font-bold text-dark-blue leading-tight mb-2">{card.name}</h3>
             <p class="text-xs font-semibold uppercase tracking-wider text-terracotta">{card.tagline}</p>
           </div>
@@ -233,6 +237,13 @@ const cards = copy.categories.map((category) => {
 </script>
 
 <style>
+  .template-card--web {
+    background: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--color-mid-blue) 7%, var(--color-cream)) 0%,
+      #fff 55%
+    );
+  }
   .plan-toggle {
     color: var(--color-body);
   }

@@ -25,6 +25,8 @@ export interface TemplateCategory {
   /** With no sample, "Ver plantilla" opens the coming-soon modal instead of doing nothing. */
   comingSoon?: boolean;
   featured?: boolean;
+  /** Web service cards: group label above title and subtle card tint. */
+  webService?: boolean;
 }
 
 interface CategoriesCopy {
@@ -35,6 +37,7 @@ interface CategoriesCopy {
   planLabels: Record<TemplatePlanId, string>;
   featuredLabel: string;
   viewTemplateLabel: string;
+  webServicesLabel: string;
   categories: TemplateCategory[];
 }
 
@@ -46,9 +49,11 @@ const es: CategoriesCopy = {
   planLabels: { standard: 'Estándar', full: 'Premium' },
   featuredLabel: 'Más solicitado',
   viewTemplateLabel: 'Ver plantilla',
+  webServicesLabel: 'Servicios Web',
   categories: [
     {
       id: 'onepage',
+      webService: true,
       name: 'OnePage',
       tagline: 'Todo tu negocio en una sola página',
       description:
@@ -93,6 +98,7 @@ const es: CategoriesCopy = {
     },
     {
       id: 'multipage',
+      webService: true,
       name: 'Multipage',
       tagline: 'Un sitio corporativo completo',
       description:
@@ -136,6 +142,7 @@ const es: CategoriesCopy = {
     },
     {
       id: 'landing',
+      webService: true,
       name: 'LandingPage',
       tagline: 'Diseñada para convertir',
       description:
@@ -250,9 +257,11 @@ const en: CategoriesCopy = {
   planLabels: { standard: 'Standard', full: 'Premium' },
   featuredLabel: 'Most popular',
   viewTemplateLabel: 'View template',
+  webServicesLabel: 'Web Services',
   categories: [
     {
       id: 'onepage',
+      webService: true,
       name: 'OnePage',
       tagline: 'Your whole business on one page',
       description:
@@ -297,6 +306,7 @@ const en: CategoriesCopy = {
     },
     {
       id: 'multipage',
+      webService: true,
       name: 'Multipage',
       tagline: 'A complete corporate website',
       description:
@@ -340,6 +350,7 @@ const en: CategoriesCopy = {
     },
     {
       id: 'landing',
+      webService: true,
       name: 'LandingPage',
       tagline: 'Built to convert',
       description:
