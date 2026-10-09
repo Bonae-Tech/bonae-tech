@@ -1,6 +1,7 @@
 ---
 import type { Translations } from '@bonae/content';
-import { templateDetailPath } from '../lib/templates';
+import { findTemplateBySlug, templateDetailPath } from '../lib/templates';
+import { templateCategoriesFor } from '../lib/templateCategories';
 
 interface Props {
   t: Translations;
@@ -8,6 +9,21 @@ interface Props {
 
 const { t } = Astro.props;
 const section = t.templates;
+const copy = templateCategoriesFor(t.lang);
+
+const VISIBLE_BULLETS = 3;
+
+const cards = copy.categories.map((category) => {
+  const sample = category.sampleSlug ? findTemplateBySlug(t, category.sampleSlug) : undefined;
+  const plans = category.plans.map((plan) => ({
+    ...plan,
+    bullets: [
+      ...(plan.features ?? category.features).map((text) => ({ text, included: true })),
+      ...(plan.excludedFeatures ?? category.excludedFeatures ?? []).map((text) => ({ text, included: false })),
+    ],
+  }));
+  return { ...category, plans, href: sample ? templateDetailPath(t.lang, sample.slug) : null };
+});
 ---
 
 <section id="plantillas" class="py-20 bg-cream">
@@ -20,53 +36,143 @@ const section = t.templates;
       <p class="section-subtitle">{section.subheadline}</p>
     </div>
 
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {section.items.map((item) => (
-        item.comingSoon ? (
-          <button
-            type="button"
-            class="template-coming-soon flex flex-col items-center justify-center text-center rounded-2xl border-2 border-dashed border-light-blue/40 bg-white/60 px-6 py-12 min-h-[320px] transition-colors hover:border-terracotta cursor-pointer"
-            data-coming-soon-open
-          >
-            <div class="w-12 h-12 rounded-full bg-cream border border-light-blue/30 flex items-center justify-center mb-5 text-dark-blue text-2xl font-light" aria-hidden="true">
-              +
-            </div>
-            <h3 class="text-lg font-bold text-dark-blue mb-2">{item.title}</h3>
-            <p class="text-sm text-body leading-relaxed max-w-xs">{item.description}</p>
-          </button>
-        ) : (
-          <a
-            href={templateDetailPath(t.lang, item.slug)}
-            class="group bg-white rounded-2xl shadow-sm border border-light-blue/15 overflow-hidden flex flex-col transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
-          >
-            <div class="aspect-[16/10] overflow-hidden bg-cream">
-              <img
-                src={item.imageSrc}
-                alt=""
-                class="w-full h-full object-cover object-top"
-                width="640"
-                height="400"
-                loading="lazy"
-              />
-            </div>
-            <div class="p-5 text-left flex-1 flex flex-col">
-              <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-2">{item.category}</p>
-              <h3 class="text-lg font-bold text-dark-blue mb-2">{item.title}</h3>
-              <p class="text-sm text-body leading-relaxed flex-1">{item.description}</p>
-              <p class="text-sm font-semibold text-terracotta mt-4">{section.viewDetailsLabel}</p>
-            </div>
-          </a>
-        )
-      ))}
-    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+      {cards.map((card) => (
+        <article
+          class:list={[
+            'relative flex flex-col rounded-2xl p-7 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
+            'bg-white',
+            card.featured
+              ? 'border-2 border-cyan shadow-md'
+              : card.group === 'web'
+                ? 'border-2 border-terracotta/45 shadow-sm'
+                : card.group === 'business'
+                  ? 'border-2 border-cyan/40 shadow-sm'
+                  : 'border border-light-blue/20 shadow-sm',
+          ]}
+          data-plan-group
+        >
+          {card.featured && (
+            <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-br from-cyan/90 to-mid-blue px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow-md">
+              {copy.featuredLabel}
+            </span>
+          )}
 
-    <div class="mt-12 text-center">
-      <a
-        href={section.viewAllHref}
-        class="inline-flex items-center justify-center px-6 py-3 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
-      >
-        {section.viewAllLabel}
-      </a>
+          <div class="mb-4">
+            {card.group === 'web' && (
+              <p class="text-xs font-semibold uppercase tracking-wider text-mid-blue mb-2">{copy.webServicesLabel}</p>
+            )}
+            {card.group === 'business' && (
+              <p class="text-xs font-semibold uppercase tracking-wider text-mid-blue mb-2">{copy.businessServicesLabel}</p>
+            )}
+            <h3 class="text-xl font-bold text-dark-blue leading-tight mb-2">{card.name}</h3>
+            <p class="text-xs font-semibold uppercase tracking-wider text-terracotta">{card.tagline}</p>
+          </div>
+
+          <p class="text-sm text-body leading-relaxed mb-5">{card.description}</p>
+
+          <div class="mb-5 pb-5 border-b border-light-blue/20">
+            {card.plans.length > 1 ? (
+              <div class="inline-flex rounded-lg bg-cream border border-light-blue/25 p-1 mb-3" role="group">
+                {card.plans.map((plan, index) => (
+                  <button
+                    type="button"
+                    class="plan-toggle px-4 py-1.5 rounded-md text-sm font-semibold transition-colors cursor-pointer"
+                    data-plan-toggle={plan.id}
+                    aria-pressed={index === 0 ? 'true' : 'false'}
+                  >
+                    {copy.planLabels[plan.id]}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <span class="text-sm text-body">{copy.priceLabel}</span>
+            )}
+            {card.plans.map((plan, index) => (
+              <div class:list={{ hidden: index > 0 }} data-plan-price={plan.id}>
+                <div class="flex items-baseline gap-2">
+                  {plan.originalPrice && (
+                    <s class="text-2xl font-semibold text-light-blue decoration-terracotta decoration-2">${plan.originalPrice}</s>
+                  )}
+                  <span class="text-4xl font-extrabold text-dark-blue">${plan.price}</span>
+                  <span class="text-sm font-semibold text-body">{section.priceCurrency}</span>
+                </div>
+                <span class:list={['text-xs', plan.originalPrice ? 'font-semibold text-terracotta' : 'text-body']}>
+                  {plan.originalPrice ? copy.offerNote : section.priceNote}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div class="flex-1 mb-7">
+            {card.plans.map((plan, planIndex) => (
+              <div class:list={{ hidden: planIndex > 0 }} data-plan-price={plan.id} data-features>
+                <ul class="space-y-2.5">
+                  {plan.bullets.map((bullet, index) => (
+                    <li
+                      class:list={[
+                        'flex items-start gap-2.5 text-sm',
+                        bullet.included ? 'text-dark-blue' : 'text-body',
+                        { hidden: index >= VISIBLE_BULLETS },
+                      ]}
+                      data-feature-extra={index >= VISIBLE_BULLETS ? '' : undefined}
+                    >
+                      {bullet.included ? (
+                        <svg class="w-5 h-5 shrink-0 text-terracotta" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0z" clip-rule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg class="w-5 h-5 shrink-0 text-light-blue" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M5.3 5.3a1 1 0 0 1 1.4 0L10 8.6l3.3-3.3a1 1 0 1 1 1.4 1.4L11.4 10l3.3 3.3a1 1 0 0 1-1.4 1.4L10 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L8.6 10 5.3 6.7a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
+                        </svg>
+                      )}
+                      <span>{bullet.text}</span>
+                    </li>
+                  ))}
+                </ul>
+                {plan.bullets.length > VISIBLE_BULLETS && (
+                  <button
+                    type="button"
+                    class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-terracotta hover:text-terracotta-dark cursor-pointer"
+                    aria-expanded="false"
+                    data-features-toggle
+                    data-label-more={copy.showMoreLabel}
+                    data-label-less={copy.showLessLabel}
+                  >
+                    <span data-features-toggle-label>{copy.showMoreLabel}</span>
+                    <svg class="features-chevron w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.3 7.3a1 1 0 0 1 1.4 0L10 10.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 0-1.4z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {card.href ? (
+            <a
+              href={card.href}
+              class:list={[
+                'inline-flex items-center justify-center w-full px-6 py-3 rounded-lg font-semibold transition-colors',
+                card.featured
+                  ? 'bg-gradient-to-br from-cyan/90 to-mid-blue text-white hover:brightness-110'
+                  : 'border-2 border-dark-blue text-dark-blue hover:bg-dark-blue hover:text-white',
+              ]}
+            >
+              {copy.viewTemplateLabel}
+            </a>
+          ) : (
+            <button
+              type="button"
+              class="inline-flex items-center justify-center w-full px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-dark-blue text-dark-blue hover:bg-dark-blue hover:text-white cursor-pointer"
+              data-coming-soon-open={card.comingSoon ? '' : undefined}
+              data-coming-soon-title={card.comingSoon ? card.name : undefined}
+            >
+              {copy.viewTemplateLabel}
+            </button>
+          )}
+        </article>
+      ))}
     </div>
   </div>
 
@@ -78,7 +184,7 @@ const section = t.templates;
       <div class="w-14 h-14 rounded-full bg-cream text-terracotta flex items-center justify-center mx-auto mb-5 text-2xl font-light" aria-hidden="true">
         +
       </div>
-      <h3 class="text-xl font-bold text-dark-blue mb-3">{section.items.find((i) => i.comingSoon)?.title ?? section.sectionBadge}</h3>
+      <h3 class="text-xl font-bold text-dark-blue mb-3" data-coming-soon-heading>{section.sectionBadge}</h3>
       <p class="text-sm text-body leading-relaxed mb-6">{section.comingSoonModalBody}</p>
       <button
         type="button"
@@ -94,8 +200,12 @@ const section = t.templates;
 <script>
   const dialog = document.getElementById('templates-coming-soon');
   if (dialog instanceof HTMLDialogElement) {
-    document.querySelectorAll('[data-coming-soon-open]').forEach((el) => {
-      el.addEventListener('click', () => dialog.showModal());
+    const heading = dialog.querySelector('[data-coming-soon-heading]');
+    document.querySelectorAll<HTMLElement>('[data-coming-soon-open]').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (heading && el.dataset.comingSoonTitle) heading.textContent = el.dataset.comingSoonTitle;
+        dialog.showModal();
+      });
     });
     document.querySelectorAll('[data-coming-soon-close]').forEach((el) => {
       el.addEventListener('click', () => dialog.close());
@@ -104,4 +214,44 @@ const section = t.templates;
       if (event.target === dialog) dialog.close();
     });
   }
+
+  document.querySelectorAll<HTMLElement>('[data-plan-group]').forEach((group) => {
+    const toggles = group.querySelectorAll<HTMLButtonElement>('[data-plan-toggle]');
+    toggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const planId = toggle.dataset.planToggle;
+        toggles.forEach((t) => t.setAttribute('aria-pressed', String(t === toggle)));
+        group.querySelectorAll<HTMLElement>('[data-plan-price]').forEach((price) => {
+          price.classList.toggle('hidden', price.dataset.planPrice !== planId);
+        });
+      });
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-features]').forEach((block) => {
+    const toggle = block.querySelector<HTMLButtonElement>('[data-features-toggle]');
+    const label = toggle?.querySelector('[data-features-toggle-label]');
+    if (!toggle || !label) return;
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(expanded));
+      label.textContent = (expanded ? toggle.dataset.labelLess : toggle.dataset.labelMore) ?? '';
+      block.querySelectorAll('[data-feature-extra]').forEach((item) => {
+        item.classList.toggle('hidden', !expanded);
+      });
+    });
+  });
 </script>
+
+<style>
+  .plan-toggle {
+    color: var(--color-body);
+  }
+  .plan-toggle[aria-pressed='true'] {
+    background-color: var(--color-dark-blue);
+    color: #fff;
+  }
+  [aria-expanded='true'] .features-chevron {
+    transform: rotate(180deg);
+  }
+</style>
