@@ -181,6 +181,8 @@ const es: CategoriesCopy = {
             'Buscador para encontrar productos en segundos',
             'Actualiza precios y productos cuando quieras',
             'Mantenimiento incluido el primer mes',
+            'Hosting incluido por 1 año (aplican condiciones)',
+            'Dominio incluido por 1 año (aplican condiciones)',
           ],
           excludedFeatures: [],
         },
