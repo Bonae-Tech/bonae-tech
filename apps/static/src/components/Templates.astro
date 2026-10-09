@@ -41,14 +41,12 @@ const cards = copy.categories.map((category) => {
         <article
           class:list={[
             'relative flex flex-col rounded-2xl p-7 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg',
-            card.group === 'web'
-              ? 'template-card--web'
-              : card.group === 'business'
-                ? 'template-card--business'
-                : 'bg-white',
+            card.group === 'web' ? 'template-card--web' : 'bg-white',
             card.featured
               ? 'border-2 border-terracotta shadow-md'
-              : 'border border-light-blue/20 shadow-sm',
+              : card.group === 'business'
+                ? 'border-2 border-[#25D366]/45 shadow-sm'
+                : 'border border-light-blue/20 shadow-sm',
           ]}
           data-plan-group
         >
@@ -248,13 +246,6 @@ const cards = copy.categories.map((category) => {
     background: linear-gradient(
       165deg,
       color-mix(in srgb, var(--color-mid-blue) 7%, var(--color-cream)) 0%,
-      #fff 55%
-    );
-  }
-  .template-card--business {
-    background: linear-gradient(
-      165deg,
-      color-mix(in srgb, #25d366 7%, var(--color-cream)) 0%,
       #fff 55%
     );
   }
