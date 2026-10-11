@@ -32,7 +32,7 @@
         "icon": "accessible",
         "title": "Presencia Web de alto impacto",
         "description": "Diseño web ligero y optimizado para que te encuentren en Google y otros buscadores y conviertas visitas en contactos.",
-        "backLabel": "Servicios Web",
+        "backLabel": "Productos Web",
         "backDescription": "Elige el formato ideal para tu negocio.",
         "backBullets": [
           {
@@ -49,6 +49,10 @@
             "label": "Multipage",
             "description": "Varias páginas para mostrar servicios, equipo y más detalle.",
             "href": "#plantillas"
+          },
+          {
+            "label": "Saber más",
+            "linkTarget": "whatsapp"
           }
         ]
       },

@@ -32,7 +32,7 @@
         "icon": "accessible",
         "title": "High-impact web presence",
         "description": "Lightweight web design optimized so customers find you on Google and other search engines and turn visits into leads.",
-        "backLabel": "Web Services",
+        "backLabel": "Web Products",
         "backDescription": "Pick the format that fits your business.",
         "backBullets": [
           {
@@ -49,6 +49,10 @@
             "label": "Multipage",
             "description": "Multiple pages to showcase services, team, and more detail.",
             "href": "/en/#plantillas"
+          },
+          {
+            "label": "Learn more",
+            "linkTarget": "whatsapp"
           }
         ]
       },

@@ -64,11 +64,31 @@ export const businessHoursSchema = z
 export type BusinessHours = z.infer<typeof businessHoursSchema>;
 export type BusinessHoursDay = z.infer<typeof businessHoursDaySchema>;
 
-export const valuePropBackBulletSchema = z.object({
-  label: z.string().min(1).max(80),
-  description: z.string().min(1).max(140),
-  href: z.string().min(1).optional(),
-});
+export const valuePropBackBulletSchema = z
+  .object({
+    label: z.string().min(1).max(80),
+    description: z.string().min(1).max(140).optional(),
+    href: z.string().min(1).optional(),
+    linkTarget: z.enum(['whatsapp']).optional(),
+  })
+  .superRefine((bullet, ctx) => {
+    const hasHref = Boolean(bullet.href?.trim());
+    const hasWhatsApp = bullet.linkTarget === 'whatsapp';
+    if (hasHref && hasWhatsApp) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Use either href or linkTarget whatsapp, not both',
+        path: ['href'],
+      });
+    }
+    if (!hasHref && !hasWhatsApp) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Structured back bullet needs href or linkTarget whatsapp',
+        path: ['href'],
+      });
+    }
+  });
 
 const iconItemSchema = z.object({
   icon: z.enum(valuePropIcons),

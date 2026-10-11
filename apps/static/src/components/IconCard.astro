@@ -6,8 +6,9 @@ type BackBullet =
   | string
   | {
       label: string;
-      description: string;
+      description?: string;
       href?: string;
+      linkTarget?: 'whatsapp';
     };
 
 interface Props {
@@ -17,15 +18,26 @@ interface Props {
   backLabel: string;
   backDescription: string;
   backBullets?: BackBullet[];
+  whatsappHref: string;
 }
 
-const { icon, title, description, backLabel, backDescription, backBullets } = Astro.props;
+const { icon, title, description, backLabel, backDescription, backBullets, whatsappHref } =
+  Astro.props;
 const src = valuePropIconSrc[icon];
 const alt = valuePropIconAlt[icon] ?? title;
 const richBack = backBullets && backBullets.length > 0;
 
 function isStructuredBullet(bullet: BackBullet): bullet is Exclude<BackBullet, string> {
   return typeof bullet === 'object';
+}
+
+function bulletHref(bullet: Exclude<BackBullet, string>): string | undefined {
+  if (bullet.linkTarget === 'whatsapp') return whatsappHref;
+  return bullet.href;
+}
+
+function bulletIsExternal(bullet: Exclude<BackBullet, string>): boolean {
+  return bullet.linkTarget === 'whatsapp';
 }
 ---
 
@@ -52,24 +64,32 @@ function isStructuredBullet(bullet: BackBullet): bullet is Exclude<BackBullet, s
       <span class="flip-card-badge">{backLabel}</span>
       {richBack ? (
         <ul class="flip-card-bullets">
-          {backBullets.map((bullet) => (
-            <li>
-              {isStructuredBullet(bullet) ? (
-                <>
-                  {bullet.href ? (
-                    <a href={bullet.href} class="flip-card-bullet-link">
-                      {bullet.label}
-                    </a>
-                  ) : (
-                    <span class="font-semibold text-dark-blue">{bullet.label}</span>
-                  )}
-                  <span class="text-body"> — {bullet.description}</span>
-                </>
-              ) : (
-                bullet
-              )}
-            </li>
-          ))}
+          {backBullets.map((bullet) => {
+            if (!isStructuredBullet(bullet)) {
+              return <li>{bullet}</li>;
+            }
+            const href = bulletHref(bullet);
+            const external = bulletIsExternal(bullet);
+            return (
+              <li>
+                {href ? (
+                  <a
+                    href={href}
+                    class="flip-card-bullet-link"
+                    target={external ? '_blank' : undefined}
+                    rel={external ? 'noopener noreferrer' : undefined}
+                  >
+                    {bullet.label}
+                  </a>
+                ) : (
+                  <span class="font-semibold text-dark-blue">{bullet.label}</span>
+                )}
+                {bullet.description && (
+                  <span class="flip-card-bullet-desc"> — {bullet.description}</span>
+                )}
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p class="text-sm text-body leading-relaxed px-2">{backDescription}</p>
