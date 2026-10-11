@@ -246,7 +246,7 @@
             "id": "standard",
             "price": 320,
             "originalPrice": 340,
-            "description": "Standard model: up to 3 pages with WhatsApp, SEO, social links, contact form, and 15 days of maintenance included.",
+            "description": "Standard model: with 3 pages you introduce your business, core services, and a clear path for customers to reach you.",
             "features": [
               "Up to 3 pages to show everything you offer",
               "WhatsApp button to reply instantly",
@@ -263,7 +263,7 @@
             "id": "full",
             "price": 480,
             "originalPrice": 500,
-            "description": "Premium model: up to 5 pages, branded copy and images, Google Maps, legal pages, and 30 days of maintenance.",
+            "description": "Premium model: with 5 pages you expand services, team, and trust, add map and legal pages, and tell your story in richer detail.",
             "features": [
               "Up to 5 pages to show everything you offer",
               "WhatsApp button to reply instantly",
