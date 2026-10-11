@@ -98,7 +98,11 @@ const cards = copy.categories.map((category) => {
                   <span class="text-sm font-semibold text-body">{section.priceCurrency}</span>
                 </div>
                 <span class:list={['text-xs', plan.originalPrice ? 'font-semibold text-terracotta' : 'text-body']}>
-                  {plan.originalPrice ? copy.offerNote : section.priceNote}
+                  {plan.originalPrice
+                    ? plan.id === 'full'
+                      ? copy.premiumOfferNote
+                      : copy.offerNote
+                    : section.priceNote}
                 </span>
               </div>
             ))}

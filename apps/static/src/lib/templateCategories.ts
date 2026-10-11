@@ -33,6 +33,7 @@ export interface TemplateCategory {
 interface CategoriesCopy {
   priceLabel: string;
   offerNote: string;
+  premiumOfferNote: string;
   showMoreLabel: string;
   showLessLabel: string;
   planLabels: Record<TemplatePlanId, string>;
@@ -46,6 +47,7 @@ interface CategoriesCopy {
 const es: CategoriesCopy = {
   priceLabel: 'Modelo Estándar',
   offerNote: 'Oferta limitada',
+  premiumOfferNote: 'Precio inicial',
   showMoreLabel: 'Ver más',
   showLessLabel: 'Ver menos',
   planLabels: { standard: 'Estándar', full: 'Premium' },
