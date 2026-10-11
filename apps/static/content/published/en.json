@@ -222,26 +222,63 @@
     "featuresLabel": "Technical details",
     "priceCurrency": "USD",
     "priceNote": "one-time payment",
+    "planStandardLabel": "Standard",
+    "planPremiumLabel": "Premium",
+    "offerNote": "Limited-time offer",
+    "premiumOfferNote": "Starting price",
     "useTemplateLabel": "Use this template",
     "demoLabel": "View live page",
     "comingSoonModalBody": "We are working on new designs. Check back soon for the full portfolio.",
     "comingSoonModalDismiss": "Got it",
     "items": [
       {
-        "category": "Corporate & Business",
+        "category": "Multipage · Web Services",
         "title": "Corporate Business Template",
-        "description": "A lightweight, modern web template designed to help corporate services reach more clients efficiently.",
-        "detailDescription": "This template offers a sleek, professional layout featuring a hero image slider, service highlights, key metrics counters, client logo showcases, and clear call-to-action sections to effectively convert visitors into leads.",
+        "description": "A multi-page site for a fast, effective corporate online presence.",
+        "detailDescription": "Live demo of our Multipage product: a corporate layout with multiple sections, ready to customize with your brand.",
         "imageSrc": "/images/templates/modelo-2.png",
         "slug": "modelo-2",
         "demoUrl": "https://modelo-2.bonaetech.com/",
-        "price": 100,
-        "features": [
-          "Lightweight and modern responsive design",
-          "Hero slider section with call-to-action buttons",
-          "Dedicated services breakdown cards",
-          "Key metrics and achievements counters",
-          "Multilingual support layout with contact integration"
+        "price": 320,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 320,
+            "originalPrice": 340,
+            "description": "Standard model: up to 3 pages with WhatsApp, SEO, social links, contact form, and 15 days of maintenance included.",
+            "features": [
+              "Up to 3 pages to show everything you offer",
+              "WhatsApp button to reply instantly",
+              "Looks great on phones, tablets and computers",
+              "Shows up on Google so customers find you easily",
+              "Links to all your social media",
+              "A form so customers can reach you",
+              "15 days of free maintenance",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ]
+          },
+          {
+            "id": "full",
+            "price": 480,
+            "originalPrice": 500,
+            "description": "Premium model: up to 5 pages, branded copy and images, Google Maps, legal pages, and 30 days of maintenance.",
+            "features": [
+              "Up to 5 pages to show everything you offer",
+              "WhatsApp button to reply instantly",
+              "Looks great on phones, tablets and computers",
+              "Shows up on Google so customers find you easily",
+              "Links to all your social media",
+              "A form so customers can reach you",
+              "Your location on Google Maps so customers find their way",
+              "We create copy and images that match your brand",
+              "Legal pages: cookies, terms and privacy",
+              "30 days of free maintenance",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ]
+          }
         ],
         "comingSoon": false
       },

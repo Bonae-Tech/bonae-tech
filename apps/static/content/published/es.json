@@ -222,26 +222,63 @@
     "featuresLabel": "Detalles técnicos",
     "priceCurrency": "USD",
     "priceNote": "pago único",
+    "planStandardLabel": "Estándar",
+    "planPremiumLabel": "Premium",
+    "offerNote": "Oferta limitada",
+    "premiumOfferNote": "Precio inicial",
     "useTemplateLabel": "Usar esta plantilla",
     "demoLabel": "Ver página en vivo",
     "comingSoonModalBody": "Estamos trabajando en nuevos diseños. Vuelve pronto para ver el portafolio completo.",
     "comingSoonModalDismiss": "Entendido",
     "items": [
       {
-        "category": "Corporativo y Empresarial",
+        "category": "Multipage · Servicios Web",
         "title": "Plantilla Modelo Empresarial",
-        "description": "Un sitio web liviano y novedoso diseñado para ayudar a empresas a llegar a más clientes de forma efectiva.",
-        "detailDescription": "Esta plantilla ofrece un diseño elegante y profesional que incluye un carrusel principal de imágenes, tarjetas para destacar servicios, contadores de métricas clave, logotipos de clientes y secciones de llamada a la acción enfocadas en la conversión.",
+        "description": "Sitio con varias páginas para presencia corporativa rápida y efectiva.",
+        "detailDescription": "Vista demo de nuestro producto Multipage: diseño corporativo con varias secciones, pensado para personalizarlo con tu marca.",
         "imageSrc": "/images/templates/modelo-2.png",
         "slug": "modelo-2",
         "demoUrl": "https://modelo-2.bonaetech.com/",
-        "price": 100,
-        "features": [
-          "Diseño adaptable, liviano y moderno",
-          "Sección principal con carrusel e interactividad",
-          "Tarjetas organizadas para la oferta de servicios",
-          "Sección de indicadores y métricas de impacto",
-          "Estructura multilingüe e integración de contacto rápido"
+        "price": 320,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 320,
+            "originalPrice": 340,
+            "description": "Modelo Estándar: hasta 3 páginas con WhatsApp, SEO, redes sociales, formulario y 15 días de mantenimiento incluidos.",
+            "features": [
+              "Hasta 3 páginas para mostrar todo lo que ofreces",
+              "Botón de WhatsApp para atenderlos al instante",
+              "Se ve perfecta en celulares, tablets y computadoras",
+              "Aparece en Google para que tus clientes te encuentren fácil",
+              "Enlaces a todas tus redes sociales",
+              "Formulario para que tus clientes te escriban",
+              "15 días de mantenimiento gratis",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ]
+          },
+          {
+            "id": "full",
+            "price": 480,
+            "originalPrice": 500,
+            "description": "Modelo Premium: hasta 5 páginas, textos e imágenes de marca, Google Maps, páginas legales y 30 días de mantenimiento.",
+            "features": [
+              "Hasta 5 páginas para mostrar todo lo que ofreces",
+              "Botón de WhatsApp para atenderlos al instante",
+              "Se ve perfecta en celulares, tablets y computadoras",
+              "Aparece en Google para que tus clientes te encuentren fácil",
+              "Enlaces a todas tus redes sociales",
+              "Formulario para que tus clientes te escriban",
+              "Tu ubicación en Google Maps para que lleguen sin perderse",
+              "Creamos textos e imágenes acordes a la marca de tu empresa",
+              "Páginas legales: cookies, términos y privacidad",
+              "30 días de mantenimiento gratis",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ]
+          }
         ],
         "comingSoon": false
       },
