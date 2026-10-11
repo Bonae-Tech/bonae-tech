@@ -41,7 +41,7 @@ function bulletIsExternal(bullet: Exclude<BackBullet, string>): boolean {
 }
 ---
 
-<article class="flip-card group" tabindex="0">
+<article class:list={['flip-card group', { 'flip-card--rich': richBack }]} tabindex="0">
   <div class="flip-card-inner">
     <div class="flip-card-front">
       <div class="value-prop-icon-frame">
