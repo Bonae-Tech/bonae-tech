@@ -129,8 +129,8 @@
             "description": "Sharper messaging and information: clarity, SEO, and conversions."
           },
           {
-            "label": "More benefits",
-            "description": "A more professional image and smoother digital processes."
+            "label": "Other products",
+            "linkTarget": "whatsapp"
           }
         ]
       },

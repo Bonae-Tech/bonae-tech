@@ -221,9 +221,9 @@
     padding: 0.5rem 1rem;
   }
 
-  .flip-card-back:not(.flip-card-back--rich) p {
-    font-size: clamp(0.8125rem, 1vw, 0.9375rem);
-    @apply leading-relaxed px-1;
+  .flip-card-back-text {
+    font-size: clamp(0.8125rem, 1.15vw, 0.9375rem);
+    @apply text-body leading-relaxed px-2;
   }
 
   .value-prop-icon-frame {
