@@ -138,8 +138,26 @@
         "icon": "education",
         "title": "Plataformas de E-learning y Aulas Virtuales",
         "description": "Creamos y configuramos tu propia academia online para que puedas digitalizar tus cursos, automatizar las inscripciones y vender tu conocimiento sin límites geográficos.",
-        "backLabel": "Educación sin Fronteras",
-        "backDescription": "Desplegamos tus cursos y clases para que tu conocimiento llegue a cualquier parte del mundo."
+        "backLabel": "E-learning y aulas virtuales",
+        "backDescription": "Lo que puedes crear con nosotros.",
+        "backBullets": [
+          {
+            "label": "Plataforma E-learning",
+            "description": "Cursos en video, módulos, tareas y evaluaciones con acceso 24/7."
+          },
+          {
+            "label": "Aulas virtuales",
+            "description": "Clases en vivo, horarios y salas para conectar con tus alumnos."
+          },
+          {
+            "label": "Tu academia online",
+            "description": "Inscripciones, pagos, certificados y contenido con tu marca."
+          },
+          {
+            "label": "Otros productos",
+            "linkTarget": "whatsapp"
+          }
+        ]
       }
     ]
   },

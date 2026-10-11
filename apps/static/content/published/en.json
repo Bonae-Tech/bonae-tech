@@ -136,10 +136,28 @@
       },
       {
         "icon": "education",
-        "title": "Virtual classrooms",
-        "description": "Virtual classrooms",
-        "backLabel": "Borderless learning",
-        "backDescription": "We make virtual classrooms for you"
+        "title": "E-learning platforms and virtual classrooms",
+        "description": "We build and configure your online academy so you can digitize courses, automate enrollments, and sell your expertise without geographic limits.",
+        "backLabel": "E-learning and virtual classrooms",
+        "backDescription": "What you can build with us.",
+        "backBullets": [
+          {
+            "label": "E-learning platform",
+            "description": "Video courses, modules, assignments, and assessments with 24/7 access."
+          },
+          {
+            "label": "Virtual classrooms",
+            "description": "Live classes, schedules, and rooms to connect with your students."
+          },
+          {
+            "label": "Your online academy",
+            "description": "Enrollments, payments, certificates, and branded content."
+          },
+          {
+            "label": "Other products",
+            "linkTarget": "whatsapp"
+          }
+        ]
       }
     ]
   },
