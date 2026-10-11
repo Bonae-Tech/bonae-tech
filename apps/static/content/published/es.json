@@ -301,20 +301,56 @@
         "comingSoon": false
       },
       {
-        "category": "E-commerce / Moda y Belleza",
+        "category": "Tienda Virtual · Gestión de Negocios",
         "title": "Plantilla de Tienda de Moda y Belleza Femenina",
-        "description": "Una plantilla web elegante y moderna para comercio electrónico, diseñada para tiendas de moda, accesorios y productos de belleza femenina.",
-        "detailDescription": "Una plantilla de tienda en línea completa con una estética refinada, ideal para marcas de moda y belleza. Incluye categorías estructuradas (vestidos, blusas, faldas, abrigos, joyería, maquillaje, cuidado de la piel y fragancias), catálogo destacado, sección de testimonios de clientes, banners promocionales con contador regresivo y navegación integrada.",
+        "description": "Tienda en línea completa con carrito de compras y gestión de productos.",
+        "detailDescription": "Vista demo de nuestro producto Tienda Virtual: venta en línea con carrito, pagos y catálogo por categorías, personalizable con tu marca (ejemplo: moda y belleza).",
         "imageSrc": "/images/templates/modelo-4.png",
         "slug": "modelo-4",
         "demoUrl": "https://modelo-4.bonaetech.com/",
-        "price": 150,
-        "features": [
-          "Diseño limpio y moderno optimizado para productos de moda y cuidado personal",
-          "Navegación completa por categorías que abarca prendas, accesorios y cosméticos",
-          "Catálogo destacado con visualización de precios y botones de compra rápida",
-          "Banner de ofertas semanales con temporizador de cuenta regresiva",
-          "Sección integrada de opiniones de clientes y enlaces a redes sociales"
+        "price": 499,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 499,
+            "originalPrice": 520,
+            "description": "Modelo Estándar: con 25 productos vendes en línea con carrito, categorías y pagos listos para tus clientes.",
+            "features": [
+              "Hasta 25 productos precargados para vender en tu tienda",
+              "Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras",
+              "Carrito de compras y favoritos",
+              "Controla tu inventario y tus productos",
+              "Destaca tus ofertas",
+              "Recibe pagos en línea, nacional e internacional (no incluye comisiones)",
+              "Tus productos ordenados por categorías",
+              "Bonus Chatbot",
+              "Mantenimiento incluido el primer mes",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ],
+            "excludedFeatures": ["No incluye realización de foto productos"]
+          },
+          {
+            "id": "full",
+            "price": 650,
+            "originalPrice": 680,
+            "description": "Modelo Premium: con 50 productos amplías catálogo, ofertas y pagos en línea con más capacidad de venta.",
+            "features": [
+              "Hasta 50 productos precargados para vender en tu tienda",
+              "Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras",
+              "Carrito de compras y favoritos",
+              "Controla tu inventario y tus productos",
+              "Destaca tus ofertas",
+              "Recibe pagos en línea, nacional e internacional (no incluye comisiones)",
+              "Tus productos ordenados por categorías",
+              "Bonus Chatbot",
+              "Mantenimiento incluido el primer mes",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ],
+            "excludedFeatures": ["No incluye realización de foto productos"]
+          }
         ],
         "comingSoon": false
       },

@@ -301,20 +301,56 @@
         "comingSoon": false
       },
       {
-        "category": "E-commerce / Fashion & Beauty",
+        "category": "Online Store · Business Management",
         "title": "Women's Fashion & Beauty Store Template",
-        "description": "An elegant and modern e-commerce web template designed for women's fashion, accessories, and beauty products.",
-        "detailDescription": "Complete online store template featuring a refined aesthetic tailored for fashion and beauty brands. It includes structured product categories (dresses, blouses, skirts, coats, jewelry, makeup, skincare, and fragrances), a featured catalog layout, customer testimonial sections, promotional banners with countdown timers, and integrated search and navigation features.",
+        "description": "A full online store with shopping cart and product management.",
+        "detailDescription": "Live demo of our Online Store product: sell online with cart, payments, and category catalog, customizable with your brand (example: fashion and beauty).",
         "imageSrc": "/images/templates/modelo-4.png",
         "slug": "modelo-4",
         "demoUrl": "https://modelo-4.bonaetech.com/",
-        "price": 150,
-        "features": [
-          "Clean, modern layout optimized for fashion and skincare products",
-          "Comprehensive category navigation including clothing, accessories, and cosmetics",
-          "Featured catalog sections with price displays and quick-buy buttons",
-          "Promotional offer banner with integrated countdown timer",
-          "Built-in customer review section and social media links"
+        "price": 499,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 499,
+            "originalPrice": 520,
+            "description": "Standard model: with 25 products you sell online with cart, categories, and payments ready for your customers.",
+            "features": [
+              "Up to 25 preloaded products to sell in your store",
+              "Product pages with photos, price and details you can update anytime",
+              "Shopping cart and favorites",
+              "Keep track of your inventory and products",
+              "Highlight your deals",
+              "Accept online payments, domestic and international (fees not included)",
+              "Your products organized by category",
+              "Bonus Chatbot",
+              "Maintenance included for the first month",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ],
+            "excludedFeatures": ["Product photo production not included"]
+          },
+          {
+            "id": "full",
+            "price": 650,
+            "originalPrice": 680,
+            "description": "Premium model: with 50 products you expand catalog, deals, and online payments with more sales capacity.",
+            "features": [
+              "Up to 50 preloaded products to sell in your store",
+              "Product pages with photos, price and details you can update anytime",
+              "Shopping cart and favorites",
+              "Keep track of your inventory and products",
+              "Highlight your deals",
+              "Accept online payments, domestic and international (fees not included)",
+              "Your products organized by category",
+              "Bonus Chatbot",
+              "Maintenance included for the first month",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ],
+            "excludedFeatures": ["Product photo production not included"]
+          }
         ],
         "comingSoon": false
       },
