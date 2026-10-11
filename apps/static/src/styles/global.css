@@ -156,11 +156,6 @@
     @apply w-full list-none space-y-3 text-left text-base text-dark-blue leading-relaxed px-0.5;
   }
 
-  .flip-card-bullets li::before {
-    content: '•';
-    @apply text-terracotta font-bold mr-2 text-lg;
-  }
-
   .flip-card-bullet-link {
     @apply text-base font-bold text-dark-blue underline decoration-terracotta/70 underline-offset-[3px]
            hover:text-terracotta hover:decoration-terracotta transition-colors;
