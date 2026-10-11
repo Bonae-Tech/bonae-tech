@@ -37,17 +37,17 @@
         "backBullets": [
           {
             "label": "Landing Page",
-            "description": "Captación desde anuncios y campañas.",
+            "description": "Página enfocada en captar clientes desde anuncios y campañas.",
             "href": "#plantillas"
           },
           {
             "label": "OnePage",
-            "description": "Una página clara para tu negocio.",
+            "description": "Tu negocio en una sola página, clara y fácil de navegar.",
             "href": "#plantillas"
           },
           {
             "label": "Multipage",
-            "description": "Servicios, equipo y más detalle.",
+            "description": "Varias páginas para mostrar servicios, equipo y más detalle.",
             "href": "#plantillas"
           },
           {
@@ -100,7 +100,7 @@
           },
           {
             "label": "Sistema de Ventas",
-            "description": "Pedidos, cobros y reportes.",
+            "description": "Controla pedidos, cobros y reportes de tu operación comercial.",
             "href": "#plantillas"
           },
           {
