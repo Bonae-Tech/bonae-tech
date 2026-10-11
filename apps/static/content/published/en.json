@@ -59,7 +59,14 @@
       {
         "icon": "simple",
         "title": "Social media",
-        "description": "We set up your social ecosystem and automate customer channels so you never miss a message or sales opportunity.",
+        "description": "Social presence and automated channels so you never miss a message, plus customer management and sales follow-up in one approach.",
+        "backLabel": "Close and strategic",
+        "backDescription": "Hands-on support in your language and digital ecosystems built to turn conversations into sales and lasting relationships."
+      },
+      {
+        "icon": "secure",
+        "title": "Business Management",
+        "description": "Digital catalog, online store, and tools for sales, inventory, and payments—the same Business Management templates in our Templates section.",
         "backLabel": "Business Management",
         "backDescription": "Solutions to sell and run your business online.",
         "backBullets": [
