@@ -319,20 +319,51 @@
         "comingSoon": false
       },
       {
-        "category": "Comercio Electrónico",
+        "category": "Catálogo Digital · Gestión de Negocios",
         "title": "Equipo Ecuestre y Ropa de Montar",
-        "description": "Una plantilla de comercio electrónico refinada y moderna, diseñada específicamente para equipo ecuestre, ropa de equitación y accesorios de caballeriza.",
-        "detailDescription": "model-5 es una plantilla sólida y elegante pensada para marcas ecuestres, tiendas de guarnicionería y boutiques de equitación. Con una tipografía limpia, catálogos destacados, banners promocionales con contador de tiempo regresivo, formulario de contacto directo y cabecera con soporte para cambio de idioma, este diseño ofrece una experiencia de compra completa y profesional para amantes de los caballos.",
+        "description": "Muestra tus productos en un catálogo en línea claro y fácil de navegar.",
+        "detailDescription": "Vista demo de nuestro producto Catálogo Digital: vitrina en línea para exhibir productos, categorías y pedidos por WhatsApp, personalizable con tu marca (ejemplo: tienda ecuestre).",
         "imageSrc": "/images/templates/modelo-5.png",
         "slug": "modelo-5",
         "demoUrl": "https://modelo-5.bonaetech.com/",
-        "price": 150,
-        "features": [
-          "Catálogo de productos organizado por sillas, botas, ropa, cascos y accesorios de cuidado",
-          "Sección de ofertas promocionales con temporizador de cuenta regresiva",
-          "Barra de suscripción al boletín para ofrecer códigos de descuento",
-          "Formulario de contacto para consultas personalizadas sobre disciplina o equipo",
-          "Sección de favoritos e integración visual para navegación multi-idioma"
+        "price": 199,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 199,
+            "originalPrice": 220,
+            "description": "Modelo Estándar: con 25 productos muestras lo esencial de tu catálogo, por categorías y listo para pedidos por WhatsApp.",
+            "features": [
+              "Hasta 25 productos precargados para exhibir en tu catálogo",
+              "Tus productos ordenados por categorías",
+              "Cada producto con fotos, precio y detalles",
+              "Tus clientes te hacen pedidos directo por WhatsApp",
+              "Buscador para encontrar productos en segundos",
+              "Actualiza precios y productos cuando quieras",
+              "Mantenimiento incluido el primer mes",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)",
+              "No incluye fotografía de productos"
+            ]
+          },
+          {
+            "id": "full",
+            "price": 340,
+            "originalPrice": 380,
+            "description": "Modelo Premium: con 50 productos amplías tu vitrina, más categorías y más opciones para que te compren por WhatsApp.",
+            "features": [
+              "Hasta 50 productos precargados para exhibir en tu catálogo",
+              "Tus productos ordenados por categorías",
+              "Cada producto con fotos, precio y detalles",
+              "Tus clientes te hacen pedidos directo por WhatsApp",
+              "Buscador para encontrar productos en segundos",
+              "Actualiza precios y productos cuando quieras",
+              "Mantenimiento incluido el primer mes",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ]
+          }
         ],
         "comingSoon": false
       }

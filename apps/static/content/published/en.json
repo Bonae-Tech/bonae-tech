@@ -319,20 +319,51 @@
         "comingSoon": false
       },
       {
-        "category": "E-Commerce",
+        "category": "Digital Catalog · Business Management",
         "title": "Equestrian Equipment & Apparel",
-        "description": "A refined, modern e-commerce template designed specifically for equestrian gear, riding apparel, and tack supplies.",
-        "detailDescription": "An elegant and robust e-commerce template tailored for equestrian brands, horse tack shops, and riding apparel retailers. Featuring clean typography, curated product showcases, integrated promotional banners with countdown timers, customer contact forms, and bilingual-ready header navigation, this design provides a complete and professional shopping experience for horse enthusiasts and riders.",
+        "description": "Show your products in a clear, easy-to-browse online catalog.",
+        "detailDescription": "Live demo of our Digital Catalog product: an online showcase for products, categories, and WhatsApp orders, customizable with your brand (example: equestrian store).",
         "imageSrc": "/images/templates/modelo-5.png",
         "slug": "modelo-5",
         "demoUrl": "https://modelo-5.bonaetech.com/",
-        "price": 150,
-        "features": [
-          "Product catalog showcasing saddles, boots, apparel, helmets, and care accessories",
-          "Promotional banner with dynamic countdown timer for special offers and sales",
-          "Newsletter subscription bar offering promotional discount codes",
-          "Customer inquiry form tailored for rider discipline and horse equipment needs",
-          "Favorites list and navigation support for multi-language toggle"
+        "price": 199,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 199,
+            "originalPrice": 220,
+            "description": "Standard model: with 25 products you showcase catalog essentials by category, ready for WhatsApp orders.",
+            "features": [
+              "Up to 25 preloaded products to showcase in your catalog",
+              "Your products organized by category",
+              "Every product with photos, price and details",
+              "Customers order directly via WhatsApp",
+              "Search bar to find products in seconds",
+              "Update prices and products whenever you want",
+              "Maintenance included for the first month",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)",
+              "Product photography not included"
+            ]
+          },
+          {
+            "id": "full",
+            "price": 340,
+            "originalPrice": 380,
+            "description": "Premium model: with 50 products you expand your showcase, categories, and options for WhatsApp sales.",
+            "features": [
+              "Up to 50 preloaded products to showcase in your catalog",
+              "Your products organized by category",
+              "Every product with photos, price and details",
+              "Customers order directly via WhatsApp",
+              "Search bar to find products in seconds",
+              "Update prices and products whenever you want",
+              "Maintenance included for the first month",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ]
+          }
         ],
         "comingSoon": false
       }
