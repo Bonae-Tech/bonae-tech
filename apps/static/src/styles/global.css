@@ -148,6 +148,24 @@
     transform: rotateY(180deg);
   }
 
+  .flip-card-back--rich {
+    @apply justify-start gap-3 px-2 py-8 overflow-y-auto;
+  }
+
+  .flip-card-bullets {
+    @apply w-full list-none space-y-2.5 text-left text-sm text-dark-blue leading-snug px-1;
+  }
+
+  .flip-card-bullets li::before {
+    content: '•';
+    @apply text-terracotta font-bold mr-2;
+  }
+
+  .flip-card-link {
+    @apply mt-auto inline-flex items-center justify-center self-center px-4 py-2 rounded-lg text-sm font-semibold
+           border-2 border-dark-blue text-dark-blue hover:bg-dark-blue hover:text-white transition-colors;
+  }
+
   .flip-card-badge {
     @apply inline-block self-center px-3 py-1 rounded-full bg-cream text-dark-blue text-xs font-semibold uppercase tracking-wider mb-4 border border-light-blue/20;
   }

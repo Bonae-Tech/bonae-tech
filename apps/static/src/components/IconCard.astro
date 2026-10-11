@@ -8,11 +8,16 @@ interface Props {
   description: string;
   backLabel: string;
   backDescription: string;
+  backBullets?: string[];
+  backLinkLabel?: string;
+  backLinkHref?: string;
 }
 
-const { icon, title, description, backLabel, backDescription } = Astro.props;
+const { icon, title, description, backLabel, backDescription, backBullets, backLinkLabel, backLinkHref } =
+  Astro.props;
 const src = valuePropIconSrc[icon];
 const alt = valuePropIconAlt[icon] ?? title;
+const richBack = backBullets && backBullets.length > 0;
 ---
 
 <article class="flip-card group" tabindex="0">
@@ -34,9 +39,24 @@ const alt = valuePropIconAlt[icon] ?? title;
         <p class="value-prop-card-subtitle">{description}</p>
       )}
     </div>
-    <div class="flip-card-back">
+    <div class:list={['flip-card-back', { 'flip-card-back--rich': richBack }]}>
       <span class="flip-card-badge">{backLabel}</span>
-      <p class="text-sm text-body leading-relaxed px-2">{backDescription}</p>
+      {richBack ? (
+        <>
+          <ul class="flip-card-bullets">
+            {backBullets.map((bullet) => (
+              <li>{bullet}</li>
+            ))}
+          </ul>
+          {backLinkHref && backLinkLabel && (
+            <a href={backLinkHref} class="flip-card-link">
+              {backLinkLabel}
+            </a>
+          )}
+        </>
+      ) : (
+        <p class="text-sm text-body leading-relaxed px-2">{backDescription}</p>
+      )}
     </div>
   </div>
 </article>

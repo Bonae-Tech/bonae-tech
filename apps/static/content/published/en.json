@@ -31,9 +31,16 @@
       {
         "icon": "accessible",
         "title": "High-impact web presence",
-        "description": "We design and launch your professional website, ready to attract customers.",
-        "backLabel": "Accessible",
-        "backDescription": "Market-aligned pricing, from basic plans to complete solutions, with financing options."
+        "description": "Lightweight web design optimized so customers find you on Google and other search engines and turn visits into leads.",
+        "backLabel": "Web Services",
+        "backDescription": "Pick the format that fits your business.",
+        "backBullets": [
+          "Landing Page — A focused page to capture leads from ads and campaigns.",
+          "OnePage — Your business on one clear, easy-to-browse page.",
+          "Multipage — Multiple pages to showcase services, team, and more detail."
+        ],
+        "backLinkLabel": "View templates",
+        "backLinkHref": "/en/#plantillas"
       },
       {
         "icon": "simple",
