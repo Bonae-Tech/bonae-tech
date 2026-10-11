@@ -113,8 +113,26 @@
         "icon": "close",
         "title": "Digital consulting",
         "description": "We diagnose your business to cut repetitive work and automate operations, and we improve your current website: speed, design, and conversion.",
-        "backLabel": "Secure",
-        "backDescription": "We optimize technical and strategic processes, strengthen your existing site, and professionalize your brand to earn customer trust."
+        "backLabel": "Digital consulting",
+        "backDescription": "Get more from the website you already have.",
+        "backBullets": [
+          {
+            "label": "Improve your current site",
+            "description": "Speed, design, and UX so your site performs better."
+          },
+          {
+            "label": "Maintenance",
+            "description": "We update and care for what you already have online."
+          },
+          {
+            "label": "Copy and content",
+            "description": "Sharper messaging and information: clarity, SEO, and conversions."
+          },
+          {
+            "label": "More benefits",
+            "description": "A more professional image and smoother digital processes."
+          }
+        ]
       },
       {
         "icon": "education",

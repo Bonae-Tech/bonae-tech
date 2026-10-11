@@ -113,8 +113,26 @@
         "icon": "close",
         "title": "Consultoría digital",
         "description": "Diagnosticamos tu negocio para eliminar tareas repetitivas y automatizar la operación, y mejoramos tu web actual: velocidad, diseño y conversión.",
-        "backLabel": "Seguro",
-        "backDescription": "Optimizamos procesos técnicos y estratégicos, potenciamos tu sitio web existente y profesionalizamos tu imagen para ganar la confianza de tus clientes."
+        "backLabel": "Consultoría digital",
+        "backDescription": "Potencia lo que ya tienes en la web.",
+        "backBullets": [
+          {
+            "label": "Mejorar tu página actual",
+            "description": "Velocidad, diseño y experiencia para que tu sitio rinda más."
+          },
+          {
+            "label": "Mantenimiento",
+            "description": "Actualizamos y cuidamos lo que ya tienes en línea."
+          },
+          {
+            "label": "Textos y contenido",
+            "description": "Refinamos copy e información: claridad, SEO y más conversiones."
+          },
+          {
+            "label": "Otros beneficios",
+            "description": "Imagen más profesional y procesos digitales más eficientes."
+          }
+        ]
       },
       {
         "icon": "education",
