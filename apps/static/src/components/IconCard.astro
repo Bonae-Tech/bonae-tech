@@ -2,22 +2,31 @@
 import type { ValuePropIcon } from '@bonae/content';
 import { valuePropIconSrc, valuePropIconAlt } from '../lib/icons';
 
+type BackBullet =
+  | string
+  | {
+      label: string;
+      description: string;
+      href?: string;
+    };
+
 interface Props {
   icon: ValuePropIcon;
   title: string;
   description: string;
   backLabel: string;
   backDescription: string;
-  backBullets?: string[];
-  backLinkLabel?: string;
-  backLinkHref?: string;
+  backBullets?: BackBullet[];
 }
 
-const { icon, title, description, backLabel, backDescription, backBullets, backLinkLabel, backLinkHref } =
-  Astro.props;
+const { icon, title, description, backLabel, backDescription, backBullets } = Astro.props;
 const src = valuePropIconSrc[icon];
 const alt = valuePropIconAlt[icon] ?? title;
 const richBack = backBullets && backBullets.length > 0;
+
+function isStructuredBullet(bullet: BackBullet): bullet is Exclude<BackBullet, string> {
+  return typeof bullet === 'object';
+}
 ---
 
 <article class="flip-card group" tabindex="0">
@@ -42,18 +51,26 @@ const richBack = backBullets && backBullets.length > 0;
     <div class:list={['flip-card-back', { 'flip-card-back--rich': richBack }]}>
       <span class="flip-card-badge">{backLabel}</span>
       {richBack ? (
-        <>
-          <ul class="flip-card-bullets">
-            {backBullets.map((bullet) => (
-              <li>{bullet}</li>
-            ))}
-          </ul>
-          {backLinkHref && backLinkLabel && (
-            <a href={backLinkHref} class="flip-card-link">
-              {backLinkLabel}
-            </a>
-          )}
-        </>
+        <ul class="flip-card-bullets">
+          {backBullets.map((bullet) => (
+            <li>
+              {isStructuredBullet(bullet) ? (
+                <>
+                  {bullet.href ? (
+                    <a href={bullet.href} class="flip-card-bullet-link">
+                      {bullet.label}
+                    </a>
+                  ) : (
+                    <span class="font-semibold text-dark-blue">{bullet.label}</span>
+                  )}
+                  <span class="text-body"> — {bullet.description}</span>
+                </>
+              ) : (
+                bullet
+              )}
+            </li>
+          ))}
+        </ul>
       ) : (
         <p class="text-sm text-body leading-relaxed px-2">{backDescription}</p>
       )}

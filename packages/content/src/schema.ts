@@ -64,28 +64,23 @@ export const businessHoursSchema = z
 export type BusinessHours = z.infer<typeof businessHoursSchema>;
 export type BusinessHoursDay = z.infer<typeof businessHoursDaySchema>;
 
-const iconItemSchema = z
-  .object({
-    icon: z.enum(valuePropIcons),
-    title: z.string().min(1),
-    description: z.string().min(1).max(180),
-    backLabel: z.string().min(1),
-    backDescription: z.string().min(1).max(180),
-    backBullets: z.array(z.string().min(1).max(140)).max(8).optional(),
-    backLinkLabel: z.string().min(1).optional(),
-    backLinkHref: z.string().min(1).optional(),
-  })
-  .superRefine((item, ctx) => {
-    const hasLinkLabel = Boolean(item.backLinkLabel?.trim());
-    const hasLinkHref = Boolean(item.backLinkHref?.trim());
-    if (hasLinkLabel !== hasLinkHref) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'backLinkLabel and backLinkHref must both be set or both omitted',
-        path: hasLinkLabel ? ['backLinkHref'] : ['backLinkLabel'],
-      });
-    }
-  });
+export const valuePropBackBulletSchema = z.object({
+  label: z.string().min(1).max(80),
+  description: z.string().min(1).max(140),
+  href: z.string().min(1).optional(),
+});
+
+const iconItemSchema = z.object({
+  icon: z.enum(valuePropIcons),
+  title: z.string().min(1),
+  description: z.string().min(1).max(180),
+  backLabel: z.string().min(1),
+  backDescription: z.string().min(1).max(180),
+  backBullets: z
+    .array(z.union([z.string().min(1).max(140), valuePropBackBulletSchema]))
+    .max(8)
+    .optional(),
+});
 
 const memberSchema = z.object({
   initials: z.string().min(1),

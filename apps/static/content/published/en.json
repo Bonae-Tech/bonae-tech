@@ -35,12 +35,22 @@
         "backLabel": "Web Services",
         "backDescription": "Pick the format that fits your business.",
         "backBullets": [
-          "Landing Page — A focused page to capture leads from ads and campaigns.",
-          "OnePage — Your business on one clear, easy-to-browse page.",
-          "Multipage — Multiple pages to showcase services, team, and more detail."
-        ],
-        "backLinkLabel": "View templates",
-        "backLinkHref": "/en/#plantillas"
+          {
+            "label": "Landing Page",
+            "description": "A focused page to capture leads from ads and campaigns.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "OnePage",
+            "description": "Your business on one clear, easy-to-browse page.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Multipage",
+            "description": "Multiple pages to showcase services, team, and more detail.",
+            "href": "/en/#plantillas"
+          }
+        ]
       },
       {
         "icon": "simple",
