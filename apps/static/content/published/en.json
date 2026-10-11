@@ -58,17 +58,31 @@
       },
       {
         "icon": "simple",
-        "title": "Social media",
-        "description": "We manage your social media presence with strategic, brand-aligned content.",
-        "backLabel": "Close to you",
-        "backDescription": "We structure high-performance digital ecosystems with advanced SEO and sustainable organic growth."
-      },
-      {
-        "icon": "secure",
-        "title": "Commercial management systems (CRM)",
-        "description": "We implement systems to organize customers, sales, and commercial follow-up.",
-        "backLabel": "Strategic",
-        "backDescription": "We optimize every technical and strategic process to professionalize your image and protect customer trust."
+        "title": "Business Management",
+        "description": "Digital catalog, online store, and tools to track sales, inventory, and payments—the same Business Management templates in our Templates section.",
+        "backLabel": "Business Management",
+        "backDescription": "Solutions to sell and run your business online.",
+        "backBullets": [
+          {
+            "label": "Digital Catalog",
+            "description": "Showcase products and take orders via WhatsApp.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Online Store",
+            "description": "Sell online 24/7 with cart and payments.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Sales System",
+            "description": "Track orders, payments, and sales reports.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Other products",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "close",

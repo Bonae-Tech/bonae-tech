@@ -58,17 +58,31 @@
       },
       {
         "icon": "simple",
-        "title": "Redes Sociales",
-        "description": "Creamos y configuramos tu ecosistema en redes sociales. Automatizamos tus canales de atención para que nunca vuelvas a perder un mensaje de ventas.",
-        "backLabel": "Cercano",
-        "backDescription": "Entendemos los retos y oportunidades de nuestra región, hablamos tu idioma y ofrecemos soporte técnico cercano, real y eficiente."
-      },
-      {
-        "icon": "secure",
-        "title": "Sistemas de Gestión Comercial (CRM)",
-        "description": "Gestión de clientes y seguimiento de ventas con sistemas de fácil acceso y manejo.",
-        "backLabel": "Estratégico",
-        "backDescription": "Estructuramos ecosistemas digitales de alto rendimiento con SEO avanzado y crecimiento orgánico sostenible."
+        "title": "Gestión de Negocios",
+        "description": "Catálogo digital, tienda en línea y sistemas para controlar ventas, inventario y cobros: las mismas soluciones de nuestra sección Plantillas en Gestión de Negocios.",
+        "backLabel": "Gestión de Negocios",
+        "backDescription": "Soluciones para vender y administrar tu negocio en línea.",
+        "backBullets": [
+          {
+            "label": "Catálogo Digital",
+            "description": "Muestra tus productos y recibe pedidos por WhatsApp.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "Tienda Virtual",
+            "description": "Vende en línea las 24 horas con carrito y pagos.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "Sistema de Ventas",
+            "description": "Controla pedidos, cobros y reportes de tu operación comercial.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "Otros productos",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "close",
