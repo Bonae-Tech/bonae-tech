@@ -115,6 +115,7 @@ export const templateDetailPlanSchema = z.object({
   originalPrice: z.number().int().positive().optional(),
   description: z.string().min(1).max(500),
   features: z.array(z.string().min(1)).max(15),
+  excludedFeatures: z.array(z.string().min(1)).max(8).optional(),
 });
 
 const templateItemSchema = z

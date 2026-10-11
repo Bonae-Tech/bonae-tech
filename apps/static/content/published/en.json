@@ -343,9 +343,9 @@
               "Update prices and products whenever you want",
               "Maintenance included for the first month",
               "Hosting included for 1 year (conditions apply)",
-              "Domain included for 1 year (conditions apply)",
-              "Product photography not included"
-            ]
+              "Domain included for 1 year (conditions apply)"
+            ],
+            "excludedFeatures": ["Product photo production not included"]
           },
           {
             "id": "full",
@@ -362,7 +362,8 @@
               "Maintenance included for the first month",
               "Hosting included for 1 year (conditions apply)",
               "Domain included for 1 year (conditions apply)"
-            ]
+            ],
+            "excludedFeatures": ["Product photo production not included"]
           }
         ],
         "comingSoon": false

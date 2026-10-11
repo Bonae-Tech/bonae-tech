@@ -78,13 +78,39 @@ const planLabels: Record<'standard' | 'full', string> = {
                   </p>
                 )}
 
-                {plan.features.length > 0 && (
+                {(plan.features.length > 0 || (plan.excludedFeatures?.length ?? 0) > 0) && (
                   <>
                     <h3 class="text-xs sm:text-sm font-bold text-dark-blue mb-2">{section.featuresLabel}</h3>
                     <ul class="space-y-2">
                       {plan.features.map((feature) => (
                         <li class="flex gap-2 items-start">
-                          <span class="w-1.5 h-1.5 rounded-full bg-terracotta shrink-0 mt-1.5" aria-hidden="true"></span>
+                          <svg
+                            class="w-4 h-4 shrink-0 text-terracotta mt-0.5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0z"
+                              clip-rule="evenodd"></path>
+                          </svg>
+                          <span class="text-xs sm:text-sm text-dark-blue leading-snug">{feature}</span>
+                        </li>
+                      ))}
+                      {(plan.excludedFeatures ?? []).map((feature) => (
+                        <li class="flex gap-2 items-start">
+                          <svg
+                            class="w-4 h-4 shrink-0 text-light-blue mt-0.5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M5.3 5.3a1 1 0 0 1 1.4 0L10 8.6l3.3-3.3a1 1 0 1 1 1.4 1.4L11.4 10l3.3 3.3a1 1 0 0 1-1.4 1.4L10 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L8.6 10 5.3 6.7a1 1 0 0 1 0-1.4z"
+                              clip-rule="evenodd"></path>
+                          </svg>
                           <span class="text-xs sm:text-sm text-body leading-snug">{feature}</span>
                         </li>
                       ))}
