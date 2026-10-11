@@ -81,11 +81,11 @@ export const valuePropBackBulletSchema = z
         path: ['href'],
       });
     }
-    if (!hasHref && !hasWhatsApp) {
+    if (!hasHref && !hasWhatsApp && !bullet.description?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Structured back bullet needs href or linkTarget whatsapp',
-        path: ['href'],
+        message: 'Structured back bullet needs href, linkTarget whatsapp, or description',
+        path: ['description'],
       });
     }
   });

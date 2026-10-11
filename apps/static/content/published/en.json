@@ -58,10 +58,28 @@
       },
       {
         "icon": "simple",
-        "title": "Social media",
+        "title": "Social media and CRM",
         "description": "Social presence and automated channels so you never miss a message, plus customer management and sales follow-up in one approach.",
-        "backLabel": "Close and strategic",
-        "backDescription": "Hands-on support in your language and digital ecosystems built to turn conversations into sales and lasting relationships."
+        "backLabel": "Social media and CRM",
+        "backDescription": "Connect, sell, and follow up without friction.",
+        "backBullets": [
+          {
+            "label": "CRM at full potential",
+            "description": "Centralize customers, history, and follow-up to get the most from every contact."
+          },
+          {
+            "label": "Social media campaigns",
+            "description": "On-brand content and campaigns to attract and convert your audience."
+          },
+          {
+            "label": "Integrated, no missed sales",
+            "description": "We connect social, messaging, and CRM so every inquiry gets a response."
+          },
+          {
+            "label": "Other products",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "secure",

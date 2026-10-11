@@ -58,10 +58,28 @@
       },
       {
         "icon": "simple",
-        "title": "Redes Sociales",
+        "title": "Redes Sociales y CRM",
         "description": "Ecosistema en redes y canales automatizados para no perder mensajes, más gestión de clientes y seguimiento comercial en un solo enfoque.",
-        "backLabel": "Cercano y estratégico",
-        "backDescription": "Soporte técnico cercano en tu idioma y ecosistemas digitales pensados para convertir conversaciones en ventas y relaciones duraderas."
+        "backLabel": "Redes Sociales y CRM",
+        "backDescription": "Conecta, vende y da seguimiento sin fricción.",
+        "backBullets": [
+          {
+            "label": "Potencial CRM",
+            "description": "Centraliza clientes, historial y seguimiento para sacar el máximo provecho a cada contacto."
+          },
+          {
+            "label": "Campañas en redes sociales",
+            "description": "Contenido y campañas alineadas a tu marca para atraer y convertir audiencia."
+          },
+          {
+            "label": "Integración sin perder ventas",
+            "description": "Unimos redes, mensajes y CRM para que ninguna consulta se quede sin respuesta."
+          },
+          {
+            "label": "Otros productos",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "secure",
