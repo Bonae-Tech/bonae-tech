@@ -21,7 +21,7 @@ const planLabels: Record<'standard' | 'full', string> = {
 ---
 
 <section class="flex-1 bg-cream py-10 md:py-14">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <a
       href={backHref}
       class="inline-flex items-center gap-2 text-sm font-semibold text-body hover:text-dark-blue transition-colors mb-8"
@@ -30,7 +30,7 @@ const planLabels: Record<'standard' | 'full', string> = {
     </a>
 
     {plans && plans.length > 0 ? (
-      <div class="grid gap-10 lg:grid-cols-2 lg:gap-x-14 lg:gap-y-8 items-start">
+      <div class="grid gap-10 lg:grid-cols-[1.35fr_1fr] xl:grid-cols-[1.4fr_1fr] lg:gap-x-12 xl:gap-x-16 lg:gap-y-8 items-start">
         <div class="flex flex-col gap-6">
           <div class="rounded-2xl overflow-hidden shadow-lg bg-dark-blue border border-light-blue/15">
             <img
@@ -58,17 +58,25 @@ const planLabels: Record<'standard' | 'full', string> = {
                     {section.priceCurrency} {plan.price}
                   </p>
                 </div>
-                <p class="text-xs text-body mb-3">
-                  {section.priceNote}
-                  {plan.originalPrice && (
-                    <>
-                      {' · '}
-                      <span class="font-semibold text-terracotta">
-                        {plan.id === 'full' ? section.premiumOfferNote : section.offerNote}
-                      </span>
-                    </>
-                  )}
-                </p>
+                {(plan.id === 'standard' || plan.originalPrice) && (
+                  <p class="text-xs text-body mb-3">
+                    {plan.id === 'full' ? (
+                      plan.originalPrice && (
+                        <span class="font-semibold text-terracotta">{section.premiumOfferNote}</span>
+                      )
+                    ) : (
+                      <>
+                        {section.priceNote}
+                        {plan.originalPrice && (
+                          <>
+                            {' · '}
+                            <span class="font-semibold text-terracotta">{section.offerNote}</span>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </p>
+                )}
 
                 {plan.features.length > 0 && (
                   <>
@@ -88,10 +96,10 @@ const planLabels: Record<'standard' | 'full', string> = {
           </div>
         </div>
 
-        <div class="lg:sticky lg:top-8 flex flex-col">
+        <div class="lg:sticky lg:top-8 flex flex-col max-w-xl lg:max-w-none">
           <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-3">{item.category}</p>
-          <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-5 leading-tight">{item.title}</h1>
-          <p class="text-base text-body leading-relaxed mb-8">{item.detailDescription}</p>
+          <h1 class="text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-dark-blue mb-5 leading-tight">{item.title}</h1>
+          <p class="text-base lg:text-lg text-body leading-relaxed mb-8">{item.detailDescription}</p>
 
           <div class="flex flex-col sm:flex-row gap-3 mt-auto">
             <a
