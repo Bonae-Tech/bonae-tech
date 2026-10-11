@@ -274,6 +274,7 @@ const es: CategoriesCopy = {
 const en: CategoriesCopy = {
   priceLabel: 'Standard Model',
   offerNote: 'Limited-time offer',
+  premiumOfferNote: 'Starting price',
   showMoreLabel: 'Show more',
   showLessLabel: 'Show less',
   planLabels: { standard: 'Standard', full: 'Premium' },

@@ -29,155 +29,150 @@ const planLabels: Record<'standard' | 'full', string> = {
       {section.backLabel}
     </a>
 
-    <div class="grid gap-10 lg:grid-cols-2 lg:gap-14 items-start">
-      <div class="rounded-2xl overflow-hidden shadow-lg bg-dark-blue border border-light-blue/15">
-        <img
-          src={item.imageSrc}
-          alt=""
-          class="w-full object-cover object-top aspect-[4/3]"
-          width="800"
-          height="600"
-        />
-      </div>
+    {plans && plans.length > 0 ? (
+      <div class="grid gap-10 lg:grid-cols-2 lg:gap-x-14 lg:gap-y-8 items-start">
+        <div class="flex flex-col gap-6">
+          <div class="rounded-2xl overflow-hidden shadow-lg bg-dark-blue border border-light-blue/15">
+            <img
+              src={item.imageSrc}
+              alt=""
+              class="w-full object-cover object-top aspect-[4/3]"
+              width="800"
+              height="600"
+            />
+          </div>
 
-      <div class={plans?.length ? 'template-detail-plans' : undefined} data-plan-group={plans?.length ? '' : undefined}>
-        <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-3">{item.category}</p>
-        <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-4 leading-tight">{item.title}</h1>
-        <p class="text-base text-body leading-relaxed mb-6">{item.detailDescription}</p>
+          {plans.map((plan) => (
+            <article class="rounded-2xl bg-white border border-light-blue/15 shadow-sm px-5 py-5 sm:px-6">
+              <h2 class="text-lg font-bold text-dark-blue mb-2">{planLabels[plan.id]}</h2>
+              <p class="text-sm text-body leading-relaxed mb-4">{plan.description}</p>
 
-        {plans && plans.length > 0 ? (
-          <>
-            <div class="inline-flex rounded-lg bg-white border border-light-blue/25 p-1 mb-4" role="group">
-              {plans.map((plan, index) => (
-                <button
-                  type="button"
-                  class="plan-toggle px-4 py-1.5 rounded-md text-sm font-semibold transition-colors cursor-pointer"
-                  data-plan-toggle={plan.id}
-                  aria-pressed={index === 0 ? 'true' : 'false'}
-                >
-                  {planLabels[plan.id]}
-                </button>
-              ))}
-            </div>
-
-            {plans.map((plan, index) => (
-              <div class:list={{ hidden: index > 0 }} data-plan-panel={plan.id}>
-                <p class="text-sm text-body leading-relaxed mb-5">{plan.description}</p>
-
-                <div class="flex items-baseline flex-wrap gap-x-2 gap-y-1 mb-1">
-                  {plan.originalPrice && (
-                    <s class="text-2xl font-semibold text-light-blue decoration-terracotta decoration-2">
-                      {section.priceCurrency} {plan.originalPrice}
-                    </s>
-                  )}
-                  <p class="text-3xl font-bold text-dark-blue">
-                    {section.priceCurrency} {plan.price}
-                  </p>
-                </div>
-                <p class="text-sm text-body mb-6">
-                  {section.priceNote}
-                  {plan.originalPrice && (
-                    <>
-                      {' · '}
-                      <span class="font-semibold text-terracotta">
-                        {plan.id === 'full' ? section.premiumOfferNote : section.offerNote}
-                      </span>
-                    </>
-                  )}
-                </p>
-
-                {plan.features.length > 0 && (
-                  <div class="rounded-2xl bg-white border border-light-blue/15 shadow-sm px-6 py-5 mb-8">
-                    <h2 class="text-base font-bold text-dark-blue mb-4">{section.featuresLabel}</h2>
-                    <ul class="space-y-3">
-                      {plan.features.map((feature) => (
-                        <li class="flex gap-3 items-start">
-                          <span class="w-2 h-2 rounded-full bg-terracotta shrink-0 mt-2" aria-hidden="true"></span>
-                          <span class="text-sm text-body leading-relaxed">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+              <div class="flex items-baseline flex-wrap gap-x-2 gap-y-1 mb-1">
+                {plan.originalPrice && (
+                  <s class="text-xl font-semibold text-light-blue decoration-terracotta decoration-2">
+                    {section.priceCurrency} {plan.originalPrice}
+                  </s>
                 )}
+                <p class="text-2xl font-bold text-dark-blue">
+                  {section.priceCurrency} {plan.price}
+                </p>
               </div>
-            ))}
-          </>
-        ) : (
-          <>
-            {item.features.length > 0 && (
-              <div class="rounded-2xl bg-white border border-light-blue/15 shadow-sm px-6 py-5 mb-8">
-                <h2 class="text-base font-bold text-dark-blue mb-4">{section.featuresLabel}</h2>
-                <ul class="space-y-3">
-                  {item.features.map((feature) => (
-                    <li class="flex gap-3 items-start">
-                      <span class="w-2 h-2 rounded-full bg-terracotta shrink-0 mt-2" aria-hidden="true"></span>
-                      <span class="text-sm text-body leading-relaxed">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div class="flex items-baseline gap-2 mb-6">
-              <p class="text-3xl font-bold text-dark-blue">
-                {section.priceCurrency} {item.price}
+              <p class="text-xs sm:text-sm text-body mb-4">
+                {section.priceNote}
+                {plan.originalPrice && (
+                  <>
+                    {' · '}
+                    <span class="font-semibold text-terracotta">
+                      {plan.id === 'full' ? section.premiumOfferNote : section.offerNote}
+                    </span>
+                  </>
+                )}
               </p>
-              <p class="text-sm text-body">{section.priceNote}</p>
-            </div>
-          </>
-        )}
 
-        <div class="flex flex-col sm:flex-row gap-3">
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-terracotta text-white font-semibold hover:bg-terracotta-dark transition-colors"
-          >
-            {section.useTemplateLabel}
-          </a>
-          {demoUrl && (
+              {plan.features.length > 0 && (
+                <>
+                  <h3 class="text-sm font-bold text-dark-blue mb-3">{section.featuresLabel}</h3>
+                  <ul class="space-y-2.5">
+                    {plan.features.map((feature) => (
+                      <li class="flex gap-2.5 items-start">
+                        <span class="w-2 h-2 rounded-full bg-terracotta shrink-0 mt-1.5" aria-hidden="true"></span>
+                        <span class="text-sm text-body leading-relaxed">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </article>
+          ))}
+        </div>
+
+        <div class="lg:sticky lg:top-8 flex flex-col">
+          <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-3">{item.category}</p>
+          <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-5 leading-tight">{item.title}</h1>
+          <p class="text-base text-body leading-relaxed mb-8">{item.detailDescription}</p>
+
+          <div class="flex flex-col sm:flex-row gap-3 mt-auto">
             <a
-              href={demoUrl}
+              href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
+              class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-terracotta text-white font-semibold hover:bg-terracotta-dark transition-colors"
             >
-              {section.demoLabel}
+              {section.useTemplateLabel}
             </a>
-          )}
+            {demoUrl && (
+              <a
+                href={demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
+              >
+                {section.demoLabel}
+              </a>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    ) : (
+      <div class="grid gap-10 lg:grid-cols-2 lg:gap-14 items-start">
+        <div class="rounded-2xl overflow-hidden shadow-lg bg-dark-blue border border-light-blue/15">
+          <img
+            src={item.imageSrc}
+            alt=""
+            class="w-full object-cover object-top aspect-[4/3]"
+            width="800"
+            height="600"
+          />
+        </div>
+
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-3">{item.category}</p>
+          <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-4 leading-tight">{item.title}</h1>
+          <p class="text-base text-body leading-relaxed mb-8">{item.detailDescription}</p>
+
+          {item.features.length > 0 && (
+            <div class="rounded-2xl bg-white border border-light-blue/15 shadow-sm px-6 py-5 mb-8">
+              <h2 class="text-base font-bold text-dark-blue mb-4">{section.featuresLabel}</h2>
+              <ul class="space-y-3">
+                {item.features.map((feature) => (
+                  <li class="flex gap-3 items-start">
+                    <span class="w-2 h-2 rounded-full bg-terracotta shrink-0 mt-2" aria-hidden="true"></span>
+                    <span class="text-sm text-body leading-relaxed">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div class="flex items-baseline gap-2 mb-6">
+            <p class="text-3xl font-bold text-dark-blue">
+              {section.priceCurrency} {item.price}
+            </p>
+            <p class="text-sm text-body">{section.priceNote}</p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-terracotta text-white font-semibold hover:bg-terracotta-dark transition-colors"
+            >
+              {section.useTemplateLabel}
+            </a>
+            {demoUrl && (
+              <a
+                href={demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
+              >
+                {section.demoLabel}
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
   </div>
 </section>
-
-{plans && plans.length > 0 && (
-  <>
-    <style>
-      .template-detail-plans .plan-toggle {
-        @apply text-body;
-      }
-      .template-detail-plans .plan-toggle[aria-pressed='true'] {
-        @apply bg-dark-blue text-white;
-      }
-    </style>
-    <script>
-      document.querySelectorAll<HTMLElement>('[data-plan-group]').forEach((group) => {
-        const toggles = group.querySelectorAll<HTMLButtonElement>('[data-plan-toggle]');
-        toggles.forEach((toggle) => {
-          toggle.addEventListener('click', () => {
-            const planId = toggle.dataset.planToggle;
-            if (!planId) return;
-            toggles.forEach((btn) => {
-              btn.setAttribute('aria-pressed', btn === toggle ? 'true' : 'false');
-            });
-            group.querySelectorAll<HTMLElement>('[data-plan-panel]').forEach((panel) => {
-              panel.classList.toggle('hidden', panel.dataset.planPanel !== planId);
-            });
-          });
-        });
-      });
-    </script>
-  </>
-)}
