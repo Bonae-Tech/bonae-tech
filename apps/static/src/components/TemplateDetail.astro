@@ -18,6 +18,12 @@ const planLabels: Record<'standard' | 'full', string> = {
   standard: section.planStandardLabel,
   full: section.planPremiumLabel,
 };
+
+function planUsesInitialPriceFootnote(
+  plan: NonNullable<TemplateItem['plans']>[number],
+): boolean {
+  return plan.priceFootnote === 'initialPrice';
+}
 ---
 
 <section class="flex-1 bg-cream py-10 md:py-14">
@@ -42,7 +48,12 @@ const planLabels: Record<'standard' | 'full', string> = {
             />
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 items-start">
+          <div
+            class:list={[
+              'grid gap-4 sm:gap-5 items-start',
+              plans.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2',
+            ]}
+          >
             {plans.map((plan) => (
               <article class="rounded-2xl bg-white border border-light-blue/15 shadow-sm px-4 py-5 sm:px-5 h-full">
                 <h2 class="text-base sm:text-lg font-bold text-dark-blue mb-2">{planLabels[plan.id]}</h2>
@@ -58,9 +69,13 @@ const planLabels: Record<'standard' | 'full', string> = {
                     {section.priceCurrency} {plan.price}
                   </p>
                 </div>
-                {(plan.id === 'standard' || plan.originalPrice) && (
+                {(planUsesInitialPriceFootnote(plan) ||
+                  plan.originalPrice ||
+                  (plan.id === 'standard' && !planUsesInitialPriceFootnote(plan))) && (
                   <p class="text-xs text-body mb-3">
-                    {plan.id === 'full' ? (
+                    {planUsesInitialPriceFootnote(plan) ? (
+                      <span class="font-semibold text-terracotta">{section.premiumOfferNote}</span>
+                    ) : plan.id === 'full' ? (
                       plan.originalPrice && (
                         <span class="font-semibold text-terracotta">{section.premiumOfferNote}</span>
                       )
@@ -180,11 +195,17 @@ const planLabels: Record<'standard' | 'full', string> = {
             </div>
           )}
 
-          <div class="flex items-baseline gap-2 mb-6">
+          <div class="flex items-baseline flex-wrap gap-x-2 gap-y-1 mb-6">
             <p class="text-3xl font-bold text-dark-blue">
               {section.priceCurrency} {item.price}
             </p>
-            <p class="text-sm text-body">{section.priceNote}</p>
+            <p class="text-sm text-body">
+              {item.priceFootnote === 'initialPrice' ? (
+                <span class="font-semibold text-terracotta">{section.premiumOfferNote}</span>
+              ) : (
+                section.priceNote
+              )}
+            </p>
           </div>
 
           <div class="flex flex-col sm:flex-row gap-3">

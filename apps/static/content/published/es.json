@@ -283,20 +283,31 @@
         "comingSoon": false
       },
       {
-        "category": "Paneles de Administración y Negocios",
+        "category": "Sistema de Ventas · Gestión de Negocios",
         "title": "Plantilla de Panel Administrativo y de Ventas",
-        "description": "Un panel administrativo moderno y responsivo diseñado para el seguimiento de contratos, pagos, rendimiento de vendedores y saldos pendientes.",
-        "detailDescription": "Esta plantilla de panel de gestión intuitiva adaptada para empresas que gestionan ventas, contratos y seguimiento de pagos a través de múltiples canales. Incluye métricas de resumen en tiempo real para contratos activos, pendientes y cancelados, resúmenes financieros claros de deudas, desglose por métodos de pago (Zelle, PayPal, Binance, Efectivo, etc.) y reportes descargables agrupados por vendedor.",
+        "description": "Panel administrativo para gestionar ventas, pagos y vendedores con métricas en tiempo real.",
+        "detailDescription": "Vista demo de nuestro producto Sistema de Ventas: control de pedidos, cobros y reportes por vendedor desde web o móvil, personalizable para tu operación comercial.",
         "imageSrc": "/images/templates/modelo-3.png",
         "slug": "modelo-3",
         "demoUrl": "https://modelo-3.bonaetech.com/",
         "price": 300,
-        "features": [
-          "Seguimiento en tiempo real del estado de contratos (Activos, Por despachar, Cancelados, Finalizados)",
-          "Resumen financiero completo (Deuda Total, Deuda Vencida, Saldo Pendiente, Total Pagado)",
-          "Desglose de pagos multicanal (Pago Móvil, Zelle, PayPal, Binance, Efectivo, Transferencia)",
-          "Reportes descargables de ventas y deudas agrupados por vendedor",
-          "Diseño responsivo y optimizado para dispositivos móviles con navegación por pestañas"
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 300,
+            "priceFootnote": "initialPrice",
+            "description": "Un solo plan para seguir pedidos, deudas y cobros en tiempo real y descargar reportes por vendedor desde cualquier dispositivo.",
+            "features": [
+              "Sigue tus pedidos en tiempo real",
+              "Mira cuánto te deben y cuánto has cobrado",
+              "Registra pagos por Zelle, PayPal, Binance o efectivo",
+              "Descarga reportes de ventas por vendedor",
+              "Úsalo desde tu celular, tablet o computadora",
+              "Mantenimiento incluido el primer mes",
+              "Conexión con correo y mensajería para enviar reportes a tus clientes registrados (configuración y costos de terceros no incluidos)"
+            ]
+          }
         ],
         "comingSoon": false
       },

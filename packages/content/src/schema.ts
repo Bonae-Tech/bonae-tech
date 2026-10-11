@@ -109,6 +109,8 @@ const memberSchema = z.object({
   highlights: z.array(z.string().min(1)).min(1),
 });
 
+export const templatePriceFootnoteSchema = z.enum(['singlePayment', 'initialPrice']);
+
 export const templateDetailPlanSchema = z.object({
   id: z.enum(['standard', 'full']),
   price: z.number().int().positive(),
@@ -116,6 +118,7 @@ export const templateDetailPlanSchema = z.object({
   description: z.string().min(1).max(500),
   features: z.array(z.string().min(1)).max(15),
   excludedFeatures: z.array(z.string().min(1)).max(8).optional(),
+  priceFootnote: templatePriceFootnoteSchema.optional(),
 });
 
 const templateItemSchema = z
@@ -130,7 +133,8 @@ const templateItemSchema = z
     price: z.number().int().nonnegative(),
     features: z.array(z.string().min(1)).max(8),
     comingSoon: z.boolean(),
-    plans: z.array(templateDetailPlanSchema).min(2).max(2).optional(),
+    plans: z.array(templateDetailPlanSchema).min(1).max(2).optional(),
+    priceFootnote: templatePriceFootnoteSchema.optional(),
   })
   .superRefine((item, ctx) => {
     if (item.comingSoon) {

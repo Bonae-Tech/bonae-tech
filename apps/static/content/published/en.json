@@ -283,20 +283,31 @@
         "comingSoon": false
       },
       {
-        "category": "Business & Admin Dashboards",
+        "category": "Sales System · Business Management",
         "title": "Administrative & Sales Dashboard Template",
-        "description": "A modern, responsive administrative dashboard designed for tracking contracts, payments, seller performance, and overdue balances.",
-        "detailDescription": "This template is an intuitive management dashboard template tailored for businesses that handle sales, contracts, and payment tracking across multiple channels. It features real-time overview metrics for active, pending, and canceled contracts, clear financial debt summaries, payment method breakdowns (Zelle, PayPal, Binance, Cash, etc.), and downloadable reports grouped by seller.",
+        "description": "An admin dashboard to manage sales, payments and sales reps with real-time metrics.",
+        "detailDescription": "Live demo of our Sales System product: track orders, collections, and per-rep reports from web or mobile, tailored to your sales operation.",
         "imageSrc": "/images/templates/modelo-3.png",
         "slug": "modelo-3",
         "demoUrl": "https://modelo-3.bonaetech.com/",
         "price": 300,
-        "features": [
-          "Real-time contract status tracking (Active, Pending Dispatch, Canceled, Finished)",
-          "Comprehensive balance summary (Total Debt, Overdue Debt, Pending Balance, Paid Total)",
-          "Multi-channel payment breakdown (Zelle, PayPal, Binance, Mobile Payment, Cash)",
-          "Downloadable sales and debt reports grouped by seller",
-          "Clean, mobile-optimized responsive layout with tabbed navigation"
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 300,
+            "priceFootnote": "initialPrice",
+            "description": "One plan to track orders, balances, and payments in real time and download per-rep reports from any device.",
+            "features": [
+              "Track your orders in real time",
+              "See how much you're owed and how much you've collected",
+              "Log payments via Zelle, PayPal, Binance or cash",
+              "Download sales reports by sales rep",
+              "Use it from your phone, tablet or computer",
+              "Maintenance included for the first month",
+              "Email and messaging integration to send reports to your registered clients (third-party setup and fees not included)"
+            ]
+          }
         ],
         "comingSoon": false
       },
