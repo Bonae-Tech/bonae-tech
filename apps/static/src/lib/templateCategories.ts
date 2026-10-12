@@ -3,11 +3,15 @@ import type { ContentDocument } from '@bonae/content';
 export type TemplatePlanId = 'standard' | 'full';
 export type TemplateCardGroup = 'web' | 'business';
 
+export type TemplatePlanPriceFootnote = 'singlePayment' | 'initialPrice';
+
 export interface TemplatePlan {
   id: TemplatePlanId;
   price: number;
   /** Shown struck through next to `price` as an offer. */
   originalPrice?: number;
+  /** When set without `originalPrice`, replaces section “pago único” (e.g. Sistema de Ventas). */
+  priceFootnote?: TemplatePlanPriceFootnote;
   /** Overrides the category bullets while this plan is selected. */
   features?: string[];
   excludedFeatures?: string[];
@@ -256,7 +260,7 @@ const es: CategoriesCopy = {
       tagline: 'Controla tu operación comercial',
       description:
         'Panel administrativo para gestionar ventas, pagos y vendedores con métricas en tiempo real.',
-      plans: [{ id: 'standard', price: 300 }],
+      plans: [{ id: 'standard', price: 300, priceFootnote: 'initialPrice' }],
       features: [
         'Sigue tus pedidos en tiempo real',
         'Mira cuánto te deben y cuánto has cobrado',
@@ -483,7 +487,7 @@ const en: CategoriesCopy = {
       tagline: 'Control your sales operation',
       description:
         'An admin dashboard to manage sales, payments and sales reps with real-time metrics.',
-      plans: [{ id: 'standard', price: 300 }],
+      plans: [{ id: 'standard', price: 300, priceFootnote: 'initialPrice' }],
       features: [
         'Track your orders in real time',
         "See how much you're owed and how much you've collected",
