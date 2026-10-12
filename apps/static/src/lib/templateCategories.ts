@@ -177,8 +177,8 @@ const es: CategoriesCopy = {
         { id: 'standard', price: 199, originalPrice: 220 },
         {
           id: 'full',
-          price: 340,
-          originalPrice: 380,
+          price: 320,
+          originalPrice: 340,
           features: [
             'Hasta 50 productos precargados para exhibir en tu catálogo',
             'Tus productos ordenados por categorías',
@@ -404,8 +404,8 @@ const en: CategoriesCopy = {
         { id: 'standard', price: 199, originalPrice: 220 },
         {
           id: 'full',
-          price: 340,
-          originalPrice: 380,
+          price: 320,
+          originalPrice: 340,
           features: [
             'Up to 50 preloaded products to showcase in your catalog',
             'Your products organized by category',
