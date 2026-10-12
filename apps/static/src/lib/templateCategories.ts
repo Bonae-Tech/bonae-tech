@@ -68,11 +68,11 @@ const es: CategoriesCopy = {
       description:
         'Sitio de una sola página, obtén presencia rápida y efectiva.',
       plans: [
-        { id: 'standard', price: 99, originalPrice: 120 },
+        { id: 'standard', price: 199, originalPrice: 220 },
         {
           id: 'full',
-          price: 250,
-          originalPrice: 270,
+          price: 320,
+          originalPrice: 340,
           features: [
             'Hasta 10 secciones para contar todo sobre tu negocio',
             'Botón de WhatsApp para atenderlos al instante',
@@ -295,11 +295,11 @@ const en: CategoriesCopy = {
       description:
         'A single-page site to get a fast, effective online presence.',
       plans: [
-        { id: 'standard', price: 99, originalPrice: 120 },
+        { id: 'standard', price: 199, originalPrice: 220 },
         {
           id: 'full',
-          price: 250,
-          originalPrice: 270,
+          price: 320,
+          originalPrice: 340,
           features: [
             'Up to 10 sections to tell your business story',
             'WhatsApp button to reply instantly',
