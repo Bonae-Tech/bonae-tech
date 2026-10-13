@@ -2,137 +2,118 @@ import { buildWhatsAppHref } from '@bonae/content';
 
 export type MetaLandingLang = 'es' | 'en';
 
+export interface MetaPriceCard {
+  label: string;
+  price: string;
+  note: string;
+  highlight?: boolean;
+}
+
 export interface MetaLandingCopy {
   lang: MetaLandingLang;
   pageTitle: string;
   pageDescription: string;
-  badge: string;
+  urgencyStrip: string;
   headline: string;
   subheadline: string;
+  heroBullets: string[];
   primaryCta: string;
-  secondaryCta: string;
-  trustSameDay: string;
-  trustRegion: string;
-  offersTitle: string;
-  offers: { title: string; description: string }[];
-  pricingTitle: string;
-  pricingLead: string;
-  pricingFrom: string;
-  pricingCta: string;
-  stepsTitle: string;
+  ctaNote: string;
+  priceSectionTitle: string;
+  popularBadge: string;
+  priceCards: MetaPriceCard[];
+  priceFootnote: string;
+  panelTitle: string;
+  panelLead: string;
   steps: { title: string; description: string }[];
-  finalTitle: string;
-  finalLead: string;
   siteLinkLabel: string;
   legalNote: string;
   whatsappMessage: string;
+  deviceImageAlt: string;
 }
 
 const es: MetaLandingCopy = {
   lang: 'es',
-  pageTitle: 'BONAE TECH — Digitaliza tu negocio',
+  pageTitle: 'Cotiza tu web — BONAE TECH',
   pageDescription:
-    'Sitios web, catálogos, tiendas en línea y herramientas de gestión con plantillas propias. Publicamos en días, no meses. Consulta por WhatsApp.',
-  badge: 'Oferta para anuncios Meta',
-  headline: 'Tu negocio en internet, listo en días',
+    'Landing, OnePage y catálogo digital con precio claro. Publicamos en días. Cotiza por WhatsApp sin compromiso.',
+  urgencyStrip: 'Consulta gratis · Te respondemos hoy · Venezuela y Latinoamérica',
+  headline: 'Publica tu negocio en internet desde $99 USD',
   subheadline:
-    'Plantillas propias, ágiles y adaptadas a tu marca. Precios claros, editor sencillo y el producto final es tuyo.',
-  primaryCta: 'Quiero una cotización por WhatsApp',
-  secondaryCta: 'Ver precios en la web',
-  trustSameDay: 'Te respondemos el mismo día',
-  trustRegion: 'Venezuela · Latinoamérica · remoto',
-  offersTitle: 'Qué puedes lanzar con nosotros',
-  offers: [
-    {
-      title: 'Productos Web',
-      description: 'OnePage, Multipage y Landing Page optimizados para Google y conversiones.',
-    },
-    {
-      title: 'Gestión de negocio',
-      description: 'Catálogo digital, tienda virtual y sistema de ventas con panel administrativo.',
-    },
-    {
-      title: 'Redes, CRM y campañas',
-      description: 'Integración para no perder leads y potenciar tu operación comercial.',
-    },
-    {
-      title: 'Consultoría y IA',
-      description: 'Mejoramos tu web actual e incluimos chatbot con IA según tu plan.',
-    },
+    'No necesitas meses ni un equipo técnico: elegimos la plantilla, la personalizamos y te entregamos un producto tuyo.',
+  heroBullets: [
+    'Plantillas propias listas para tu marca',
+    'Editor sencillo para cambios básicos',
+    'Hosting y dominio incluidos 1 año (condiciones)',
+    'Catálogo, tienda o web corporativa según tu meta',
   ],
-  pricingTitle: 'Precios desde',
-  pricingLead: 'Ofertas en USD · pago único o precio inicial según producto',
-  pricingFrom: 'Landing Page desde $99 · OnePage desde $149 · Catálogo desde $199',
-  pricingCta: 'Ver todas las plantillas',
-  stepsTitle: 'Cómo empezamos',
+  primaryCta: 'Cotizar por WhatsApp',
+  ctaNote: 'Sin formularios largos: escríbenos y te guiamos en minutos.',
+  priceSectionTitle: 'Paquetes más pedidos en Meta',
+  popularBadge: 'Más pedido',
+  priceCards: [
+    { label: 'Landing Page', price: '$99', note: 'pago único · 1 campaña' },
+    { label: 'OnePage', price: '$149', note: 'oferta · presencia completa', highlight: true },
+    { label: 'Catálogo digital', price: '$199', note: 'oferta · vende por WhatsApp' },
+  ],
+  priceFootnote: 'Precios en USD. Otros productos (Multipage, tienda, CRM) en el sitio.',
+  panelTitle: 'En 3 pasos publicamos contigo',
+  panelLead: 'Así trabajamos contigo desde el primer mensaje:',
   steps: [
-    { title: '1. Escríbenos', description: 'Cuéntanos tu negocio y qué quieres lograr.' },
-    { title: '2. Elegimos plantilla', description: 'Te recomendamos el producto y plan que encajan.' },
-    { title: '3. Publicamos', description: 'Personalizamos, publicamos y te entregamos tu sitio.' },
+    { title: 'Cuéntanos tu negocio', description: 'Qué vendes y qué quieres lograr con la web.' },
+    { title: 'Elegimos plantilla', description: 'Te recomendamos plan y funciones sin sorpresas.' },
+    { title: 'Entrega en días', description: 'Personalizamos, publicamos y te capacitamos en lo básico.' },
   ],
-  finalTitle: '¿Listo para digitalizar tu marca?',
-  finalLead: 'Un mensaje y te orientamos sin compromiso.',
-  siteLinkLabel: 'Ir al sitio completo bonaetech.com',
-  legalNote: 'Al contactarnos aceptas nuestra política de privacidad.',
+  siteLinkLabel: 'Ver catálogo completo en bonaetech.com',
+  legalNote: 'Al escribirnos aceptas nuestra política de privacidad.',
   whatsappMessage:
-    'Hola BONAE TECH, vi su anuncio en Meta y me gustaría conocer sus servicios y precios.',
+    'Hola BONAE TECH, vi su anuncio en Meta y quiero cotizar una web para mi negocio.',
+  deviceImageAlt: 'Vista previa de sitio web corporativo BONAE TECH',
 };
 
 const en: MetaLandingCopy = {
   lang: 'en',
-  pageTitle: 'BONAE TECH — Grow your business online',
+  pageTitle: 'Quote your website — BONAE TECH',
   pageDescription:
-    'Websites, catalogs, online stores, and business tools with our own templates. Live in days, not months. Message us on WhatsApp.',
-  badge: 'Meta ads offer',
-  headline: 'Get your business online in days',
+    'Landing, OnePage, and digital catalog with clear pricing. Live in days. Message us on WhatsApp.',
+  urgencyStrip: 'Free inquiry · Same-day reply · Venezuela & Latin America',
+  headline: 'Get your business online from $99 USD',
   subheadline:
-    'Our own agile templates, tailored to your brand. Clear pricing, simple editor, and you own the final product.',
+    'No months-long projects: we pick the template, customize it, and hand you a product you own.',
+  heroBullets: [
+    'Ready-made templates tailored to your brand',
+    'Simple editor for basic updates',
+    'Hosting & domain included 1 year (conditions apply)',
+    'Catalog, store, or corporate site based on your goal',
+  ],
   primaryCta: 'Get a quote on WhatsApp',
-  secondaryCta: 'See pricing on the website',
-  trustSameDay: 'We reply the same day',
-  trustRegion: 'Venezuela · Latin America · remote',
-  offersTitle: 'What you can launch with us',
-  offers: [
-    {
-      title: 'Web products',
-      description: 'OnePage, Multipage, and landing pages built for Google and conversions.',
-    },
-    {
-      title: 'Business management',
-      description: 'Digital catalog, online store, and sales system with an admin dashboard.',
-    },
-    {
-      title: 'Social, CRM & campaigns',
-      description: 'Integrations so you do not lose leads and can scale sales.',
-    },
-    {
-      title: 'Consulting & AI',
-      description: 'We improve your current site and can add an AI chatbot on select plans.',
-    },
+  ctaNote: 'No long forms — message us and we will guide you in minutes.',
+  priceSectionTitle: 'Top packages from our Meta campaigns',
+  popularBadge: 'Top pick',
+  priceCards: [
+    { label: 'Landing Page', price: '$99', note: 'one-time · one campaign' },
+    { label: 'OnePage', price: '$149', note: 'offer · full presence', highlight: true },
+    { label: 'Digital catalog', price: '$199', note: 'offer · sell via WhatsApp' },
   ],
-  pricingTitle: 'Starting at',
-  pricingLead: 'Prices in USD · one-time or starting price depending on product',
-  pricingFrom: 'Landing Page from $99 · OnePage from $149 · Catalog from $199',
-  pricingCta: 'See all templates',
-  stepsTitle: 'How we start',
+  priceFootnote: 'Prices in USD. More products (Multipage, store, CRM) on the main site.',
+  panelTitle: 'We publish with you in 3 steps',
+  panelLead: 'How we work from your first message:',
   steps: [
-    { title: '1. Message us', description: 'Tell us about your business and goals.' },
-    { title: '2. Pick a template', description: 'We recommend the product and plan that fit.' },
-    { title: '3. Go live', description: 'We customize, publish, and hand off your site.' },
+    { title: 'Tell us about your business', description: 'What you sell and what you want the site to do.' },
+    { title: 'Pick a template', description: 'We recommend plan and features with clear pricing.' },
+    { title: 'Delivery in days', description: 'We customize, launch, and show you the basics.' },
   ],
-  finalTitle: 'Ready to digitize your brand?',
-  finalLead: 'One message — we will guide you with no obligation.',
-  siteLinkLabel: 'Go to full site bonaetech.com',
-  legalNote: 'By contacting us you accept our privacy policy.',
+  siteLinkLabel: 'See full catalog at bonaetech.com',
+  legalNote: 'By messaging us you accept our privacy policy.',
   whatsappMessage:
-    'Hello BONAE TECH, I saw your Meta ad and would like to learn about your services and pricing.',
+    'Hello BONAE TECH, I saw your Meta ad and would like a quote for a website for my business.',
+  deviceImageAlt: 'Preview of a BONAE TECH corporate website',
 };
 
 export function metaLandingFor(lang: MetaLandingLang): MetaLandingCopy {
   return lang === 'en' ? en : es;
 }
 
-/** Builds WhatsApp link; appends UTM/ref from the landing URL when present (client updates href). */
 export function metaWhatsAppHref(number: string, copy: MetaLandingCopy, ref?: string): string {
   const suffix = ref ? ` (ref: ${ref})` : '';
   return buildWhatsAppHref(number, `${copy.whatsappMessage}${suffix}`);
@@ -142,7 +123,6 @@ export function metaLandingPaths(lang: MetaLandingLang) {
   const home = lang === 'en' ? '/en/' : '/';
   return {
     home,
-    self: lang === 'en' ? '/en/meta/' : '/meta/',
     templates: `${home}#plantillas`,
     privacy: lang === 'en' ? '/en/privacy-policy/' : '/politica-de-privacidad/',
   };

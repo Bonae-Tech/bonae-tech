@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/meta-landing.css';
 import type { SiteSettings } from '@bonae/content';
 import { themeColor } from '../styles/colors.mjs';
 import CookieBanner from '../components/CookieBanner.astro';
@@ -49,7 +50,7 @@ const { t, settings, title, description, noIndex = true } = Astro.props;
     </script>
     -->
   </head>
-  <body class="min-h-screen flex flex-col bg-cream">
+  <body class="meta-lp min-h-screen flex flex-col">
     <slot />
     <CookieBanner t={t} settings={settings} />
   </body>
