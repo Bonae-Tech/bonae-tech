@@ -338,9 +338,9 @@
               "Bonus Chatbot",
               "Maintenance included for the first month",
               "Hosting included for 1 year (conditions apply)",
-              "Domain included for 1 year (conditions apply)"
-            ],
-            "excludedFeatures": ["Product photo production not included"]
+              "Domain included for 1 year (conditions apply)",
+              "Additional product photos"
+            ]
           },
           {
             "id": "full",
@@ -358,9 +358,9 @@
               "Bonus Chatbot",
               "Maintenance included for the first month",
               "Hosting included for 1 year (conditions apply)",
-              "Domain included for 1 year (conditions apply)"
-            ],
-            "excludedFeatures": ["Product photo production not included"]
+              "Domain included for 1 year (conditions apply)",
+              "Additional product photos"
+            ]
           }
         ],
         "comingSoon": false
@@ -390,9 +390,9 @@
               "Update prices and products whenever you want",
               "Maintenance included for the first month",
               "Hosting included for 1 year (conditions apply)",
-              "Domain included for 1 year (conditions apply)"
-            ],
-            "excludedFeatures": ["Product photo production not included"]
+              "Domain included for 1 year (conditions apply)",
+              "Additional product photos"
+            ]
           },
           {
             "id": "full",
@@ -408,9 +408,9 @@
               "Update prices and products whenever you want",
               "Maintenance included for the first month",
               "Hosting included for 1 year (conditions apply)",
-              "Domain included for 1 year (conditions apply)"
-            ],
-            "excludedFeatures": ["Product photo production not included"]
+              "Domain included for 1 year (conditions apply)",
+              "Additional product photos"
+            ]
           }
         ],
         "comingSoon": false
