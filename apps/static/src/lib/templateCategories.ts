@@ -68,11 +68,11 @@ const es: CategoriesCopy = {
       description:
         'Sitio de una sola página, obtén presencia rápida y efectiva.',
       plans: [
-        { id: 'standard', price: 199, originalPrice: 220 },
+        { id: 'standard', price: 149, originalPrice: 170 },
         {
           id: 'full',
-          price: 320,
-          originalPrice: 340,
+          price: 270,
+          originalPrice: 290,
           features: [
             'Hasta 10 secciones para contar todo sobre tu negocio',
             'Botón de WhatsApp para atenderlos al instante',
@@ -86,8 +86,8 @@ const es: CategoriesCopy = {
             '30 días de mantenimiento gratis',
             'Hosting incluido por 1 año (aplican condiciones)',
             'Dominio incluido por 1 año (aplican condiciones)',
+            'Servicio de Marca Personal incurre en pago adicional',
           ],
-          excludedFeatures: [],
         },
       ],
       features: [
@@ -100,8 +100,8 @@ const es: CategoriesCopy = {
         '15 días de mantenimiento gratis',
         'Hosting incluido por 1 año (aplican condiciones)',
         'Dominio incluido por 1 año (aplican condiciones)',
+        'Servicio de Marca Personal incurre en pago adicional',
       ],
-      excludedFeatures: ['No incluye diseño de marca personal (logo, colores)'],
       sampleSlug: null,
       comingSoon: true,
     },
@@ -113,11 +113,11 @@ const es: CategoriesCopy = {
       description:
         'Sitio con varias páginas, obtén presencia corporativa rápida y efectiva.',
       plans: [
-        { id: 'standard', price: 320, originalPrice: 340 },
+        { id: 'standard', price: 199, originalPrice: 220 },
         {
           id: 'full',
-          price: 480,
-          originalPrice: 500,
+          price: 320,
+          originalPrice: 340,
           features: [
             'Hasta 5 páginas para mostrar todo lo que ofreces',
             'Botón de WhatsApp para atenderlos al instante',
@@ -131,8 +131,8 @@ const es: CategoriesCopy = {
             '30 días de mantenimiento gratis',
             'Hosting incluido por 1 año (aplican condiciones)',
             'Dominio incluido por 1 año (aplican condiciones)',
+            'Servicio de Marca Personal incurre en pago adicional',
           ],
-          excludedFeatures: [],
         },
       ],
       features: [
@@ -145,8 +145,8 @@ const es: CategoriesCopy = {
         '15 días de mantenimiento gratis',
         'Hosting incluido por 1 año (aplican condiciones)',
         'Dominio incluido por 1 año (aplican condiciones)',
+        'Servicio de Marca Personal incurre en pago adicional',
       ],
-      excludedFeatures: ['No incluye diseño de marca personal (logo, colores)'],
       sampleSlug: 'modelo-2',
     },
     {
@@ -156,7 +156,7 @@ const es: CategoriesCopy = {
       tagline: 'Diseñada para convertir',
       description:
         'Página enfocada en una sola oferta o campaña, pensada para captar clientes potenciales desde anuncios y redes sociales.',
-      plans: [{ id: 'standard', price: 80 }],
+      plans: [{ id: 'standard', price: 99 }],
       features: [
         'Pensada para convertir visitantes en clientes',
         'Botones llamativos que invitan a comprar o contactarte',
@@ -189,8 +189,8 @@ const es: CategoriesCopy = {
             'Mantenimiento incluido el primer mes',
             'Hosting incluido por 1 año (aplican condiciones)',
             'Dominio incluido por 1 año (aplican condiciones)',
+            'Servicio de Foto producto incurre en pago adicional',
           ],
-          excludedFeatures: [],
         },
       ],
       features: [
@@ -203,8 +203,8 @@ const es: CategoriesCopy = {
         'Mantenimiento incluido el primer mes',
         'Hosting incluido por 1 año (aplican condiciones)',
         'Dominio incluido por 1 año (aplican condiciones)',
+        'Servicio de Foto producto incurre en pago adicional',
       ],
-      excludedFeatures: ['No incluye fotografía de productos'],
       sampleSlug: 'modelo-5',
       featured: true,
     },
@@ -216,11 +216,11 @@ const es: CategoriesCopy = {
       description:
         'Tienda en línea completa con carrito de compras y gestión de productos.',
       plans: [
-        { id: 'standard', price: 499, originalPrice: 520 },
+        { id: 'standard', price: 399, originalPrice: 420 },
         {
           id: 'full',
-          price: 650,
-          originalPrice: 680,
+          price: 520,
+          originalPrice: 540,
           features: [
             'Hasta 50 productos precargados para vender en tu tienda',
             'Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras',
@@ -233,8 +233,8 @@ const es: CategoriesCopy = {
             'Mantenimiento incluido el primer mes',
             'Hosting incluido por 1 año (aplican condiciones)',
             'Dominio incluido por 1 año (aplican condiciones)',
+            'Servicio de Foto producto incurre en pago adicional',
           ],
-          excludedFeatures: ['No incluye fotografía de productos'],
         },
       ],
       features: [
@@ -249,8 +249,8 @@ const es: CategoriesCopy = {
         'Mantenimiento incluido el primer mes',
         'Hosting incluido por 1 año (aplican condiciones)',
         'Dominio incluido por 1 año (aplican condiciones)',
+        'Servicio de Foto producto incurre en pago adicional',
       ],
-      excludedFeatures: ['No incluye fotografía de productos'],
       sampleSlug: 'modelo-4',
     },
     {
@@ -295,11 +295,11 @@ const en: CategoriesCopy = {
       description:
         'A single-page site to get a fast, effective online presence.',
       plans: [
-        { id: 'standard', price: 199, originalPrice: 220 },
+        { id: 'standard', price: 149, originalPrice: 170 },
         {
           id: 'full',
-          price: 320,
-          originalPrice: 340,
+          price: 270,
+          originalPrice: 290,
           features: [
             'Up to 10 sections to tell your business story',
             'WhatsApp button to reply instantly',
@@ -313,8 +313,8 @@ const en: CategoriesCopy = {
             '30 days of free maintenance',
             'Hosting included for 1 year (conditions apply)',
             'Domain included for 1 year (conditions apply)',
+            'Personal branding service incurs an additional fee',
           ],
-          excludedFeatures: [],
         },
       ],
       features: [
@@ -327,8 +327,8 @@ const en: CategoriesCopy = {
         '15 days of free maintenance',
         'Hosting included for 1 year (conditions apply)',
         'Domain included for 1 year (conditions apply)',
+        'Personal branding service incurs an additional fee',
       ],
-      excludedFeatures: ['Personal brand design not included (logo, colors)'],
       sampleSlug: null,
       comingSoon: true,
     },
@@ -340,11 +340,11 @@ const en: CategoriesCopy = {
       description:
         'A multi-page site to get a fast, effective corporate online presence.',
       plans: [
-        { id: 'standard', price: 320, originalPrice: 340 },
+        { id: 'standard', price: 199, originalPrice: 220 },
         {
           id: 'full',
-          price: 480,
-          originalPrice: 500,
+          price: 320,
+          originalPrice: 340,
           features: [
             'Up to 5 pages to show everything you offer',
             'WhatsApp button to reply instantly',
@@ -358,8 +358,8 @@ const en: CategoriesCopy = {
             '30 days of free maintenance',
             'Hosting included for 1 year (conditions apply)',
             'Domain included for 1 year (conditions apply)',
+            'Personal branding service incurs an additional fee',
           ],
-          excludedFeatures: [],
         },
       ],
       features: [
@@ -372,8 +372,8 @@ const en: CategoriesCopy = {
         '15 days of free maintenance',
         'Hosting included for 1 year (conditions apply)',
         'Domain included for 1 year (conditions apply)',
+        'Personal branding service incurs an additional fee',
       ],
-      excludedFeatures: ['Personal brand design not included (logo, colors)'],
       sampleSlug: 'modelo-2',
     },
     {
@@ -383,7 +383,7 @@ const en: CategoriesCopy = {
       tagline: 'Built to convert',
       description:
         'A page focused on a single offer or campaign, designed to capture leads from ads and social media.',
-      plans: [{ id: 'standard', price: 80 }],
+      plans: [{ id: 'standard', price: 99 }],
       features: [
         'Designed to turn visitors into customers',
         'Eye-catching buttons that invite people to buy or contact you',
@@ -416,8 +416,8 @@ const en: CategoriesCopy = {
             'Maintenance included for the first month',
             'Hosting included for 1 year (conditions apply)',
             'Domain included for 1 year (conditions apply)',
+            'Product photo service incurs an additional fee',
           ],
-          excludedFeatures: [],
         },
       ],
       features: [
@@ -430,8 +430,8 @@ const en: CategoriesCopy = {
         'Maintenance included for the first month',
         'Hosting included for 1 year (conditions apply)',
         'Domain included for 1 year (conditions apply)',
+        'Product photo service incurs an additional fee',
       ],
-      excludedFeatures: ['Product photography not included'],
       sampleSlug: 'modelo-5',
       featured: true,
     },
@@ -443,11 +443,11 @@ const en: CategoriesCopy = {
       description:
         'A full online store with shopping cart and product management.',
       plans: [
-        { id: 'standard', price: 499, originalPrice: 520 },
+        { id: 'standard', price: 399, originalPrice: 420 },
         {
           id: 'full',
-          price: 650,
-          originalPrice: 680,
+          price: 520,
+          originalPrice: 540,
           features: [
             'Up to 50 preloaded products to sell in your store',
             'Product pages with photos, price and details you can update anytime',
@@ -460,8 +460,8 @@ const en: CategoriesCopy = {
             'Maintenance included for the first month',
             'Hosting included for 1 year (conditions apply)',
             'Domain included for 1 year (conditions apply)',
+            'Product photo service incurs an additional fee',
           ],
-          excludedFeatures: ['Product photography not included'],
         },
       ],
       features: [
@@ -476,8 +476,8 @@ const en: CategoriesCopy = {
         'Maintenance included for the first month',
         'Hosting included for 1 year (conditions apply)',
         'Domain included for 1 year (conditions apply)',
+        'Product photo service incurs an additional fee',
       ],
-      excludedFeatures: ['Product photography not included'],
       sampleSlug: 'modelo-4',
     },
     {
