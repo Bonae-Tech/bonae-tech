@@ -239,13 +239,13 @@
         "imageSrc": "/images/templates/modelo-2.png",
         "slug": "modelo-2",
         "demoUrl": "https://modelo-2.bonaetech.com/",
-        "price": 320,
+        "price": 199,
         "features": [],
         "plans": [
           {
             "id": "standard",
-            "price": 320,
-            "originalPrice": 340,
+            "price": 199,
+            "originalPrice": 220,
             "description": "Modelo Estándar: con 3 páginas presentas tu empresa, tus servicios esenciales y el camino claro para que te contacten.",
             "features": [
               "Hasta 3 páginas para mostrar todo lo que ofreces",
@@ -261,8 +261,8 @@
           },
           {
             "id": "full",
-            "price": 480,
-            "originalPrice": 500,
+            "price": 320,
+            "originalPrice": 340,
             "description": "Modelo Premium: con 5 páginas amplías servicios y equipo, sumas mapa y legal, y cuentas tu propuesta con más detalle.",
             "features": [
               "Hasta 5 páginas para mostrar todo lo que ofreces",
@@ -319,13 +319,13 @@
         "imageSrc": "/images/templates/modelo-4.png",
         "slug": "modelo-4",
         "demoUrl": "https://modelo-4.bonaetech.com/",
-        "price": 499,
+        "price": 399,
         "features": [],
         "plans": [
           {
             "id": "standard",
-            "price": 499,
-            "originalPrice": 520,
+            "price": 399,
+            "originalPrice": 420,
             "description": "Modelo Estándar: con 25 productos vendes en línea con carrito, categorías y pagos listos para tus clientes.",
             "features": [
               "Hasta 25 productos precargados para vender en tu tienda",
@@ -344,8 +344,8 @@
           },
           {
             "id": "full",
-            "price": 650,
-            "originalPrice": 680,
+            "price": 520,
+            "originalPrice": 540,
             "description": "Modelo Premium: con 50 productos amplías catálogo, ofertas y pagos en línea con más capacidad de venta.",
             "features": [
               "Hasta 50 productos precargados para vender en tu tienda",

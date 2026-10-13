@@ -239,13 +239,13 @@
         "imageSrc": "/images/templates/modelo-2.png",
         "slug": "modelo-2",
         "demoUrl": "https://modelo-2.bonaetech.com/",
-        "price": 320,
+        "price": 199,
         "features": [],
         "plans": [
           {
             "id": "standard",
-            "price": 320,
-            "originalPrice": 340,
+            "price": 199,
+            "originalPrice": 220,
             "description": "Standard model: with 3 pages you introduce your business, core services, and a clear path for customers to reach you.",
             "features": [
               "Up to 3 pages to show everything you offer",
@@ -261,8 +261,8 @@
           },
           {
             "id": "full",
-            "price": 480,
-            "originalPrice": 500,
+            "price": 320,
+            "originalPrice": 340,
             "description": "Premium model: with 5 pages you expand services and team, add map and legal pages, and tell your story in richer detail.",
             "features": [
               "Up to 5 pages to show everything you offer",
@@ -319,13 +319,13 @@
         "imageSrc": "/images/templates/modelo-4.png",
         "slug": "modelo-4",
         "demoUrl": "https://modelo-4.bonaetech.com/",
-        "price": 499,
+        "price": 399,
         "features": [],
         "plans": [
           {
             "id": "standard",
-            "price": 499,
-            "originalPrice": 520,
+            "price": 399,
+            "originalPrice": 420,
             "description": "Standard model: with 25 products you sell online with cart, categories, and payments ready for your customers.",
             "features": [
               "Up to 25 preloaded products to sell in your store",
@@ -344,8 +344,8 @@
           },
           {
             "id": "full",
-            "price": 650,
-            "originalPrice": 680,
+            "price": 520,
+            "originalPrice": 540,
             "description": "Premium model: with 50 products you expand catalog, deals, and online payments with more sales capacity.",
             "features": [
               "Up to 50 preloaded products to sell in your store",
