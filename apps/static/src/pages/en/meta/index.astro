@@ -1,0 +1,14 @@
+---
+import LandingLayout from '../../../layouts/LandingLayout.astro';
+import MetaLandingPage from '../../../components/meta/MetaLandingPage.astro';
+import { publishedEn, siteSettings } from '../../../lib/content';
+import { metaLandingFor, metaWhatsAppHref } from '../../../lib/metaLanding';
+
+const t = publishedEn;
+const copy = metaLandingFor('en');
+const whatsappHref = metaWhatsAppHref(siteSettings.whatsappNumber, copy);
+---
+
+<LandingLayout t={t} settings={siteSettings} title={copy.pageTitle} description={copy.pageDescription}>
+  <MetaLandingPage copy={copy} whatsappHref={whatsappHref} />
+</LandingLayout>

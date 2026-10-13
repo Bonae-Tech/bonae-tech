@@ -1,0 +1,168 @@
+---
+import type { MetaLandingCopy } from '../../lib/metaLanding';
+import { metaLandingPaths } from '../../lib/metaLanding';
+
+interface Props {
+  copy: MetaLandingCopy;
+  whatsappHref: string;
+}
+
+const { copy, whatsappHref } = Astro.props;
+const paths = metaLandingPaths(copy.lang);
+---
+
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-light-blue/15">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+    <a href={paths.home} class="flex items-center gap-2 shrink-0" aria-label="BONAE TECH">
+      <img src="/favicon.png" alt="" class="w-8 h-8" width="32" height="32" />
+      <span class="font-display font-bold text-dark-blue text-lg">BONAE TECH</span>
+    </a>
+    <a
+      href={whatsappHref}
+      class="btn-whatsapp text-sm py-2 px-4 shrink-0 meta-wa-link"
+      data-meta-wa
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      WhatsApp
+    </a>
+  </div>
+</header>
+
+<main class="pb-24 md:pb-0">
+  <section class="relative text-white overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-dark-blue via-dark-blue-dark to-dark-blue" aria-hidden="true"></div>
+    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-20 lg:py-24">
+      <p class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-semibold uppercase tracking-wider text-terracotta mb-5">
+        {copy.badge}
+      </p>
+      <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight max-w-3xl mb-5">
+        {copy.headline}
+      </h1>
+      <p class="text-lg text-light-blue leading-relaxed max-w-2xl mb-8">{copy.subheadline}</p>
+      <div class="flex flex-col sm:flex-row gap-3 mb-8">
+        <a
+          href={whatsappHref}
+          class="btn-secondary justify-center text-base meta-wa-link"
+          data-meta-wa
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {copy.primaryCta}
+        </a>
+        <a href={paths.templates} class="btn-primary justify-center text-base bg-white/10 border border-white/25 hover:bg-white/15">
+          {copy.secondaryCta}
+        </a>
+      </div>
+      <ul class="flex flex-col sm:flex-row gap-3 sm:gap-6 text-sm text-light-blue">
+        <li class="flex items-center gap-2">
+          <span class="text-terracotta" aria-hidden="true">✓</span>
+          {copy.trustSameDay}
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-terracotta" aria-hidden="true">✓</span>
+          {copy.trustRegion}
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="py-14 md:py-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <h2 class="section-title text-center mb-10">{copy.offersTitle}</h2>
+      <div class="grid sm:grid-cols-2 gap-5">
+        {copy.offers.map((offer) => (
+          <article class="rounded-2xl bg-white border border-light-blue/20 p-6 shadow-sm">
+            <h3 class="text-lg font-bold text-dark-blue mb-2">{offer.title}</h3>
+            <p class="text-sm text-body leading-relaxed">{offer.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-14 bg-white border-y border-light-blue/15">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+      <h2 class="section-title mb-3">{copy.pricingTitle}</h2>
+      <p class="text-sm text-body mb-4">{copy.pricingLead}</p>
+      <p class="text-lg font-semibold text-dark-blue mb-6">{copy.pricingFrom}</p>
+      <a href={paths.templates} class="btn-primary">{copy.pricingCta}</a>
+    </div>
+  </section>
+
+  <section class="py-14 md:py-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <h2 class="section-title text-center mb-10">{copy.stepsTitle}</h2>
+      <ol class="grid md:grid-cols-3 gap-6">
+        {copy.steps.map((step) => (
+          <li class="rounded-2xl bg-white border border-light-blue/20 p-6 text-center">
+            <h3 class="font-bold text-dark-blue mb-2">{step.title}</h3>
+            <p class="text-sm text-body">{step.description}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-20 bg-gradient-to-br from-dark-blue to-dark-blue-dark text-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+      <h2 class="font-display text-2xl sm:text-3xl font-bold mb-3">{copy.finalTitle}</h2>
+      <p class="text-light-blue mb-8">{copy.finalLead}</p>
+      <a
+        href={whatsappHref}
+        class="btn-secondary text-base meta-wa-link"
+        data-meta-wa
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {copy.primaryCta}
+      </a>
+      <p class="mt-8 text-xs text-light-blue/80">
+        <a href={paths.home} class="underline hover:text-white">{copy.siteLinkLabel}</a>
+        <span class="mx-2" aria-hidden="true">·</span>
+        <a href={paths.privacy} class="underline hover:text-white">
+          {copy.lang === 'es' ? 'Privacidad' : 'Privacy'}
+        </a>
+      </p>
+      <p class="mt-2 text-[11px] text-light-blue/60">{copy.legalNote}</p>
+    </div>
+  </section>
+</main>
+
+<div class="fixed bottom-0 inset-x-0 p-3 bg-white/95 backdrop-blur border-t border-light-blue/20 md:hidden z-40">
+  <a
+    href={whatsappHref}
+    class="btn-whatsapp w-full justify-center meta-wa-link"
+    data-meta-wa
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    {copy.primaryCta}
+  </a>
+</div>
+
+<script>
+  /** Append utm_campaign (or utm_content) to WhatsApp prefilled text for Meta attribution. */
+  function enrichWhatsAppLinks() {
+    const params = new URLSearchParams(window.location.search);
+    const ref =
+      params.get('utm_campaign') ||
+      params.get('utm_content') ||
+      params.get('fbclid')?.slice(0, 24) ||
+      '';
+    if (!ref) return;
+    document.querySelectorAll<HTMLAnchorElement>('a[data-meta-wa]').forEach((a) => {
+      try {
+        const url = new URL(a.href);
+        const text = url.searchParams.get('text');
+        if (text && !text.includes('(ref:')) {
+          url.searchParams.set('text', `${text} (ref: ${ref})`);
+          a.href = url.toString();
+        }
+      } catch {
+        /* ignore malformed href */
+      }
+    });
+  }
+  enrichWhatsAppLinks();
+</script>

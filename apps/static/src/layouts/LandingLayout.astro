@@ -1,0 +1,56 @@
+---
+import '../styles/global.css';
+import type { SiteSettings } from '@bonae/content';
+import { themeColor } from '../styles/colors.mjs';
+import CookieBanner from '../components/CookieBanner.astro';
+import type { Translations } from '@bonae/content';
+
+interface Props {
+  t: Translations;
+  settings: SiteSettings;
+  title: string;
+  description: string;
+  /** Paid landing: avoid competing with main site in search */
+  noIndex?: boolean;
+}
+
+const { t, settings, title, description, noIndex = true } = Astro.props;
+---
+
+<!doctype html>
+<html lang={t.lang} class="scroll-smooth" translate="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={themeColor} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={t.lang === 'en' ? 'en_US' : 'es_VE'} />
+
+    <title>{title}</title>
+    <!-- Meta Pixel: replace YOUR_PIXEL_ID after creating the dataset in Events Manager -->
+    <!--
+    <script is:inline>
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', 'YOUR_PIXEL_ID');
+      fbq('track', 'PageView');
+    </script>
+    -->
+  </head>
+  <body class="min-h-screen flex flex-col bg-cream">
+    <slot />
+    <CookieBanner t={t} settings={settings} />
+  </body>
+</html>
