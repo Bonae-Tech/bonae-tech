@@ -64,12 +64,42 @@ export const businessHoursSchema = z
 export type BusinessHours = z.infer<typeof businessHoursSchema>;
 export type BusinessHoursDay = z.infer<typeof businessHoursDaySchema>;
 
+export const valuePropBackBulletSchema = z
+  .object({
+    label: z.string().min(1).max(80),
+    description: z.string().min(1).max(140).optional(),
+    href: z.string().min(1).optional(),
+    linkTarget: z.enum(['whatsapp']).optional(),
+  })
+  .superRefine((bullet, ctx) => {
+    const hasHref = Boolean(bullet.href?.trim());
+    const hasWhatsApp = bullet.linkTarget === 'whatsapp';
+    if (hasHref && hasWhatsApp) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Use either href or linkTarget whatsapp, not both',
+        path: ['href'],
+      });
+    }
+    if (!hasHref && !hasWhatsApp && !bullet.description?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Structured back bullet needs href, linkTarget whatsapp, or description',
+        path: ['description'],
+      });
+    }
+  });
+
 const iconItemSchema = z.object({
   icon: z.enum(valuePropIcons),
   title: z.string().min(1),
   description: z.string().min(1).max(180),
   backLabel: z.string().min(1),
   backDescription: z.string().min(1).max(180),
+  backBullets: z
+    .array(z.union([z.string().min(1).max(140), valuePropBackBulletSchema]))
+    .max(8)
+    .optional(),
 });
 
 const memberSchema = z.object({
@@ -77,6 +107,18 @@ const memberSchema = z.object({
   role: z.string().min(1),
   bio: z.string().min(1),
   highlights: z.array(z.string().min(1)).min(1),
+});
+
+export const templatePriceFootnoteSchema = z.enum(['singlePayment', 'initialPrice']);
+
+export const templateDetailPlanSchema = z.object({
+  id: z.enum(['standard', 'full']),
+  price: z.number().int().positive(),
+  originalPrice: z.number().int().positive().optional(),
+  description: z.string().min(1).max(500),
+  features: z.array(z.string().min(1)).max(15),
+  excludedFeatures: z.array(z.string().min(1)).max(8).optional(),
+  priceFootnote: templatePriceFootnoteSchema.optional(),
 });
 
 const templateItemSchema = z
@@ -91,6 +133,8 @@ const templateItemSchema = z
     price: z.number().int().nonnegative(),
     features: z.array(z.string().min(1)).max(8),
     comingSoon: z.boolean(),
+    plans: z.array(templateDetailPlanSchema).min(1).max(2).optional(),
+    priceFootnote: templatePriceFootnoteSchema.optional(),
   })
   .superRefine((item, ctx) => {
     if (item.comingSoon) {
@@ -208,6 +252,10 @@ export const contentDocumentSchema = z.object({
     featuresLabel: z.string().min(1),
     priceCurrency: z.string().min(1),
     priceNote: z.string().min(1),
+    planStandardLabel: z.string().min(1),
+    planPremiumLabel: z.string().min(1),
+    offerNote: z.string().min(1),
+    premiumOfferNote: z.string().min(1),
     useTemplateLabel: z.string().min(1),
     demoLabel: z.string().min(1),
     comingSoonModalBody: z.string().min(1),

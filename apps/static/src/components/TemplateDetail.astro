@@ -13,11 +13,21 @@ const { t, item, whatsappHref } = Astro.props;
 const section = t.templates;
 const backHref = templatesSectionHref(t.lang);
 const demoUrl = item.demoUrl.trim();
-const priceLabel = `${section.priceCurrency} ${item.price}`;
+const plans = item.plans;
+const planLabels: Record<'standard' | 'full', string> = {
+  standard: section.planStandardLabel,
+  full: section.planPremiumLabel,
+};
+
+function planUsesInitialPriceFootnote(
+  plan: NonNullable<TemplateItem['plans']>[number],
+): boolean {
+  return plan.priceFootnote === 'initialPrice';
+}
 ---
 
 <section class="flex-1 bg-cream py-10 md:py-14">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <a
       href={backHref}
       class="inline-flex items-center gap-2 text-sm font-semibold text-body hover:text-dark-blue transition-colors mb-8"
@@ -25,62 +35,201 @@ const priceLabel = `${section.priceCurrency} ${item.price}`;
       {section.backLabel}
     </a>
 
-    <div class="grid gap-10 lg:grid-cols-2 lg:gap-14 items-start">
-      <div class="rounded-2xl overflow-hidden shadow-lg bg-dark-blue border border-light-blue/15">
-        <img
-          src={item.imageSrc}
-          alt=""
-          class="w-full object-cover object-top aspect-[4/3]"
-          width="800"
-          height="600"
-        />
-      </div>
-
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-3">{item.category}</p>
-        <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-4 leading-tight">{item.title}</h1>
-        <p class="text-base text-body leading-relaxed mb-8">{item.detailDescription}</p>
-
-        {item.features.length > 0 && (
-          <div class="rounded-2xl bg-white border border-light-blue/15 shadow-sm px-6 py-5 mb-8">
-            <h2 class="text-base font-bold text-dark-blue mb-4">{section.featuresLabel}</h2>
-            <ul class="space-y-3">
-              {item.features.map((feature) => (
-                <li class="flex gap-3 items-start">
-                  <span class="w-2 h-2 rounded-full bg-terracotta shrink-0 mt-2" aria-hidden="true"></span>
-                  <span class="text-sm text-body leading-relaxed">{feature}</span>
-                </li>
-              ))}
-            </ul>
+    {plans && plans.length > 0 ? (
+      <div class="grid gap-10 lg:grid-cols-[1.35fr_1fr] xl:grid-cols-[1.4fr_1fr] lg:gap-x-12 xl:gap-x-16 lg:gap-y-8 items-start">
+        <div class="flex flex-col gap-6">
+          <div class="rounded-2xl overflow-hidden shadow-lg bg-dark-blue border border-light-blue/15">
+            <img
+              src={item.imageSrc}
+              alt=""
+              class="w-full object-cover object-top aspect-[4/3]"
+              width="800"
+              height="600"
+            />
           </div>
-        )}
 
-        <div class="flex items-baseline gap-2 mb-6">
-          <p class="text-3xl font-bold text-dark-blue">{priceLabel}</p>
-          <p class="text-sm text-body">{section.priceNote}</p>
+          <div
+            class:list={[
+              'grid gap-4 sm:gap-5 items-start',
+              plans.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2',
+            ]}
+          >
+            {plans.map((plan) => (
+              <article class="rounded-2xl bg-white border border-light-blue/15 shadow-sm px-4 py-5 sm:px-5 h-full">
+                <h2 class="text-base sm:text-lg font-bold text-dark-blue mb-2">{planLabels[plan.id]}</h2>
+                <p class="text-xs sm:text-sm text-body leading-relaxed mb-3">{plan.description}</p>
+
+                <div class="flex items-baseline flex-wrap gap-x-2 gap-y-1 mb-1">
+                  {plan.originalPrice && (
+                    <s class="text-lg sm:text-xl font-semibold text-light-blue decoration-terracotta decoration-2">
+                      {section.priceCurrency} {plan.originalPrice}
+                    </s>
+                  )}
+                  <p class="text-xl sm:text-2xl font-bold text-dark-blue">
+                    {section.priceCurrency} {plan.price}
+                  </p>
+                </div>
+                {(planUsesInitialPriceFootnote(plan) ||
+                  plan.originalPrice ||
+                  (plan.id === 'standard' && !planUsesInitialPriceFootnote(plan))) && (
+                  <p class="text-xs text-body mb-3">
+                    {planUsesInitialPriceFootnote(plan) ? (
+                      <span class="font-semibold text-terracotta">{section.premiumOfferNote}</span>
+                    ) : plan.id === 'full' ? (
+                      plan.originalPrice && (
+                        <span class="font-semibold text-terracotta">{section.premiumOfferNote}</span>
+                      )
+                    ) : (
+                      <>
+                        {section.priceNote}
+                        {plan.originalPrice && (
+                          <>
+                            {' · '}
+                            <span class="font-semibold text-terracotta">{section.offerNote}</span>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </p>
+                )}
+
+                {(plan.features.length > 0 || (plan.excludedFeatures?.length ?? 0) > 0) && (
+                  <>
+                    <h3 class="text-xs sm:text-sm font-bold text-dark-blue mb-2">{section.featuresLabel}</h3>
+                    <ul class="space-y-2">
+                      {plan.features.map((feature) => (
+                        <li class="flex gap-2 items-start">
+                          <svg
+                            class="w-4 h-4 shrink-0 text-terracotta mt-0.5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0z"
+                              clip-rule="evenodd"></path>
+                          </svg>
+                          <span class="text-xs sm:text-sm text-dark-blue leading-snug">{feature}</span>
+                        </li>
+                      ))}
+                      {(plan.excludedFeatures ?? []).map((feature) => (
+                        <li class="flex gap-2 items-start">
+                          <svg
+                            class="w-4 h-4 shrink-0 text-light-blue mt-0.5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M5.3 5.3a1 1 0 0 1 1.4 0L10 8.6l3.3-3.3a1 1 0 1 1 1.4 1.4L11.4 10l3.3 3.3a1 1 0 0 1-1.4 1.4L10 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L8.6 10 5.3 6.7a1 1 0 0 1 0-1.4z"
+                              clip-rule="evenodd"></path>
+                          </svg>
+                          <span class="text-xs sm:text-sm text-body leading-snug">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </article>
+            ))}
+          </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-3">
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-terracotta text-white font-semibold hover:bg-terracotta-dark transition-colors"
-          >
-            {section.useTemplateLabel}
-          </a>
-          {demoUrl && (
+        <div class="lg:sticky lg:top-8 flex flex-col max-w-xl lg:max-w-none">
+          <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-3">{item.category}</p>
+          <h1 class="text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-dark-blue mb-5 leading-tight">{item.title}</h1>
+          <p class="text-base lg:text-lg text-body leading-relaxed mb-8">{item.detailDescription}</p>
+
+          <div class="flex flex-col sm:flex-row gap-3 mt-auto">
             <a
-              href={demoUrl}
+              href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
+              class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-terracotta text-white font-semibold hover:bg-terracotta-dark transition-colors"
             >
-              {section.demoLabel}
+              {section.useTemplateLabel}
             </a>
-          )}
+            {demoUrl && (
+              <a
+                href={demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
+              >
+                {section.demoLabel}
+              </a>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    ) : (
+      <div class="grid gap-10 lg:grid-cols-2 lg:gap-14 items-start">
+        <div class="rounded-2xl overflow-hidden shadow-lg bg-dark-blue border border-light-blue/15">
+          <img
+            src={item.imageSrc}
+            alt=""
+            class="w-full object-cover object-top aspect-[4/3]"
+            width="800"
+            height="600"
+          />
+        </div>
+
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-terracotta mb-3">{item.category}</p>
+          <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-4 leading-tight">{item.title}</h1>
+          <p class="text-base text-body leading-relaxed mb-8">{item.detailDescription}</p>
+
+          {item.features.length > 0 && (
+            <div class="rounded-2xl bg-white border border-light-blue/15 shadow-sm px-6 py-5 mb-8">
+              <h2 class="text-base font-bold text-dark-blue mb-4">{section.featuresLabel}</h2>
+              <ul class="space-y-3">
+                {item.features.map((feature) => (
+                  <li class="flex gap-3 items-start">
+                    <span class="w-2 h-2 rounded-full bg-terracotta shrink-0 mt-2" aria-hidden="true"></span>
+                    <span class="text-sm text-body leading-relaxed">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div class="flex items-baseline flex-wrap gap-x-2 gap-y-1 mb-6">
+            <p class="text-3xl font-bold text-dark-blue">
+              {section.priceCurrency} {item.price}
+            </p>
+            <p class="text-sm text-body">
+              {item.priceFootnote === 'initialPrice' ? (
+                <span class="font-semibold text-terracotta">{section.premiumOfferNote}</span>
+              ) : (
+                section.priceNote
+              )}
+            </p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-terracotta text-white font-semibold hover:bg-terracotta-dark transition-colors"
+            >
+              {section.useTemplateLabel}
+            </a>
+            {demoUrl && (
+              <a
+                href={demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center px-6 py-3.5 rounded-lg border-2 border-dark-blue text-dark-blue font-semibold hover:bg-dark-blue hover:text-white transition-colors"
+              >
+                {section.demoLabel}
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
   </div>
 </section>

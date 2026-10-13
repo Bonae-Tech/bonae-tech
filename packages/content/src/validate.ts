@@ -33,6 +33,17 @@ export function checkLocaleParity(es: ContentDocument, en: ContentDocument): Par
     }
   }
 
+  for (let i = 0; i < es.valueProp.items.length; i++) {
+    const esBullets = es.valueProp.items[i]?.backBullets?.length ?? 0;
+    const enBullets = en.valueProp.items[i]?.backBullets?.length ?? 0;
+    if (esBullets !== enBullets) {
+      issues.push({
+        path: `valueProp.items[${i}].backBullets`,
+        message: `Back bullet count mismatch: es=${esBullets}, en=${enBullets}`,
+      });
+    }
+  }
+
   for (let i = 0; i < es.about.members.length; i++) {
     const esHighlights = es.about.members[i]?.highlights.length ?? 0;
     const enHighlights = en.about.members[i]?.highlights.length ?? 0;

@@ -108,10 +108,28 @@
     transition: box-shadow 0.45s ease, transform 0.45s ease;
   }
 
+  .flip-card--rich {
+    min-height: 420px;
+  }
+
   .flip-card-inner {
     @apply relative w-full h-full min-h-[380px];
     transform-style: preserve-3d;
     transition: transform 0.6s ease;
+  }
+
+  .flip-card--rich .flip-card-inner {
+    min-height: 420px;
+  }
+
+  @media (min-width: 768px) {
+    .flip-card--rich {
+      min-height: 440px;
+    }
+
+    .flip-card--rich .flip-card-inner {
+      min-height: 440px;
+    }
   }
 
   .flip-card:hover,
@@ -144,16 +162,68 @@
   }
 
   .flip-card-back {
-    @apply bg-cream justify-center;
+    @apply bg-cream justify-center overflow-hidden;
     transform: rotateY(180deg);
   }
 
+  .flip-card-back--rich {
+    @apply justify-start gap-0 min-h-0 h-full;
+    padding: 1.125rem 1rem;
+  }
+
+  .flip-card-bullets {
+    @apply w-full list-none text-left text-dark-blue px-0 min-h-0 flex-1 overflow-y-auto overscroll-contain mt-4 pt-1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.625rem, 1.6vw, 0.875rem);
+    scrollbar-width: thin;
+  }
+
+  .flip-card-bullets::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .flip-card-bullets::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-light-blue/40;
+  }
+
+  .flip-card-bullet-item {
+    @apply block break-words hyphens-auto;
+  }
+
+  .flip-card-bullet-title {
+    @apply block font-bold text-dark-blue leading-snug;
+    font-size: clamp(0.9375rem, 1.35vw, 1.125rem);
+  }
+
+  .flip-card-bullet-link {
+    @apply block font-bold text-dark-blue leading-snug underline decoration-terracotta/70 underline-offset-2
+           hover:text-terracotta hover:decoration-terracotta transition-colors;
+    font-size: clamp(0.9375rem, 1.35vw, 1.125rem);
+  }
+
+  .flip-card-bullet-desc {
+    @apply mt-1 text-body leading-relaxed;
+    font-size: clamp(0.8125rem, 1.15vw, 0.9375rem);
+  }
+
   .flip-card-badge {
-    @apply inline-block self-center px-3 py-1 rounded-full bg-cream text-dark-blue text-xs font-semibold uppercase tracking-wider mb-4 border border-light-blue/20;
+    @apply inline-block self-center max-w-full px-3 py-1 rounded-full bg-cream text-dark-blue text-xs font-bold uppercase tracking-wide border border-light-blue/20 shrink-0;
   }
 
   .flip-card-back .flip-card-badge {
     @apply bg-white;
+  }
+
+  .flip-card-back--rich .flip-card-badge {
+    @apply normal-case tracking-normal leading-snug text-center mb-0;
+    font-size: clamp(0.875rem, 1.2vw, 1rem);
+    padding: 0.5rem 1rem;
+  }
+
+  .flip-card-back-text {
+    font-size: clamp(0.8125rem, 1.15vw, 0.9375rem);
+    @apply text-body leading-relaxed px-2;
   }
 
   .value-prop-icon-frame {
@@ -190,7 +260,36 @@
       grid-column: span 2;
     }
 
+    /* Exactly 4 cards: two centered pairs (merged Redes + CRM counts as one) */
+    .value-prop-grid > *:nth-child(1):nth-last-child(4) {
+      grid-column: 2 / span 2;
+    }
+
+    .value-prop-grid > *:nth-child(2):nth-last-child(3) {
+      grid-column: 4 / span 2;
+    }
+
+    .value-prop-grid > *:nth-child(3):nth-last-child(2) {
+      grid-column: 2 / span 2;
+    }
+
+    .value-prop-grid > *:nth-child(4):nth-last-child(1) {
+      grid-column: 4 / span 2;
+    }
+
     /* Exactly 5 cards: center the bottom row pair until a 6th is added */
+    .value-prop-grid > *:nth-child(1):nth-last-child(5) {
+      grid-column: span 2;
+    }
+
+    .value-prop-grid > *:nth-child(2):nth-last-child(4) {
+      grid-column: span 2;
+    }
+
+    .value-prop-grid > *:nth-child(3):nth-last-child(3) {
+      grid-column: span 2;
+    }
+
     .value-prop-grid > *:nth-child(4):nth-last-child(2) {
       grid-column: 2 / span 2;
     }

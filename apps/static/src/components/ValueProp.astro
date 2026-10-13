@@ -4,9 +4,10 @@ import IconCard from './IconCard.astro';
 
 interface Props {
   t: Translations;
+  whatsappHref: string;
 }
 
-const { t } = Astro.props;
+const { t, whatsappHref } = Astro.props;
 ---
 
 <section id="servicios" class="py-20 bg-white">
@@ -26,6 +27,8 @@ const { t } = Astro.props;
           description={item.description}
           backLabel={item.backLabel}
           backDescription={item.backDescription}
+          backBullets={item.backBullets}
+          whatsappHref={whatsappHref}
         />
       ))}
     </div>

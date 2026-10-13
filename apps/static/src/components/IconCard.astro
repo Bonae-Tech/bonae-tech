@@ -2,20 +2,46 @@
 import type { ValuePropIcon } from '@bonae/content';
 import { valuePropIconSrc, valuePropIconAlt } from '../lib/icons';
 
+type BackBullet =
+  | string
+  | {
+      label: string;
+      description?: string;
+      href?: string;
+      linkTarget?: 'whatsapp';
+    };
+
 interface Props {
   icon: ValuePropIcon;
   title: string;
   description: string;
   backLabel: string;
   backDescription: string;
+  backBullets?: BackBullet[];
+  whatsappHref: string;
 }
 
-const { icon, title, description, backLabel, backDescription } = Astro.props;
+const { icon, title, description, backLabel, backDescription, backBullets, whatsappHref } =
+  Astro.props;
 const src = valuePropIconSrc[icon];
 const alt = valuePropIconAlt[icon] ?? title;
+const richBack = backBullets && backBullets.length > 0;
+
+function isStructuredBullet(bullet: BackBullet): bullet is Exclude<BackBullet, string> {
+  return typeof bullet === 'object';
+}
+
+function bulletHref(bullet: Exclude<BackBullet, string>): string | undefined {
+  if (bullet.linkTarget === 'whatsapp') return whatsappHref;
+  return bullet.href;
+}
+
+function bulletIsExternal(bullet: Exclude<BackBullet, string>): boolean {
+  return bullet.linkTarget === 'whatsapp';
+}
 ---
 
-<article class="flip-card group" tabindex="0">
+<article class:list={['flip-card group', { 'flip-card--rich': richBack }]} tabindex="0">
   <div class="flip-card-inner">
     <div class="flip-card-front">
       <div class="value-prop-icon-frame">
@@ -34,9 +60,40 @@ const alt = valuePropIconAlt[icon] ?? title;
         <p class="value-prop-card-subtitle">{description}</p>
       )}
     </div>
-    <div class="flip-card-back">
+    <div class:list={['flip-card-back', { 'flip-card-back--rich': richBack }]}>
       <span class="flip-card-badge">{backLabel}</span>
-      <p class="text-sm text-body leading-relaxed px-2">{backDescription}</p>
+      {richBack ? (
+        <ul class="flip-card-bullets">
+          {backBullets.map((bullet) => {
+            if (!isStructuredBullet(bullet)) {
+              return <li>{bullet}</li>;
+            }
+            const href = bulletHref(bullet);
+            const external = bulletIsExternal(bullet);
+            return (
+              <li class="flip-card-bullet-item">
+                {href ? (
+                  <a
+                    href={href}
+                    class="flip-card-bullet-link"
+                    target={external ? '_blank' : undefined}
+                    rel={external ? 'noopener noreferrer' : undefined}
+                  >
+                    {bullet.label}
+                  </a>
+                ) : (
+                  <span class="flip-card-bullet-title">{bullet.label}</span>
+                )}
+                {bullet.description && (
+                  <p class="flip-card-bullet-desc">{bullet.description}</p>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p class="flip-card-back-text">{backDescription}</p>
+      )}
     </div>
   </div>
 </article>

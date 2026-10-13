@@ -31,37 +31,133 @@
       {
         "icon": "accessible",
         "title": "Presencia Web de alto impacto",
-        "description": " Diseño y desarrollo web optimizado para transformar visitas en clientes las 24 horas del día.",
-        "backLabel": "Accesible",
-        "backDescription": "Precios acordes al mercado, desde planes básicos hasta soluciones completas, con opciones de financiación."
+        "description": "Diseño web ligero y optimizado para que te encuentren en Google y otros buscadores y conviertas visitas en contactos.",
+        "backLabel": "Productos Web",
+        "backDescription": "Elige el formato ideal para tu negocio.",
+        "backBullets": [
+          {
+            "label": "Landing Page",
+            "description": "Página enfocada en captar clientes desde anuncios y campañas.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "OnePage",
+            "description": "Tu negocio en una sola página, clara y fácil de navegar.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "Multipage",
+            "description": "Varias páginas para mostrar servicios, equipo y más detalle.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "Otros productos",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "simple",
-        "title": "Redes Sociales",
-        "description": "Creamos y configuramos tu ecosistema en redes sociales. Automatizamos tus canales de atención para que nunca vuelvas a perder un mensaje de ventas.",
-        "backLabel": "Cercano",
-        "backDescription": "Entendemos los retos y oportunidades de nuestra región, hablamos tu idioma y ofrecemos soporte técnico cercano, real y eficiente."
+        "title": "Redes Sociales y CRM",
+        "description": "Ecosistema en redes y canales automatizados para no perder mensajes, más gestión de clientes y seguimiento comercial en un solo enfoque.",
+        "backLabel": "Redes Sociales y CRM",
+        "backDescription": "Conecta, vende y da seguimiento sin fricción.",
+        "backBullets": [
+          {
+            "label": "Potencial CRM",
+            "description": "Clientes e historial centralizados."
+          },
+          {
+            "label": "Campañas en redes",
+            "description": "Contenido y ads para tu marca."
+          },
+          {
+            "label": "Integración de ventas",
+            "description": "Redes y CRM sin consultas perdidas."
+          },
+          {
+            "label": "Otros productos",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "secure",
-        "title": "Sistemas de Gestión Comercial (CRM)",
-        "description": "Gestión de clientes y seguimiento de ventas con sistemas de fácil acceso y manejo.",
-        "backLabel": "Estratégico",
-        "backDescription": "Estructuramos ecosistemas digitales de alto rendimiento con SEO avanzado y crecimiento orgánico sostenible."
+        "title": "Gestión de Negocios",
+        "description": "Catálogo digital, tienda en línea y sistemas para ventas, inventario y cobros: lo mismo que ofrecemos en Plantillas, categoría Gestión de Negocios.",
+        "backLabel": "Gestión de Negocios",
+        "backDescription": "Soluciones para vender y administrar tu negocio en línea.",
+        "backBullets": [
+          {
+            "label": "Catálogo Digital",
+            "description": "Muestra tus productos y recibe pedidos por WhatsApp.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "Tienda Virtual",
+            "description": "Vende en línea las 24 horas con carrito y pagos.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "Sistema de Ventas",
+            "description": "Controla pedidos, cobros y reportes de tu operación comercial.",
+            "href": "#plantillas"
+          },
+          {
+            "label": "Otros productos",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "close",
         "title": "Consultoría digital",
-        "description": "Deja atrás los procesos manuales. Diagnosticamos tu negocio para eliminar tareas repetitivas, automatizar tu operación diaria y adaptar tu empresa al reto de reducir errores.",
-        "backLabel": "Seguro",
-        "backDescription": "Optimizamos cada proceso técnico y estratégico para profesionalizar tu imagen y proteger la confianza de tus clientes."
+        "description": "Diagnosticamos tu negocio para eliminar tareas repetitivas y automatizar la operación, y mejoramos tu web actual: velocidad, diseño y conversión.",
+        "backLabel": "Consultoría digital",
+        "backDescription": "Potencia lo que ya tienes en la web.",
+        "backBullets": [
+          {
+            "label": "Mejorar tu página actual",
+            "description": "Velocidad, diseño y experiencia para que tu sitio rinda más."
+          },
+          {
+            "label": "Inclusión de Chatbot con IA",
+            "description": "Responde consultas y captura leads de forma automática."
+          },
+          {
+            "label": "Textos y contenido",
+            "description": "Refinamos copy e información: claridad, SEO y más conversiones."
+          },
+          {
+            "label": "Otros productos",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "education",
         "title": "Plataformas de E-learning y Aulas Virtuales",
         "description": "Creamos y configuramos tu propia academia online para que puedas digitalizar tus cursos, automatizar las inscripciones y vender tu conocimiento sin límites geográficos.",
-        "backLabel": "Educación sin Fronteras",
-        "backDescription": "Desplegamos tus cursos y clases para que tu conocimiento llegue a cualquier parte del mundo."
+        "backLabel": "E-learning y aulas virtuales",
+        "backDescription": "Lo que puedes crear con nosotros.",
+        "backBullets": [
+          {
+            "label": "Plataforma E-learning",
+            "description": "Cursos en video, módulos, tareas y evaluaciones con acceso 24/7."
+          },
+          {
+            "label": "Aulas virtuales",
+            "description": "Clases en vivo, horarios y salas para conectar con tus alumnos."
+          },
+          {
+            "label": "Tu academia online",
+            "description": "Inscripciones, pagos, certificados y contenido con tu marca."
+          },
+          {
+            "label": "Otros productos",
+            "linkTarget": "whatsapp"
+          }
+        ]
       }
     ]
   },
@@ -116,9 +212,9 @@
     ]
   },
   "templates": {
-    "sectionBadge": "Plantillas",
+    "sectionBadge": "Precios y Plantillas",
     "title": "Lanza tu presencia digital hoy mismo",
-    "subheadline": "Plantillas listas para usar, pensadas para negocios de la región. Elige un diseño, personalízalo con tu marca y publícalo en días, no meses.",
+    "subheadline": "Plantillas propias, ágiles y adaptadas a las necesidades de tu negocio. Elige un diseño, lo personalizamos con tu marca y publicamos en días, ¡No meses! Incluye un editor sencillo para cambios básicos. El producto es del cliente.",
     "viewAllLabel": "Ver todas las plantillas",
     "viewAllHref": "#plantillas",
     "viewDetailsLabel": "Ver detalles →",
@@ -126,80 +222,196 @@
     "featuresLabel": "Detalles técnicos",
     "priceCurrency": "USD",
     "priceNote": "pago único",
+    "planStandardLabel": "Estándar",
+    "planPremiumLabel": "Premium",
+    "offerNote": "Oferta limitada",
+    "premiumOfferNote": "Precio inicial",
     "useTemplateLabel": "Usar esta plantilla",
     "demoLabel": "Ver página en vivo",
     "comingSoonModalBody": "Estamos trabajando en nuevos diseños. Vuelve pronto para ver el portafolio completo.",
     "comingSoonModalDismiss": "Entendido",
     "items": [
       {
-        "category": "Corporativo y Empresarial",
+        "category": "Multipage · Servicios Web",
         "title": "Plantilla Modelo Empresarial",
-        "description": "Un sitio web liviano y novedoso diseñado para ayudar a empresas a llegar a más clientes de forma efectiva.",
-        "detailDescription": "Esta plantilla ofrece un diseño elegante y profesional que incluye un carrusel principal de imágenes, tarjetas para destacar servicios, contadores de métricas clave, logotipos de clientes y secciones de llamada a la acción enfocadas en la conversión.",
+        "description": "Sitio con varias páginas para presencia corporativa rápida y efectiva.",
+        "detailDescription": "Vista demo de nuestro producto Multipage: diseño corporativo con varias secciones, pensado para personalizarlo con tu marca.",
         "imageSrc": "/images/templates/modelo-2.png",
         "slug": "modelo-2",
         "demoUrl": "https://modelo-2.bonaetech.com/",
-        "price": 100,
-        "features": [
-          "Diseño adaptable, liviano y moderno",
-          "Sección principal con carrusel e interactividad",
-          "Tarjetas organizadas para la oferta de servicios",
-          "Sección de indicadores y métricas de impacto",
-          "Estructura multilingüe e integración de contacto rápido"
+        "price": 320,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 320,
+            "originalPrice": 340,
+            "description": "Modelo Estándar: con 3 páginas presentas tu empresa, tus servicios esenciales y el camino claro para que te contacten.",
+            "features": [
+              "Hasta 3 páginas para mostrar todo lo que ofreces",
+              "Botón de WhatsApp para atenderlos al instante",
+              "Se ve perfecta en celulares, tablets y computadoras",
+              "Aparece en Google para que tus clientes te encuentren fácil",
+              "Enlaces a todas tus redes sociales",
+              "Formulario para que tus clientes te escriban",
+              "15 días de mantenimiento gratis",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ]
+          },
+          {
+            "id": "full",
+            "price": 480,
+            "originalPrice": 500,
+            "description": "Modelo Premium: con 5 páginas amplías servicios y equipo, sumas mapa y legal, y cuentas tu propuesta con más detalle.",
+            "features": [
+              "Hasta 5 páginas para mostrar todo lo que ofreces",
+              "Botón de WhatsApp para atenderlos al instante",
+              "Se ve perfecta en celulares, tablets y computadoras",
+              "Aparece en Google para que tus clientes te encuentren fácil",
+              "Enlaces a todas tus redes sociales",
+              "Formulario para que tus clientes te escriban",
+              "Tu ubicación en Google Maps para que lleguen sin perderse",
+              "Creamos textos e imágenes acordes a la marca de tu empresa",
+              "Páginas legales: cookies, términos y privacidad",
+              "30 días de mantenimiento gratis",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ]
+          }
         ],
         "comingSoon": false
       },
       {
-        "category": "Paneles de Administración y Negocios",
+        "category": "Sistema de Ventas · Gestión de Negocios",
         "title": "Plantilla de Panel Administrativo y de Ventas",
-        "description": "Un panel administrativo moderno y responsivo diseñado para el seguimiento de contratos, pagos, rendimiento de vendedores y saldos pendientes.",
-        "detailDescription": "Esta plantilla de panel de gestión intuitiva adaptada para empresas que gestionan ventas, contratos y seguimiento de pagos a través de múltiples canales. Incluye métricas de resumen en tiempo real para contratos activos, pendientes y cancelados, resúmenes financieros claros de deudas, desglose por métodos de pago (Zelle, PayPal, Binance, Efectivo, etc.) y reportes descargables agrupados por vendedor.",
+        "description": "Panel administrativo para gestionar ventas, pagos y vendedores con métricas en tiempo real.",
+        "detailDescription": "Vista demo de nuestro producto Sistema de Ventas: control de pedidos, cobros y reportes por vendedor desde web o móvil, personalizable para tu operación comercial.",
         "imageSrc": "/images/templates/modelo-3.png",
         "slug": "modelo-3",
         "demoUrl": "https://modelo-3.bonaetech.com/",
         "price": 300,
-        "features": [
-          "Seguimiento en tiempo real del estado de contratos (Activos, Por despachar, Cancelados, Finalizados)",
-          "Resumen financiero completo (Deuda Total, Deuda Vencida, Saldo Pendiente, Total Pagado)",
-          "Desglose de pagos multicanal (Pago Móvil, Zelle, PayPal, Binance, Efectivo, Transferencia)",
-          "Reportes descargables de ventas y deudas agrupados por vendedor",
-          "Diseño responsivo y optimizado para dispositivos móviles con navegación por pestañas"
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 300,
+            "priceFootnote": "initialPrice",
+            "description": "Un solo plan para seguir pedidos, deudas y cobros en tiempo real y descargar reportes por vendedor desde cualquier dispositivo.",
+            "features": [
+              "Sigue tus pedidos en tiempo real",
+              "Mira cuánto te deben y cuánto has cobrado",
+              "Registra pagos por Zelle, PayPal, Binance o efectivo",
+              "Descarga reportes de ventas por vendedor",
+              "Úsalo desde tu celular, tablet o computadora",
+              "Mantenimiento incluido el primer mes",
+              "Conexión con correo y mensajería para enviar reportes a tus clientes registrados (configuración y costos de terceros no incluidos)"
+            ]
+          }
         ],
         "comingSoon": false
       },
       {
-        "category": "E-commerce / Moda y Belleza",
+        "category": "Tienda Virtual · Gestión de Negocios",
         "title": "Plantilla de Tienda de Moda y Belleza Femenina",
-        "description": "Una plantilla web elegante y moderna para comercio electrónico, diseñada para tiendas de moda, accesorios y productos de belleza femenina.",
-        "detailDescription": "Una plantilla de tienda en línea completa con una estética refinada, ideal para marcas de moda y belleza. Incluye categorías estructuradas (vestidos, blusas, faldas, abrigos, joyería, maquillaje, cuidado de la piel y fragancias), catálogo destacado, sección de testimonios de clientes, banners promocionales con contador regresivo y navegación integrada.",
+        "description": "Tienda en línea completa con carrito de compras y gestión de productos.",
+        "detailDescription": "Vista demo de nuestro producto Tienda Virtual: venta en línea con carrito, pagos y catálogo por categorías, personalizable con tu marca (ejemplo: moda y belleza).",
         "imageSrc": "/images/templates/modelo-4.png",
         "slug": "modelo-4",
         "demoUrl": "https://modelo-4.bonaetech.com/",
-        "price": 150,
-        "features": [
-          "Diseño limpio y moderno optimizado para productos de moda y cuidado personal",
-          "Navegación completa por categorías que abarca prendas, accesorios y cosméticos",
-          "Catálogo destacado con visualización de precios y botones de compra rápida",
-          "Banner de ofertas semanales con temporizador de cuenta regresiva",
-          "Sección integrada de opiniones de clientes y enlaces a redes sociales"
+        "price": 499,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 499,
+            "originalPrice": 520,
+            "description": "Modelo Estándar: con 25 productos vendes en línea con carrito, categorías y pagos listos para tus clientes.",
+            "features": [
+              "Hasta 25 productos precargados para vender en tu tienda",
+              "Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras",
+              "Carrito de compras y favoritos",
+              "Controla tu inventario y tus productos",
+              "Destaca tus ofertas",
+              "Recibe pagos en línea, nacional e internacional (no incluye comisiones)",
+              "Tus productos ordenados por categorías",
+              "Bonus Chatbot",
+              "Mantenimiento incluido el primer mes",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ],
+            "excludedFeatures": ["No incluye realización de foto productos"]
+          },
+          {
+            "id": "full",
+            "price": 650,
+            "originalPrice": 680,
+            "description": "Modelo Premium: con 50 productos amplías catálogo, ofertas y pagos en línea con más capacidad de venta.",
+            "features": [
+              "Hasta 50 productos precargados para vender en tu tienda",
+              "Fichas de producto con fotos, precio y detalles que puedes actualizar cuando quieras",
+              "Carrito de compras y favoritos",
+              "Controla tu inventario y tus productos",
+              "Destaca tus ofertas",
+              "Recibe pagos en línea, nacional e internacional (no incluye comisiones)",
+              "Tus productos ordenados por categorías",
+              "Bonus Chatbot",
+              "Mantenimiento incluido el primer mes",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ],
+            "excludedFeatures": ["No incluye realización de foto productos"]
+          }
         ],
         "comingSoon": false
       },
       {
-        "category": "Comercio Electrónico",
+        "category": "Catálogo Digital · Gestión de Negocios",
         "title": "Equipo Ecuestre y Ropa de Montar",
-        "description": "Una plantilla de comercio electrónico refinada y moderna, diseñada específicamente para equipo ecuestre, ropa de equitación y accesorios de caballeriza.",
-        "detailDescription": "model-5 es una plantilla sólida y elegante pensada para marcas ecuestres, tiendas de guarnicionería y boutiques de equitación. Con una tipografía limpia, catálogos destacados, banners promocionales con contador de tiempo regresivo, formulario de contacto directo y cabecera con soporte para cambio de idioma, este diseño ofrece una experiencia de compra completa y profesional para amantes de los caballos.",
+        "description": "Muestra tus productos en un catálogo en línea claro y fácil de navegar.",
+        "detailDescription": "Vista demo de nuestro producto Catálogo Digital: vitrina en línea para exhibir productos, categorías y pedidos por WhatsApp, personalizable con tu marca (ejemplo: tienda ecuestre).",
         "imageSrc": "/images/templates/modelo-5.png",
         "slug": "modelo-5",
         "demoUrl": "https://modelo-5.bonaetech.com/",
-        "price": 150,
-        "features": [
-          "Catálogo de productos organizado por sillas, botas, ropa, cascos y accesorios de cuidado",
-          "Sección de ofertas promocionales con temporizador de cuenta regresiva",
-          "Barra de suscripción al boletín para ofrecer códigos de descuento",
-          "Formulario de contacto para consultas personalizadas sobre disciplina o equipo",
-          "Sección de favoritos e integración visual para navegación multi-idioma"
+        "price": 199,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 199,
+            "originalPrice": 220,
+            "description": "Modelo Estándar: con 25 productos muestras lo esencial de tu catálogo, por categorías y listo para pedidos por WhatsApp.",
+            "features": [
+              "Hasta 25 productos precargados para exhibir en tu catálogo",
+              "Tus productos ordenados por categorías",
+              "Cada producto con fotos, precio y detalles",
+              "Tus clientes te hacen pedidos directo por WhatsApp",
+              "Buscador para encontrar productos en segundos",
+              "Actualiza precios y productos cuando quieras",
+              "Mantenimiento incluido el primer mes",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ],
+            "excludedFeatures": ["No incluye realización de foto productos"]
+          },
+          {
+            "id": "full",
+            "price": 320,
+            "originalPrice": 340,
+            "description": "Modelo Premium: con 50 productos amplías tu vitrina, más categorías y más opciones para que te compren por WhatsApp.",
+            "features": [
+              "Hasta 50 productos precargados para exhibir en tu catálogo",
+              "Tus productos ordenados por categorías",
+              "Cada producto con fotos, precio y detalles",
+              "Tus clientes te hacen pedidos directo por WhatsApp",
+              "Buscador para encontrar productos en segundos",
+              "Actualiza precios y productos cuando quieras",
+              "Mantenimiento incluido el primer mes",
+              "Hosting incluido por 1 año (aplican condiciones)",
+              "Dominio incluido por 1 año (aplican condiciones)"
+            ],
+            "excludedFeatures": ["No incluye realización de foto productos"]
+          }
         ],
         "comingSoon": false
       }

@@ -31,37 +31,133 @@
       {
         "icon": "accessible",
         "title": "High-impact web presence",
-        "description": "We design and launch your professional website, ready to attract customers.",
-        "backLabel": "Accessible",
-        "backDescription": "Market-aligned pricing, from basic plans to complete solutions, with financing options."
+        "description": "Lightweight web design optimized so customers find you on Google and other search engines and turn visits into leads.",
+        "backLabel": "Web Products",
+        "backDescription": "Pick the format that fits your business.",
+        "backBullets": [
+          {
+            "label": "Landing Page",
+            "description": "A focused page to capture leads from ads and campaigns.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "OnePage",
+            "description": "Your business on one clear, easy-to-browse page.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Multipage",
+            "description": "Multiple pages to showcase services, team, and more detail.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Other products",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "simple",
-        "title": "Social media",
-        "description": "We manage your social media presence with strategic, brand-aligned content.",
-        "backLabel": "Close to you",
-        "backDescription": "We structure high-performance digital ecosystems with advanced SEO and sustainable organic growth."
+        "title": "Social media and CRM",
+        "description": "Social presence and automated channels so you never miss a message, plus customer management and sales follow-up in one approach.",
+        "backLabel": "Social media and CRM",
+        "backDescription": "Connect, sell, and follow up without friction.",
+        "backBullets": [
+          {
+            "label": "CRM at full potential",
+            "description": "Customers and history in one place."
+          },
+          {
+            "label": "Social campaigns",
+            "description": "On-brand content and ads."
+          },
+          {
+            "label": "Sales integration",
+            "description": "Social and CRM, no missed inquiries."
+          },
+          {
+            "label": "Other products",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "secure",
-        "title": "Commercial management systems (CRM)",
-        "description": "We implement systems to organize customers, sales, and commercial follow-up.",
-        "backLabel": "Strategic",
-        "backDescription": "We optimize every technical and strategic process to professionalize your image and protect customer trust."
+        "title": "Business Management",
+        "description": "Digital catalog, online store, and tools for sales, inventory, and payments—the same Business Management templates in our Templates section.",
+        "backLabel": "Business Management",
+        "backDescription": "Solutions to sell and run your business online.",
+        "backBullets": [
+          {
+            "label": "Digital Catalog",
+            "description": "Showcase products and take orders via WhatsApp.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Online Store",
+            "description": "Sell online 24/7 with cart and payments.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Sales System",
+            "description": "Track orders, payments, and sales reports.",
+            "href": "/en/#plantillas"
+          },
+          {
+            "label": "Other products",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "close",
         "title": "Digital consulting",
-        "description": "We guide you to define and execute your digital strategy step by step.",
-        "backLabel": "Secure",
-        "backDescription": "We understand the challenges and opportunities of our region, speak your language, and provide close, real, efficient technical support."
+        "description": "We diagnose your business to cut repetitive work and automate operations, and we improve your current website: speed, design, and conversion.",
+        "backLabel": "Digital consulting",
+        "backDescription": "Get more from the website you already have.",
+        "backBullets": [
+          {
+            "label": "Improve your current site",
+            "description": "Speed, design, and UX so your site performs better."
+          },
+          {
+            "label": "AI chatbot included",
+            "description": "Answers questions and captures leads automatically."
+          },
+          {
+            "label": "Copy and content",
+            "description": "Sharper messaging and information: clarity, SEO, and conversions."
+          },
+          {
+            "label": "Other products",
+            "linkTarget": "whatsapp"
+          }
+        ]
       },
       {
         "icon": "education",
-        "title": "Virtual classrooms",
-        "description": "Virtual classrooms",
-        "backLabel": "Borderless learning",
-        "backDescription": "We make virtual classrooms for you"
+        "title": "E-learning platforms and virtual classrooms",
+        "description": "We build and configure your online academy so you can digitize courses, automate enrollments, and sell your expertise without geographic limits.",
+        "backLabel": "E-learning and virtual classrooms",
+        "backDescription": "What you can build with us.",
+        "backBullets": [
+          {
+            "label": "E-learning platform",
+            "description": "Video courses, modules, assignments, and assessments with 24/7 access."
+          },
+          {
+            "label": "Virtual classrooms",
+            "description": "Live classes, schedules, and rooms to connect with your students."
+          },
+          {
+            "label": "Your online academy",
+            "description": "Enrollments, payments, certificates, and branded content."
+          },
+          {
+            "label": "Other products",
+            "linkTarget": "whatsapp"
+          }
+        ]
       }
     ]
   },
@@ -116,9 +212,9 @@
     ]
   },
   "templates": {
-    "sectionBadge": "Templates",
+    "sectionBadge": "Pricing and Templates",
     "title": "Launch your digital presence today",
-    "subheadline": "Ready-to-use templates designed for businesses in the region. Pick a design, customize it with your brand, and publish in days—not months.",
+    "subheadline": "Our own agile templates, tailored to what your business needs. Pick a design—we personalize it with your brand and launch in days, not months! Includes a simple editor for basic updates. The product is yours.",
     "viewAllLabel": "See all templates",
     "viewAllHref": "#plantillas",
     "viewDetailsLabel": "View details →",
@@ -126,80 +222,196 @@
     "featuresLabel": "Technical details",
     "priceCurrency": "USD",
     "priceNote": "one-time payment",
+    "planStandardLabel": "Standard",
+    "planPremiumLabel": "Premium",
+    "offerNote": "Limited-time offer",
+    "premiumOfferNote": "Starting price",
     "useTemplateLabel": "Use this template",
     "demoLabel": "View live page",
     "comingSoonModalBody": "We are working on new designs. Check back soon for the full portfolio.",
     "comingSoonModalDismiss": "Got it",
     "items": [
       {
-        "category": "Corporate & Business",
+        "category": "Multipage · Web Services",
         "title": "Corporate Business Template",
-        "description": "A lightweight, modern web template designed to help corporate services reach more clients efficiently.",
-        "detailDescription": "This template offers a sleek, professional layout featuring a hero image slider, service highlights, key metrics counters, client logo showcases, and clear call-to-action sections to effectively convert visitors into leads.",
+        "description": "A multi-page site for a fast, effective corporate online presence.",
+        "detailDescription": "Live demo of our Multipage product: a corporate layout with multiple sections, ready to customize with your brand.",
         "imageSrc": "/images/templates/modelo-2.png",
         "slug": "modelo-2",
         "demoUrl": "https://modelo-2.bonaetech.com/",
-        "price": 100,
-        "features": [
-          "Lightweight and modern responsive design",
-          "Hero slider section with call-to-action buttons",
-          "Dedicated services breakdown cards",
-          "Key metrics and achievements counters",
-          "Multilingual support layout with contact integration"
+        "price": 320,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 320,
+            "originalPrice": 340,
+            "description": "Standard model: with 3 pages you introduce your business, core services, and a clear path for customers to reach you.",
+            "features": [
+              "Up to 3 pages to show everything you offer",
+              "WhatsApp button to reply instantly",
+              "Looks great on phones, tablets and computers",
+              "Shows up on Google so customers find you easily",
+              "Links to all your social media",
+              "A form so customers can reach you",
+              "15 days of free maintenance",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ]
+          },
+          {
+            "id": "full",
+            "price": 480,
+            "originalPrice": 500,
+            "description": "Premium model: with 5 pages you expand services and team, add map and legal pages, and tell your story in richer detail.",
+            "features": [
+              "Up to 5 pages to show everything you offer",
+              "WhatsApp button to reply instantly",
+              "Looks great on phones, tablets and computers",
+              "Shows up on Google so customers find you easily",
+              "Links to all your social media",
+              "A form so customers can reach you",
+              "Your location on Google Maps so customers find their way",
+              "We create copy and images that match your brand",
+              "Legal pages: cookies, terms and privacy",
+              "30 days of free maintenance",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ]
+          }
         ],
         "comingSoon": false
       },
       {
-        "category": "Business & Admin Dashboards",
+        "category": "Sales System · Business Management",
         "title": "Administrative & Sales Dashboard Template",
-        "description": "A modern, responsive administrative dashboard designed for tracking contracts, payments, seller performance, and overdue balances.",
-        "detailDescription": "This template is an intuitive management dashboard template tailored for businesses that handle sales, contracts, and payment tracking across multiple channels. It features real-time overview metrics for active, pending, and canceled contracts, clear financial debt summaries, payment method breakdowns (Zelle, PayPal, Binance, Cash, etc.), and downloadable reports grouped by seller.",
+        "description": "An admin dashboard to manage sales, payments and sales reps with real-time metrics.",
+        "detailDescription": "Live demo of our Sales System product: track orders, collections, and per-rep reports from web or mobile, tailored to your sales operation.",
         "imageSrc": "/images/templates/modelo-3.png",
         "slug": "modelo-3",
         "demoUrl": "https://modelo-3.bonaetech.com/",
         "price": 300,
-        "features": [
-          "Real-time contract status tracking (Active, Pending Dispatch, Canceled, Finished)",
-          "Comprehensive balance summary (Total Debt, Overdue Debt, Pending Balance, Paid Total)",
-          "Multi-channel payment breakdown (Zelle, PayPal, Binance, Mobile Payment, Cash)",
-          "Downloadable sales and debt reports grouped by seller",
-          "Clean, mobile-optimized responsive layout with tabbed navigation"
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 300,
+            "priceFootnote": "initialPrice",
+            "description": "One plan to track orders, balances, and payments in real time and download per-rep reports from any device.",
+            "features": [
+              "Track your orders in real time",
+              "See how much you're owed and how much you've collected",
+              "Log payments via Zelle, PayPal, Binance or cash",
+              "Download sales reports by sales rep",
+              "Use it from your phone, tablet or computer",
+              "Maintenance included for the first month",
+              "Email and messaging integration to send reports to your registered clients (third-party setup and fees not included)"
+            ]
+          }
         ],
         "comingSoon": false
       },
       {
-        "category": "E-commerce / Fashion & Beauty",
+        "category": "Online Store · Business Management",
         "title": "Women's Fashion & Beauty Store Template",
-        "description": "An elegant and modern e-commerce web template designed for women's fashion, accessories, and beauty products.",
-        "detailDescription": "Complete online store template featuring a refined aesthetic tailored for fashion and beauty brands. It includes structured product categories (dresses, blouses, skirts, coats, jewelry, makeup, skincare, and fragrances), a featured catalog layout, customer testimonial sections, promotional banners with countdown timers, and integrated search and navigation features.",
+        "description": "A full online store with shopping cart and product management.",
+        "detailDescription": "Live demo of our Online Store product: sell online with cart, payments, and category catalog, customizable with your brand (example: fashion and beauty).",
         "imageSrc": "/images/templates/modelo-4.png",
         "slug": "modelo-4",
         "demoUrl": "https://modelo-4.bonaetech.com/",
-        "price": 150,
-        "features": [
-          "Clean, modern layout optimized for fashion and skincare products",
-          "Comprehensive category navigation including clothing, accessories, and cosmetics",
-          "Featured catalog sections with price displays and quick-buy buttons",
-          "Promotional offer banner with integrated countdown timer",
-          "Built-in customer review section and social media links"
+        "price": 499,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 499,
+            "originalPrice": 520,
+            "description": "Standard model: with 25 products you sell online with cart, categories, and payments ready for your customers.",
+            "features": [
+              "Up to 25 preloaded products to sell in your store",
+              "Product pages with photos, price and details you can update anytime",
+              "Shopping cart and favorites",
+              "Keep track of your inventory and products",
+              "Highlight your deals",
+              "Accept online payments, domestic and international (fees not included)",
+              "Your products organized by category",
+              "Bonus Chatbot",
+              "Maintenance included for the first month",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ],
+            "excludedFeatures": ["Product photo production not included"]
+          },
+          {
+            "id": "full",
+            "price": 650,
+            "originalPrice": 680,
+            "description": "Premium model: with 50 products you expand catalog, deals, and online payments with more sales capacity.",
+            "features": [
+              "Up to 50 preloaded products to sell in your store",
+              "Product pages with photos, price and details you can update anytime",
+              "Shopping cart and favorites",
+              "Keep track of your inventory and products",
+              "Highlight your deals",
+              "Accept online payments, domestic and international (fees not included)",
+              "Your products organized by category",
+              "Bonus Chatbot",
+              "Maintenance included for the first month",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ],
+            "excludedFeatures": ["Product photo production not included"]
+          }
         ],
         "comingSoon": false
       },
       {
-        "category": "E-Commerce",
+        "category": "Digital Catalog · Business Management",
         "title": "Equestrian Equipment & Apparel",
-        "description": "A refined, modern e-commerce template designed specifically for equestrian gear, riding apparel, and tack supplies.",
-        "detailDescription": "An elegant and robust e-commerce template tailored for equestrian brands, horse tack shops, and riding apparel retailers. Featuring clean typography, curated product showcases, integrated promotional banners with countdown timers, customer contact forms, and bilingual-ready header navigation, this design provides a complete and professional shopping experience for horse enthusiasts and riders.",
+        "description": "Show your products in a clear, easy-to-browse online catalog.",
+        "detailDescription": "Live demo of our Digital Catalog product: an online showcase for products, categories, and WhatsApp orders, customizable with your brand (example: equestrian store).",
         "imageSrc": "/images/templates/modelo-5.png",
         "slug": "modelo-5",
         "demoUrl": "https://modelo-5.bonaetech.com/",
-        "price": 150,
-        "features": [
-          "Product catalog showcasing saddles, boots, apparel, helmets, and care accessories",
-          "Promotional banner with dynamic countdown timer for special offers and sales",
-          "Newsletter subscription bar offering promotional discount codes",
-          "Customer inquiry form tailored for rider discipline and horse equipment needs",
-          "Favorites list and navigation support for multi-language toggle"
+        "price": 199,
+        "features": [],
+        "plans": [
+          {
+            "id": "standard",
+            "price": 199,
+            "originalPrice": 220,
+            "description": "Standard model: with 25 products you showcase catalog essentials by category, ready for WhatsApp orders.",
+            "features": [
+              "Up to 25 preloaded products to showcase in your catalog",
+              "Your products organized by category",
+              "Every product with photos, price and details",
+              "Customers order directly via WhatsApp",
+              "Search bar to find products in seconds",
+              "Update prices and products whenever you want",
+              "Maintenance included for the first month",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ],
+            "excludedFeatures": ["Product photo production not included"]
+          },
+          {
+            "id": "full",
+            "price": 320,
+            "originalPrice": 340,
+            "description": "Premium model: with 50 products you expand your showcase, categories, and options for WhatsApp sales.",
+            "features": [
+              "Up to 50 preloaded products to showcase in your catalog",
+              "Your products organized by category",
+              "Every product with photos, price and details",
+              "Customers order directly via WhatsApp",
+              "Search bar to find products in seconds",
+              "Update prices and products whenever you want",
+              "Maintenance included for the first month",
+              "Hosting included for 1 year (conditions apply)",
+              "Domain included for 1 year (conditions apply)"
+            ],
+            "excludedFeatures": ["Product photo production not included"]
+          }
         ],
         "comingSoon": false
       }
