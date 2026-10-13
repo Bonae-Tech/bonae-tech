@@ -1,3 +1,6 @@
+# RETIRED: the CMS (admin + content-api worker + Cognito) is being retired.
+# All jobs are disabled (if: false) so this cannot be re-run by mistake.
+# Do not re-enable without reviewing docs/retirement.md.
 # Recurring deploy: content API Worker code (bonae-content-api).
 # Solo código — no sincroniza secretos GitHub App (usar Setup worker).
 # Auto-triggers on push to main.
@@ -13,15 +16,6 @@ on:
         description: Wrangler environment (empty = production)
         type: string
         default: ''
-  push:
-    branches: [main]
-    paths:
-      - 'workers/content-api/**'
-      - 'packages/content/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'turbo.json'
-      - '.github/workflows/deploy-worker.yml'
   workflow_dispatch:
     inputs:
       environment:
@@ -35,6 +29,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: false
     runs-on: ubuntu-latest
     environment: prod
     permissions:

@@ -1,3 +1,6 @@
+# RETIRED: the CMS (admin + content-api worker + Cognito) is being retired.
+# All jobs are disabled (if: false) so this cannot be re-run by mistake.
+# Do not re-enable without reviewing docs/retirement.md.
 # One-time (or when Cognito Terraform changes): apply Cognito via Terraform.
 # Part of bootstrap step 1. Requires infra-production approval for apply.
 #
@@ -7,16 +10,6 @@ name: Deploy cognito
 
 on:
   workflow_call:
-  push:
-    branches: [main]
-    paths:
-      - 'infra/terraform/cognito.tf'
-      - 'infra/terraform/ses.tf'
-      - 'infra/terraform/outputs.tf'
-      - 'infra/terraform/providers.tf'
-      - 'infra/terraform/backend.tf'
-      - 'infra/terraform/variables.tf'
-      - '.github/workflows/deploy-cognito.yml'
   workflow_dispatch:
 
 concurrency:
@@ -29,6 +22,7 @@ permissions:
 
 jobs:
   plan:
+    if: false
     name: Terraform plan
     runs-on: ubuntu-latest
     steps:
@@ -67,6 +61,7 @@ jobs:
           retention-days: 1
 
   apply:
+    if: false
     name: Terraform apply
     needs: [plan]
     runs-on: ubuntu-latest

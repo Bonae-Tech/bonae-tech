@@ -1,3 +1,6 @@
+# RETIRED: the CMS (admin + content-api worker + Cognito) is being retired.
+# All jobs are disabled (if: false) so this cannot be re-run by mistake.
+# Do not re-enable without reviewing docs/retirement.md.
 # One-time bootstrap for admin Pages (bonae-admin): verify prerequisites, then deploy.
 # setup = guardrails (Worker existe, Pages project) + primer deploy.
 # Deploy admin = solo código SPA en cada push a main.
@@ -32,6 +35,7 @@ concurrency:
 
 jobs:
   prerequisites:
+    if: false
     runs-on: ubuntu-latest
     environment: prod
     permissions:
@@ -96,14 +100,14 @@ jobs:
         run: echo "Admin bootstrap prerequisites OK (Worker + Pages project bonae-admin)."
 
   deploy:
+    if: false
     needs: [prerequisites]
-    if: inputs.action == 'setup'
     uses: ./.github/workflows/deploy-admin.yml
     secrets: inherit
 
   summary:
+    if: false
     needs: [prerequisites, deploy]
-    if: always() && inputs.action == 'setup'
     runs-on: ubuntu-latest
     steps:
       - name: Summary
