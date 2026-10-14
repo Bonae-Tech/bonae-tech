@@ -12,6 +12,7 @@ const paths = metaLandingPaths(copy.lang);
 const deviceSrc = '/images/meta/bonae-site-preview.png';
 ---
 
+<div class="meta-lp__page">
 <div class="meta-lp__strip">{copy.urgencyStrip}</div>
 
 <header class="meta-lp__shell py-4 flex items-center justify-between gap-4">
@@ -22,10 +23,10 @@ const deviceSrc = '/images/meta/bonae-site-preview.png';
   <span class="hidden sm:inline text-xs font-semibold uppercase tracking-wider text-terracotta">Meta Ads</span>
 </header>
 
-<main class="pb-28 md:pb-16">
+<main class="meta-lp__main pb-28 md:pb-16">
   <section class="meta-lp__shell">
     <div class="meta-lp__hero-grid">
-      <div>
+      <div class="meta-lp__hero-copy">
         <h1 class="meta-lp__headline">{copy.headline}</h1>
         <p class="meta-lp__lead">{copy.subheadline}</p>
         <ul class="meta-lp__checklist">
@@ -123,6 +124,7 @@ const deviceSrc = '/images/meta/bonae-site-preview.png';
   >
     {copy.primaryCta}
   </a>
+</div>
 </div>
 
 <script>

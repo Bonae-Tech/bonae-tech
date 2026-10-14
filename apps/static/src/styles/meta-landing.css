@@ -2,8 +2,20 @@
 
 body.meta-lp {
   @apply bg-white text-body;
+  width: 100%;
+  margin: 0;
   background-image: radial-gradient(circle at 100% 0%, rgba(255, 111, 97, 0.08), transparent 42%),
     radial-gradient(circle at 0% 100%, rgba(0, 180, 216, 0.07), transparent 40%);
+}
+
+.meta-lp__page {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.meta-lp__main {
+  width: 100%;
 }
 
 .meta-lp__strip {
@@ -11,11 +23,52 @@ body.meta-lp {
 }
 
 .meta-lp__shell {
-  @apply max-w-6xl mx-auto px-4 sm:px-6;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .meta-lp__shell {
+    padding-inline: 1.5rem;
+  }
 }
 
 .meta-lp__hero-grid {
-  @apply grid lg:grid-cols-2 gap-10 lg:gap-14 items-center py-10 md:py-14;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
+  padding-block: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .meta-lp__hero-grid {
+    padding-block: 3.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .meta-lp__hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 3.5rem;
+  }
+}
+
+.meta-lp__hero-copy {
+  max-width: 36rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+@media (min-width: 1280px) {
+  .meta-lp__hero-copy {
+    max-width: none;
+    margin-inline: 0;
+    text-align: left;
+  }
 }
 
 .meta-lp__headline {
@@ -32,6 +85,13 @@ body.meta-lp {
 
 .meta-lp__checklist li {
   @apply flex gap-3 text-sm sm:text-base text-dark-blue font-medium;
+}
+
+@media (max-width: 1279px) {
+  .meta-lp__checklist li {
+    justify-content: center;
+    text-align: left;
+  }
 }
 
 .meta-lp__checklist li::before {
@@ -55,7 +115,13 @@ body.meta-lp {
 }
 
 .meta-lp__cta-note {
-  @apply mt-3 text-xs text-body text-center sm:text-left;
+  @apply mt-3 text-xs text-body text-center;
+}
+
+@media (min-width: 1280px) {
+  .meta-lp__cta-note {
+    text-align: left;
+  }
 }
 
 .meta-lp__device {
