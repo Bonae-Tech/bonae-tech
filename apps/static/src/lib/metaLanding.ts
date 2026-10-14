@@ -26,7 +26,9 @@ export interface MetaLandingCopy {
   panelTitle: string;
   panelLead: string;
   steps: { title: string; description: string }[];
-  siteLinkLabel: string;
+  footerPromoBefore: string;
+  footerWebsiteLabel: string;
+  footerPromoAfter: string;
   legalNote: string;
   whatsappMessage: string;
   deviceImageAlt: string;
@@ -52,7 +54,11 @@ const es: MetaLandingCopy = {
   priceSectionTitle: 'Paquetes más pedidos en Meta',
   popularBadge: 'Más pedido',
   priceCards: [
-    { label: 'Landing Page', price: '$99', note: 'pago único · 1 campaña' },
+    {
+      label: 'Landing Page',
+      price: '$99',
+      note: 'Pago único. Solo para campañas publicitarias en Meta o Google.',
+    },
     { label: 'OnePage', price: '$149', note: 'oferta · presencia completa', highlight: true },
     { label: 'Catálogo digital', price: '$199', note: 'oferta · vende por WhatsApp' },
   ],
@@ -64,7 +70,9 @@ const es: MetaLandingCopy = {
     { title: 'Elegimos plantilla', description: 'Te recomendamos plan y funciones sin sorpresas.' },
     { title: 'Entrega en días', description: 'Personalizamos, publicamos y te capacitamos en lo básico.' },
   ],
-  siteLinkLabel: 'Ver catálogo completo en bonaetech.com',
+  footerPromoBefore: 'Para más planes y productos visítanos en nuestra website ',
+  footerWebsiteLabel: 'bonaetech.com',
+  footerPromoAfter: ' o escríbenos para comenzar a trabajar juntos.',
   legalNote: 'Al escribirnos aceptas nuestra política de privacidad.',
   whatsappMessage:
     'Hola BONAE TECH, vi su anuncio en Meta y quiero cotizar una web para mi negocio.',
@@ -91,7 +99,11 @@ const en: MetaLandingCopy = {
   priceSectionTitle: 'Top packages from our Meta campaigns',
   popularBadge: 'Top pick',
   priceCards: [
-    { label: 'Landing Page', price: '$99', note: 'one-time · one campaign' },
+    {
+      label: 'Landing Page',
+      price: '$99',
+      note: 'One-time payment. For Meta or Google ad campaigns only.',
+    },
     { label: 'OnePage', price: '$149', note: 'offer · full presence', highlight: true },
     { label: 'Digital catalog', price: '$199', note: 'offer · sell via WhatsApp' },
   ],
@@ -103,7 +115,9 @@ const en: MetaLandingCopy = {
     { title: 'Pick a template', description: 'We recommend plan and features with clear pricing.' },
     { title: 'Delivery in days', description: 'We customize, launch, and show you the basics.' },
   ],
-  siteLinkLabel: 'See full catalog at bonaetech.com',
+  footerPromoBefore: 'For more plans and products, visit our website ',
+  footerWebsiteLabel: 'bonaetech.com',
+  footerPromoAfter: ' or message us to start working together.',
   legalNote: 'By messaging us you accept our privacy policy.',
   whatsappMessage:
     'Hello BONAE TECH, I saw your Meta ad and would like a quote for a website for my business.',

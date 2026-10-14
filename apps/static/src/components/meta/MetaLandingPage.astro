@@ -100,13 +100,15 @@ const deviceSrc = '/images/meta/bonae-site-preview.png';
   </section>
 
   <footer class="meta-lp__footer meta-lp__shell">
-    <p>
-      <a href={paths.templates} class="text-mid-blue font-semibold underline underline-offset-2">
-        {copy.siteLinkLabel}
+    <p class="meta-lp__footer-promo">
+      {copy.footerPromoBefore}
+      <a href={paths.home} class="meta-lp__footer-site" target="_blank" rel="noopener noreferrer">
+        {copy.footerWebsiteLabel}
       </a>
+      {copy.footerPromoAfter}
     </p>
-    <p class="mt-2">
-      <a href={paths.privacy} class="underline underline-offset-2">{copy.legalNote}</a>
+    <p class="mt-4 text-sm">
+      <a href={paths.privacy} class="underline underline-offset-2 text-body">{copy.legalNote}</a>
     </p>
   </footer>
 </main>

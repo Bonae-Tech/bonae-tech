@@ -113,7 +113,19 @@ body.meta-lp {
 }
 
 .meta-lp__footer {
-  @apply py-8 text-center text-xs text-body border-t border-light-blue/15;
+  @apply py-10 md:py-12 text-center border-t border-light-blue/15 bg-cream/60;
+}
+
+.meta-lp__footer-promo {
+  @apply text-base sm:text-lg md:text-xl font-semibold text-dark-blue leading-relaxed max-w-3xl mx-auto;
+}
+
+.meta-lp__footer-site {
+  @apply text-terracotta font-bold underline underline-offset-4 decoration-terracotta/40 hover:decoration-terracotta;
+}
+
+.meta-lp__price-card .text-xs {
+  @apply leading-snug px-1;
 }
 
 @media (prefers-reduced-motion: reduce) {
