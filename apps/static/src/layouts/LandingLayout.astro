@@ -52,7 +52,7 @@ const { t, settings, title, description, whatsappHref, noIndex = true } = Astro.
     </script>
     -->
   </head>
-  <body class="meta-lp min-h-screen flex flex-col">
+  <body class="meta-lp min-h-screen w-full">
     <slot />
     <WhatsAppFloat href={whatsappHref} metaTracking />
     <CookieBanner t={t} settings={settings} />
