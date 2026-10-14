@@ -76,7 +76,8 @@ body.meta-lp {
 }
 
 .meta-lp__device img {
-  @apply block w-full aspect-[4/5] object-cover object-top;
+  @apply block w-full aspect-[4/5] object-cover object-top bg-white;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .meta-lp__price-row {

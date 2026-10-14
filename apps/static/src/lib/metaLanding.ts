@@ -68,7 +68,7 @@ const es: MetaLandingCopy = {
   legalNote: 'Al escribirnos aceptas nuestra política de privacidad.',
   whatsappMessage:
     'Hola BONAE TECH, vi su anuncio en Meta y quiero cotizar una web para mi negocio.',
-  deviceImageAlt: 'Vista previa de sitio web corporativo BONAE TECH',
+  deviceImageAlt: 'Miniatura del sitio web bonaetech.com',
 };
 
 const en: MetaLandingCopy = {
@@ -107,7 +107,7 @@ const en: MetaLandingCopy = {
   legalNote: 'By messaging us you accept our privacy policy.',
   whatsappMessage:
     'Hello BONAE TECH, I saw your Meta ad and would like a quote for a website for my business.',
-  deviceImageAlt: 'Preview of a BONAE TECH corporate website',
+  deviceImageAlt: 'Thumbnail preview of the bonaetech.com website',
 };
 
 export function metaLandingFor(lang: MetaLandingLang): MetaLandingCopy {
