@@ -38,9 +38,9 @@ const es: MetaLandingCopy = {
   pageDescription:
     'Landing, OnePage y catálogo digital con precio claro. Publicamos en días. Cotiza por WhatsApp sin compromiso.',
   urgencyStrip: 'Consulta gratis · Te respondemos hoy · Venezuela y Latinoamérica',
-  headline: 'Publica tu negocio en internet desde $99 USD',
+  headline: 'Publica tu negocio en internet con OnePage por $149',
   subheadline:
-    'No necesitas meses ni un equipo técnico: elegimos la plantilla, la personalizamos y te entregamos un producto tuyo.',
+    'No necesitas meses ni un equipo técnico: tenemos plantillas propias elaboradas para vender, la personalizamos y te entregamos un producto tuyo.',
   heroBullets: [
     'Plantillas propias listas para tu marca',
     'Editor sencillo para cambios básicos',
@@ -77,9 +77,9 @@ const en: MetaLandingCopy = {
   pageDescription:
     'Landing, OnePage, and digital catalog with clear pricing. Live in days. Message us on WhatsApp.',
   urgencyStrip: 'Free inquiry · Same-day reply · Venezuela & Latin America',
-  headline: 'Get your business online from $99 USD',
+  headline: 'Get your business online with OnePage for $149',
   subheadline:
-    'No months-long projects: we pick the template, customize it, and hand you a product you own.',
+    'No months-long projects: we have our own templates built to sell, we customize yours, and you own the final product.',
   heroBullets: [
     'Ready-made templates tailored to your brand',
     'Simple editor for basic updates',
