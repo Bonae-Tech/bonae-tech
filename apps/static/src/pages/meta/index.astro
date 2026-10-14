@@ -9,6 +9,12 @@ const copy = metaLandingFor('es');
 const whatsappHref = metaWhatsAppHref(siteSettings.whatsappNumber, copy);
 ---
 
-<LandingLayout t={t} settings={siteSettings} title={copy.pageTitle} description={copy.pageDescription}>
+<LandingLayout
+  t={t}
+  settings={siteSettings}
+  title={copy.pageTitle}
+  description={copy.pageDescription}
+  whatsappHref={whatsappHref}
+>
   <MetaLandingPage copy={copy} whatsappHref={whatsappHref} />
 </LandingLayout>

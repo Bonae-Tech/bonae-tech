@@ -4,6 +4,7 @@ import '../styles/meta-landing.css';
 import type { SiteSettings } from '@bonae/content';
 import { themeColor } from '../styles/colors.mjs';
 import CookieBanner from '../components/CookieBanner.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import type { Translations } from '@bonae/content';
 
 interface Props {
@@ -11,11 +12,12 @@ interface Props {
   settings: SiteSettings;
   title: string;
   description: string;
+  whatsappHref: string;
   /** Paid landing: avoid competing with main site in search */
   noIndex?: boolean;
 }
 
-const { t, settings, title, description, noIndex = true } = Astro.props;
+const { t, settings, title, description, whatsappHref, noIndex = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -52,6 +54,7 @@ const { t, settings, title, description, noIndex = true } = Astro.props;
   </head>
   <body class="meta-lp min-h-screen flex flex-col">
     <slot />
+    <WhatsAppFloat href={whatsappHref} metaTracking />
     <CookieBanner t={t} settings={settings} />
   </body>
 </html>
