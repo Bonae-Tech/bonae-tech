@@ -1,16 +1,22 @@
 ---
 interface Props {
   href: string;
+  /** Adds data-meta-wa for UTM enrichment on Meta landing pages */
+  metaTracking?: boolean;
 }
 
-const { href } = Astro.props;
+const { href, metaTracking = false } = Astro.props;
 ---
 
 <a
   href={href}
   target="_blank"
   rel="noopener noreferrer"
-  class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:bg-[#1ebe5d] hover:scale-105 transition-all duration-200"
+  class:list={[
+    'fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:bg-[#1ebe5d] hover:scale-105 transition-all duration-200',
+    metaTracking && 'meta-wa-link meta-lp__wa-float',
+  ]}
+  data-meta-wa={metaTracking ? true : undefined}
   aria-label="Contactar por WhatsApp"
 >
   <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
